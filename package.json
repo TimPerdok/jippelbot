@@ -1,0 +1,26 @@
+{
+  "name": "jippelbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimPerdok/jippelbot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TimPerdok/jippelbot/issues"
+  },
+  "homepage": "https://github.com/TimPerdok/jippelbot#readme",
+  "dependencies": {
+    "discord.js": "^14.6.0"
+  },
+  "compilerOptions": {
+    "esModuleInterop": true
+  }
+}
