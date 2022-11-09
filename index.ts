@@ -1,8 +1,7 @@
 import { Collection } from 'discord.js';
-import fs from 'fs';
 import { promises as fspromises } from 'fs';
-import path from 'path';
 import Discordbot from './classes/Bot';
+import Classfinder from './classes/Classfinder';
 import Command from './classes/Command';
 
 
@@ -10,23 +9,19 @@ import Command from './classes/Command';
 async function init() {
 
 
-    const commandsPath = path.join(__dirname, 'commands');
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
-    const commands = new Collection<string, Command>();
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const cls = await import(filePath);
-        const command = new cls.default()
-        console.log(command)
-        commands.set(command.name, command);
-    }
+    const commands = await Classfinder.getClasses("commands")
+    const commandCollection = new Collection<string, any>();
+    commands.forEach(async ({ value }: any) => {
+        if (!value) return console.error("Command error")
+        const command = new value.default()
+        commandCollection.set(command.name, command)
+    });
 
-    console.log(commands)
 
-    const {botsecret, pubkey} = await getToken()
-    const bot = new Discordbot(botsecret, commands)
+    const { botsecret, appid } = await getToken()
+    const bot = new Discordbot(botsecret, appid, commandCollection)
 
-      
+
 }
 
 init()
