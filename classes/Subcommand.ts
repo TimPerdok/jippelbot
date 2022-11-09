@@ -1,20 +1,25 @@
+import { Client } from "discord.js";
 import Option from "../classes/Option"
+import ExecutableCommand from "../interfaces/ExecutableCommand";
 
 
-export default class Subcommand {
+export default abstract class Subcommand implements ExecutableCommand {
 
     name: string
     description: string
-    options: Option[] = [
-    ]
 
 
+    abstract data(subcommand: any): any
 
-    constructor(name: string, description: string, options: Option[] = []) {
+    constructor(name: string, description: string) {
         this.name = name
         this.description = description
-        this.options = options
     }
+
+    abstract onReply(client: Client<boolean>, interaction: any): any
+    abstract onButtonPress(client: Client<boolean>, interaction: any): any
+
+
 
 
 

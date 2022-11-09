@@ -3,6 +3,7 @@ import Command from "../classes/Command";
 
 
 export default class Ping extends Command {
+    
     get data(): SlashCommandBuilder {
         return new SlashCommandBuilder()
         .setName(this.name)

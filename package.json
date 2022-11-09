@@ -21,7 +21,9 @@
     "discord.js": "^14.6.0"
   },
   "compilerOptions": {
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false
   },
   "devDependencies": {
     "@types/jest": "^29.2.2",
