@@ -1,10 +1,13 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, MessageReference } from "discord.js";
+import DiscordBot from "./Bot";
+import DataHandler from "./DataHandler";
+import Subcommand from "./Subcommand";
 
 export default class Poll {
 
+    subcommand: string
     question: string;
     initiator: any;
-
 
     message: any;
 
@@ -13,27 +16,28 @@ export default class Poll {
 
     maxTime = 86400
 
-    minimumVotes = 6
-    minimumPercentage = 0.75
+    minimumPercentage = 0.50
 
-
-    constructor(question: string, initiator: any) {
-        this.question = question
-        this.initiator = initiator
-        this.startTimestampUnix = Math.round(Date.now() / 1000)
-        setTimeout(async () => {
-            this.message.edit({
-                embeds: [],
-                components: [],
-                content: `Vote is afgelopen. ${this.percentage} van de stemmen is voor.`
-            })
-            if (this.voteCount > this.minimumVotes && this.percentage > this.minimumPercentage) await this.onPass(this)
-            else await this.onFail(this)
-        }, this.maxTime * 1000)
+    get timeLeft() {
+        return (this.startTimestampUnix + this.maxTime) * 1000 - Date.now()
     }
 
-    async onPass(poll: Poll) { }
-    async onFail(poll: Poll) { }
+    constructor(question: string, initiator: any, subcommand: string, startTimestampUnix?: number, votes?: Map<string, boolean>, message?: MessageReference) {
+        this.question = question
+        this.initiator = initiator
+        this.subcommand = subcommand
+        this.startTimestampUnix = startTimestampUnix ?? Math.round(Date.now() / 1000)
+        if (votes) this.votes = votes
+        if (message) this.message = message
+        setTimeout(async () => {
+            DataHandler.removePoll(this.message.id)
+            if (this.percentage > this.minimumPercentage) this.onPass(this)
+            else this.onFail(this)
+        }, this.timeLeft > 0 ? this.timeLeft : 0)
+    }
+
+    onPass(poll: Poll) { }
+    onFail(poll: Poll) { }
 
     get voteCount() {
         return [...this.votes.values()].length
@@ -41,7 +45,9 @@ export default class Poll {
 
     get percentage(): number {
         if (!this.yesCount && !this.noCount) return 0
-        return this.yesCount / this.yesCount + this.noCount
+        const pct = this.yesCount / (this.yesCount + this.noCount)
+        if (!isNaN(pct)) return pct
+        return 0
     }
 
     get percentageLabel() {
@@ -58,10 +64,12 @@ export default class Poll {
 
     setRef(message: any) {
         this.message = message
+        DataHandler.setPoll(this.toJSON())
     }
 
     addCount(user: GuildMember, value: boolean = false) {
         this.votes.set(user.id, value)
+        DataHandler.setPoll(this.toJSON())
     }
 
     getEndTime() {
@@ -97,9 +105,21 @@ export default class Poll {
     }
 
     async update(interaction: any) {
-        this.message.edit(this.getEmbed())
+        await this.message.edit(this.getEmbed())
         await interaction.update({ fetchReply: true })
     }
 
+
+    toJSON() {
+        return {
+            question: this.question,
+            initiator: this.initiator.user.id,
+            votes: Object.fromEntries(this.votes),
+            startTimestampUnix: this.startTimestampUnix,
+            subcommand: this.subcommand,
+            messageId: this.message.id,
+            channelId: this.message.channelId,
+        }
+    }
 
 }

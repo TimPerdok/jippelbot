@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest test",
-    "start": "ts-node index.ts"
+    "test": "jest --watchAll --config ./jest.config.js",
+    "start": "ts-node index.ts --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,8 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "strictNullChecks": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "allowJs": true
   },
   "devDependencies": {
     "@types/jest": "^29.2.2",

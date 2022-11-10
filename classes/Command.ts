@@ -24,14 +24,20 @@ export default abstract class Command implements ExecutableCommand {
         this.name = name.toLowerCase()
         this.description = description
         this.subcommands = new Map<string, any>();
-        Classfinder.getClasses("commands/vote").then((subcommands) => {
-            subcommands.forEach(async ({ value }: any) => {
-                if (!value) return console.error("Subcommand error")
-                const subcommand = new value.default()
+        const subcommands = Classfinder.getClassesSync("commands/"+this.name)
+        if (!subcommands) return
+        subcommands.forEach((obj) => {
+            try {
+                if (!obj) return console.error("Subcommand error")                
+                const subcommand = new obj.default()
                 this.subcommands.set(subcommand.name, subcommand)
-            });
-        }) 
+            } catch (e) {
+                console.log(e)
+            }
+        });
     }
+
+
     onReply(client: Client<boolean>, interaction: any): any {}
     onButtonPress(client: Client<boolean>, interaction: any): any {}
 

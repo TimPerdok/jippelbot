@@ -9,17 +9,8 @@ import Command from './classes/Command';
 async function init() {
 
 
-    const commands = await Classfinder.getClasses("commands")
-    const commandCollection = new Collection<string, any>();
-    commands.forEach(async ({ value }: any) => {
-        if (!value) return console.error("Command error")
-        const command = new value.default()
-        commandCollection.set(command.name, command)
-    });
-
-
     const { botsecret, appid } = await getToken()
-    const bot = new Discordbot(botsecret, appid, commandCollection)
+    const bot = new Discordbot(botsecret, appid)
 
 
 }

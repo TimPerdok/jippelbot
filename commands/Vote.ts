@@ -8,7 +8,6 @@ import Subcommand from "../classes/Subcommand";
 export default class Vote extends Command {
 
 
-
     get data(): any {
         const builder = new SlashCommandBuilder()
         .setName(this.name)
@@ -16,11 +15,13 @@ export default class Vote extends Command {
         this.subcommands.forEach((subcommand) => {
             builder.addSubcommand(subcommand.data.bind(subcommand))
         })
+        
         return builder
     }
     
     constructor() {
         super("vote", "Start a vote");
+        
     }
 
     async onButtonPress(client: Client, interaction: any) {
@@ -31,6 +32,7 @@ export default class Vote extends Command {
 
     
     async onReply(client: Client, interaction: any) {
+        
         const subcommand: Subcommand | undefined = this.subcommands.get(interaction.options.getSubcommand())
         if (subcommand) return subcommand.onReply(client, interaction)
 	}

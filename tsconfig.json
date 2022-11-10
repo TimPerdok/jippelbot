@@ -1,0 +1,14 @@
+{
+    "esModuleInterop": true,
+    "compilerOptions": {
+      "esModuleInterop": true,
+      "module": "commonjs",
+      "target": "es2015",
+      "sourceMap": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true
+    },
+    "exclude": [
+      "node_modules"
+    ]
+  }

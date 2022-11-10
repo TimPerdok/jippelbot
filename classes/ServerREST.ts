@@ -1,5 +1,4 @@
 import { Client, Collection, Events, GatewayIntentBits, Guild, REST, Routes, SlashCommandBuilder } from "discord.js";
-import {ClientI} from "./Client";
 import Command from "./Command";
 
 
@@ -18,7 +17,6 @@ export default class ServerREST {
     }
 
     updateCommands(commands: Collection<string, Command>) {
-        
         this.rest.put(
             Routes.applicationGuildCommands(this.clientId, this.server.id),
             {
