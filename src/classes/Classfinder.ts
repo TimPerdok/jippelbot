@@ -2,7 +2,7 @@ import { Collection } from "discord.js";
 import path from 'path';
 import fs from 'fs';
 import Command from "./Command";
-import { ROOTDIR } from "../Constants";
+import { ROOTDIR } from "../../Constants";
 
 
 export default class Classfinder {

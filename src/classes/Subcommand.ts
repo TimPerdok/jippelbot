@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import Option from "../classes/Option"
+import Option from "./Option"
 import ExecutableCommand from "../interfaces/ExecutableCommand";
 
 

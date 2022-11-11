@@ -2,7 +2,7 @@ import { Collection, Invite } from "discord.js";
 import path from 'path';
 import fs from 'fs';
 import Poll from './Poll';
-import { ROOTDIR } from "../Constants";
+import { ROOTDIR } from "../../Constants";
 import DiscordBot from "./Bot";
 
 
