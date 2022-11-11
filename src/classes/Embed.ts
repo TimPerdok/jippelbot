@@ -1,12 +1,12 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, GuildMember } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, GuildMember } from "discord.js";
 
 export default class Embed {
     title: string;
     description: string;
     initiator: GuildMember;
-    fields: any;
+    fields: APIEmbedField[];
 
-    constructor(title: string, description: string, initiator: GuildMember, fields: any) {
+    constructor(title: string, description: string, initiator: GuildMember, fields: APIEmbedField[]) {
         this.title = title
         this.description = description
         this.initiator = initiator

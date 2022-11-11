@@ -1,4 +1,4 @@
-import { Client, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
 import Command from "../classes/Command";
 
 
@@ -17,7 +17,7 @@ export default class Ping extends Command {
 
 
     
-    async onReply(interaction: any) {
+    async onReply(interaction: ChatInputCommandInteraction) {
 		await interaction.reply(`Pong!`);
 	}
 

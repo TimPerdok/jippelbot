@@ -1,4 +1,4 @@
-import { Channel, Collection, Guild, Invite, Message, TextChannel } from "discord.js";
+import { Channel, Collection, Guild, GuildMember, Invite, Message, TextChannel } from "discord.js";
 import path from 'path';
 import fs from 'fs';
 import Poll, { PollJSON } from './Poll';
@@ -40,11 +40,11 @@ export default class DataHandler {
         const pollsMap = new Map<string, Poll>()
         if (!searchSubcommand || !Object.entries(polls).length) return pollsMap
         if (!polls) return pollsMap
-        Object.entries(polls).forEach(async ([key, {question, initiator, subcommand, startTimestampUnix, votes, messageId, channelId}]: any)=>{
+        Object.entries(polls).forEach(async ([key, {question, initiatorId, subcommand, startTimestampUnix, votes, messageId, channelId}]: [string, PollJSON])=>{
             const channel: TextChannel = DiscordBot.client.channels.cache.get(channelId) as TextChannel
             const message: Message = await channel.messages.fetch(messageId)
             const guild: Guild = DiscordBot.client.guilds.cache.get(channel.guild.id)
-            initiator = await guild.members.fetch(initiator)
+            const initiator: GuildMember = await guild.members.fetch(initiatorId)
             if (subcommand === searchSubcommand) pollsMap.set(key, new Poll(question, initiator, subcommand, startTimestampUnix, new Map(Object.entries(votes)), message))
         })
         return pollsMap

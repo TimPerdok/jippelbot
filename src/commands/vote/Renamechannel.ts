@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, GuildMember } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, Client, GuildMember, Interaction, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
 import DataHandler from "../../classes/DataHandler";
 import Poll from "../../classes/Poll";
 import Subcommand from "../../classes/Subcommand";
@@ -18,11 +18,11 @@ export default class Renamechannel extends Subcommand {
     }
 
     
-    async onReply(interaction: any) {
-        const channels = interaction.member.guild.channels.cache
+    async onReply(interaction: ChatInputCommandInteraction) {
+        const channels = (interaction.member as GuildMember).guild.channels.cache
         const channel = channels.get(interaction.options.getChannel('channel').id)
         const newName = interaction.options.getString('name')
-        const poll = new Poll(`Moet het kanaal ${channel} vernoemd worden naar '${newName}'`, interaction.member, this.name);
+        const poll = new Poll(`Moet het kanaal ${channel} vernoemd worden naar '${newName}'`, interaction.member as GuildMember, this.name);
         const message = await interaction.reply({...poll.payload, fetchReply: true})
         this.polls.set(message.id, poll)
         poll.setRef(message)
@@ -32,7 +32,6 @@ export default class Renamechannel extends Subcommand {
                 components: [],
                 content: `De naam van het kanaal ${channel} is veranderd naar '${newName}!'`
             })
-            
             channel.setName(newName)
         }
     }
@@ -45,17 +44,17 @@ export default class Renamechannel extends Subcommand {
     }
 
 
-    data(subcommand: any) {
+    data(subcommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder {
         return subcommand
         .setName(this.name)
         .setDescription(this.description)
-        .addChannelOption((option: any) => {
+        .addChannelOption((option: SlashCommandChannelOption) => {
             return option
                 .setName('channel')
                 .setDescription('The channel to rename')
                 .setRequired(true)
         })
-        .addStringOption((option: any) => {
+        .addStringOption((option: SlashCommandStringOption) => {
             return option
                 .setName('name')
                 .setDescription('The new name of the channel')

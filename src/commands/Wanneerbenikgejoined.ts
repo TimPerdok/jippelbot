@@ -1,4 +1,4 @@
-import { Client, Interaction } from "discord.js";
+import { ChatInputCommandInteraction, Client, GuildMember, Interaction } from "discord.js";
 import Command from "../classes/Command";
 
 
@@ -10,8 +10,8 @@ export default class Wanneerbenikgejoined extends Command {
     }
 
 
-    async onReply(interaction: any) {
-		return await interaction.reply(`Jij bent gejoined op ${interaction.member.joinedAt}.`);
+    async onReply(interaction: ChatInputCommandInteraction) {
+		return await interaction.reply(`Jij bent gejoined op ${(interaction.member as GuildMember).joinedAt}.`);
 	}
 
 }

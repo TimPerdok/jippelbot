@@ -1,4 +1,4 @@
-import { Client, MessageEditOptions, MessagePayload } from "discord.js"
+import { ActionRowBuilder, Client, Embed, EmbedBuilder, MessageEditOptions, MessagePayload } from "discord.js"
 
 export type DataJSON = {
     
@@ -6,8 +6,8 @@ export type DataJSON = {
 
 export type Payload = {
     content?: string
-    embeds?: any[]
-    components?: any[]
+    embeds?: EmbedBuilder[]
+    components?: ActionRowBuilder[]
 }
 
 export default interface ExecutableCommand {

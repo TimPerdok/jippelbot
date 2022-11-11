@@ -4,7 +4,7 @@ import DataHandler from "./DataHandler";
 
 export type PollJSON = {
     question: string
-    initiator: string
+    initiatorId: string
     votes: {
         [key: string]: boolean
     }
@@ -33,7 +33,7 @@ export default class Poll implements MessageCarrier {
         return (this.startTimestampUnix + this.maxTime) * 1000 - Date.now()
     }
 
-    constructor(question: string, initiator: any, subcommand: string, startTimestampUnix?: number, votes: Map<string, boolean> = new Map<string, boolean>(), message: Message = null) {
+    constructor(question: string, initiator: GuildMember, subcommand: string, startTimestampUnix?: number, votes: Map<string, boolean> = new Map<string, boolean>(), message: Message = null) {
         this.question = question
         this.initiator = initiator
         this.subcommand = subcommand
@@ -79,7 +79,7 @@ export default class Poll implements MessageCarrier {
         DataHandler.setPoll(this.format())
     }
 
-    setRef(message: any): void {
+    setRef(message: Message): void {
         this.message = message
         this.updateData()
     }
@@ -128,7 +128,7 @@ export default class Poll implements MessageCarrier {
     format(): PollJSON {
         return {
             question: this.question,
-            initiator: this.initiator.user.id,
+            initiatorId: this.initiator.user.id,
             votes: Object.fromEntries(this.votes),
             startTimestampUnix: this.startTimestampUnix,
             subcommand: this.subcommand,

@@ -1,6 +1,6 @@
-import { Client } from "discord.js"
+import { ChatInputCommandInteraction, Client } from "discord.js"
 
 export default interface ExecutableCommand {
-    onReply(interaction: any): any
-    onButtonPress(interaction: any): any
+    onReply(interaction: ChatInputCommandInteraction): void
+    onButtonPress(interaction: ChatInputCommandInteraction): void
 }
