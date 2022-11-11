@@ -17,7 +17,7 @@ export default class Ping extends Command {
 
 
     
-    async onReply(client: Client, interaction: any) {
+    async onReply(interaction: any) {
 		await interaction.reply(`Pong!`);
 	}
 

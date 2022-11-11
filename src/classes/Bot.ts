@@ -1,4 +1,4 @@
-import { Client, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SlashCommandBuilder } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction } from "discord.js";
 import Classfinder from "./Classfinder";
 import Command from "./Command";
 import ServerREST from "./ServerRest";
@@ -21,24 +21,20 @@ export default class DiscordBot {
 
     constructor(token: string, clientId: string) {
         this.rest = new REST({ version: '10' }).setToken(token);
-        DiscordBot.client = new Client({ intents: [GatewayIntentBits.Guilds,
+        DiscordBot.client = new Client({
+            intents: [GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.MessageContent,
-            GatewayIntentBits.GuildMembers] });
+            GatewayIntentBits.GuildMembers]
+        });
         this.serverRESTS = []
         this.commands = new Collection<string, Command>();
-
-
 
         DiscordBot.client.on('ready', async () => {
             console.log(`Logged in as ${DiscordBot.client?.user?.tag}!`);
 
-
-            const commands = await Classfinder.getClasses("commands")
-            
-            commands.forEach(({ value }: any) => {
-                if (!value) return console.error("Command error")
-                const command = new value.default()
+            const commands: Command[] = await Classfinder.getCommands()
+            commands.forEach((command: Command) => {
                 this.commands.set(command.name, command)
             });
 
@@ -53,26 +49,31 @@ export default class DiscordBot {
 
 
 
-        DiscordBot.client.on(Events.InteractionCreate, async (interaction: any) => {
+        DiscordBot.client.on(Events.InteractionCreate, this.onInteractionCreate.bind(this));
+        DiscordBot.client.login(token);
+    }
+
+    async onInteractionCreate(interaction: Interaction) {
             try {
-                const commandName = interaction.commandName ?? interaction.message.interaction.commandName.split(' ')[0]
-                const command = this.commands.get(commandName)
-                if (!command) return;
+                let command: Command = null;
+                
                 switch (interaction.constructor.name) {
                     case 'ChatInputCommandInteraction':
-                        command.onReply(DiscordBot.client, interaction);
+                        interaction = interaction as ChatInputCommandInteraction
+                        command = this.commands.get(interaction?.commandName)
+                        console.log(command)
+                        command.onReply(interaction);
                         break;
                     case "ButtonInteraction":
-                        command.onButtonPress(DiscordBot.client, interaction);
+                        interaction = interaction as ButtonInteraction
+                        command = this.commands.get(interaction.message.interaction.commandName.split(' ')[0] ?? "")
+                        console.log(command)
+                        command.onButtonPress(interaction);
                         break;
                 }
             } catch (error) {
                 console.error(error)
             }
-        });
-
-
-        DiscordBot.client.login(token);
     }
 
 

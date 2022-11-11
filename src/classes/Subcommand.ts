@@ -16,8 +16,8 @@ export default abstract class Subcommand implements ExecutableCommand {
         this.description = description
     }
 
-    abstract onReply(client: Client<boolean>, interaction: any): any
-    abstract onButtonPress(client: Client<boolean>, interaction: any): any
+    abstract onReply(interaction: any): any
+    abstract onButtonPress(interaction: any): any
 
 
 

@@ -1,7 +1,17 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, MessageReference } from "discord.js";
-import DiscordBot from "./Bot";
 import DataHandler from "./DataHandler";
-import Subcommand from "./Subcommand";
+
+type PollJSON = {
+    question: string
+    initiator: string
+    votes: {
+        [key: string]: boolean
+    }
+    startTimestampUnix: number
+    subcommand: string
+    messageId: string
+    channelId: string
+};
 
 export default class Poll {
 
@@ -64,12 +74,12 @@ export default class Poll {
 
     setRef(message: any) {
         this.message = message
-        DataHandler.setPoll(this.toJSON())
+        DataHandler.setPoll(this.format())
     }
 
     addCount(user: GuildMember, value: boolean = false) {
         this.votes.set(user.id, value)
-        DataHandler.setPoll(this.toJSON())
+        DataHandler.setPoll(this.format())
     }
 
     getEndTime() {
@@ -101,7 +111,6 @@ export default class Poll {
                         .setStyle(ButtonStyle.Danger),
                 )]
         }
-
     }
 
     async update(interaction: any) {
@@ -109,8 +118,7 @@ export default class Poll {
         await interaction.update({ fetchReply: true })
     }
 
-
-    toJSON() {
+    format(): PollJSON {
         return {
             question: this.question,
             initiator: this.initiator.user.id,

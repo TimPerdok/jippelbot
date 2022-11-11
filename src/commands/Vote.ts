@@ -24,17 +24,17 @@ export default class Vote extends Command {
         
     }
 
-    async onButtonPress(client: Client, interaction: any) {
+    async onButtonPress(interaction: any) {
         const subcommand: Subcommand | undefined = this.subcommands.get(interaction.message.interaction.commandName.split(' ')[1])
-        if (subcommand) return subcommand.onButtonPress(client, interaction)
+        if (subcommand) return subcommand.onButtonPress(interaction)
     }
 
 
     
-    async onReply(client: Client, interaction: any) {
+    async onReply(interaction: any) {
         
         const subcommand: Subcommand | undefined = this.subcommands.get(interaction.options.getSubcommand())
-        if (subcommand) return subcommand.onReply(client, interaction)
+        if (subcommand) return subcommand.onReply(interaction)
 	}
 
 

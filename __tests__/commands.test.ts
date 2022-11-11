@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { Client } from 'discord.js';
-import Vote from '../commands/vote';
-import Renamechannel from '../commands/vote/Renamechannel';
+import Renamechannel from '../src/commands/vote/Renamechannel';
+
 
 describe('commands', () => {
 

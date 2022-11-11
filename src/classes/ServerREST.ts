@@ -17,10 +17,11 @@ export default class ServerREST {
     }
 
     updateCommands(commands: Collection<string, Command>) {
+        console.log(commands)
         this.rest.put(
             Routes.applicationGuildCommands(this.clientId, this.server.id),
             {
-                body: [...commands.values()].map((command)=>{return command.data.toJSON()})
+                body: [...commands.values()].map((command: Command)=>{return command.data.toJSON()})
             },
         )
     }

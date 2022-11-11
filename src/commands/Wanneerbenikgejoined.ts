@@ -10,7 +10,7 @@ export default class Wanneerbenikgejoined extends Command {
     }
 
 
-    async onReply(client: Client, interaction: any) {
+    async onReply(interaction: any) {
 		return await interaction.reply(`Jij bent gejoined op ${interaction.member.joinedAt}.`);
 	}
 

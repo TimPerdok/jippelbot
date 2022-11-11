@@ -18,7 +18,7 @@ export default class Renamechannel extends Subcommand {
     }
 
     
-    async onReply(client: Client<boolean>, interaction: any) {
+    async onReply(interaction: any) {
         const channels = interaction.member.guild.channels.cache
         const channel = channels.get(interaction.options.getChannel('channel').id)
         const newName = interaction.options.getString('name')
@@ -37,7 +37,7 @@ export default class Renamechannel extends Subcommand {
         }
     }
 
-    async onButtonPress(client: Client, interaction: any) {
+    async onButtonPress(interaction: any) {
         const poll = this.polls.get(interaction.message.id)
         if (!poll) return
         poll.addCount(interaction.user, interaction.customId === 'yes')
