@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { ButtonInteraction, Client, GuildMember } from "discord.js";
 import DataHandler from "../../classes/DataHandler";
 import Poll from "../../classes/Poll";
 import Subcommand from "../../classes/Subcommand";
@@ -23,7 +23,7 @@ export default class Renamechannel extends Subcommand {
         const channel = channels.get(interaction.options.getChannel('channel').id)
         const newName = interaction.options.getString('name')
         const poll = new Poll(`Moet het kanaal ${channel} vernoemd worden naar '${newName}'`, interaction.member, this.name);
-        const message = await interaction.reply({...poll.getEmbed(), fetchReply: true})
+        const message = await interaction.reply({...poll.payload, fetchReply: true})
         this.polls.set(message.id, poll)
         poll.setRef(message)
         poll.onPass = (poll) => {
@@ -37,11 +37,11 @@ export default class Renamechannel extends Subcommand {
         }
     }
 
-    async onButtonPress(interaction: any) {
+    async onButtonPress(interaction: ButtonInteraction) {
         const poll = this.polls.get(interaction.message.id)
         if (!poll) return
-        poll.addCount(interaction.user, interaction.customId === 'yes')
-        poll.update(interaction)
+        poll.addCount(interaction.member as GuildMember, interaction.customId === 'yes')
+        poll.updateMessage(interaction)
     }
 
 

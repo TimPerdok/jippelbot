@@ -1,4 +1,4 @@
-import { Client, SlashCommandBuilder } from "discord.js";
+import { Client, Interaction, SlashCommandBuilder } from "discord.js";
 import ExecutableCommand from "../interfaces/ExecutableCommand";
 import Classfinder from "./Classfinder";
 import Subcommand from "./Subcommand";
@@ -32,8 +32,8 @@ export default abstract class Command implements ExecutableCommand {
     }
 
 
-    onReply(interaction: any): any { }
-    onButtonPress(interaction: any): any { }
+    onReply(interaction: Interaction): void { }
+    onButtonPress(interaction: Interaction): void { }
 
 
 

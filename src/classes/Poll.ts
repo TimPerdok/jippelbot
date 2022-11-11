@@ -1,7 +1,8 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, MessageReference } from "discord.js";
+import { ActionRow, ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, Interaction, Message, MessageEditOptions, MessagePayload, MessageReference } from "discord.js";
+import MessageCarrier, { Payload } from "../interfaces/MessageCarrier";
 import DataHandler from "./DataHandler";
 
-type PollJSON = {
+export type PollJSON = {
     question: string
     initiator: string
     votes: {
@@ -13,32 +14,32 @@ type PollJSON = {
     channelId: string
 };
 
-export default class Poll {
+export default class Poll implements MessageCarrier {
 
     subcommand: string
     question: string;
-    initiator: any;
+    initiator: GuildMember;
 
-    message: any;
+    message: Message;
 
-    votes = new Map<string, boolean>();
+    votes: Map<string, boolean>
     startTimestampUnix: number;
 
     maxTime = 86400
 
     minimumPercentage = 0.50
 
-    get timeLeft() {
+    get timeLeft(): number {
         return (this.startTimestampUnix + this.maxTime) * 1000 - Date.now()
     }
 
-    constructor(question: string, initiator: any, subcommand: string, startTimestampUnix?: number, votes?: Map<string, boolean>, message?: MessageReference) {
+    constructor(question: string, initiator: any, subcommand: string, startTimestampUnix?: number, votes: Map<string, boolean> = new Map<string, boolean>(), message: Message = null) {
         this.question = question
         this.initiator = initiator
         this.subcommand = subcommand
         this.startTimestampUnix = startTimestampUnix ?? Math.round(Date.now() / 1000)
-        if (votes) this.votes = votes
-        if (message) this.message = message
+        this.votes = votes
+        this.message = message
         setTimeout(async () => {
             DataHandler.removePoll(this.message.id)
             if (this.percentage > this.minimumPercentage) this.onPass(this)
@@ -46,10 +47,12 @@ export default class Poll {
         }, this.timeLeft > 0 ? this.timeLeft : 0)
     }
 
+
+
     onPass(poll: Poll) { }
     onFail(poll: Poll) { }
 
-    get voteCount() {
+    get voteCount(): number {
         return [...this.votes.values()].length
     }
 
@@ -60,7 +63,7 @@ export default class Poll {
         return 0
     }
 
-    get percentageLabel() {
+    get percentageLabel(): string {
         return `${Math.round(this.percentage * 100)}%`
     }
 
@@ -72,21 +75,25 @@ export default class Poll {
         return [...this.votes.values()].filter((vote) => !vote).length
     }
 
-    setRef(message: any) {
+    updateData(): void {
+        DataHandler.setPoll(this.format())
+    }
+
+    setRef(message: any): void {
         this.message = message
-        DataHandler.setPoll(this.format())
+        this.updateData()
     }
 
-    addCount(user: GuildMember, value: boolean = false) {
+    addCount(user: GuildMember, value: boolean = false): void {
         this.votes.set(user.id, value)
-        DataHandler.setPoll(this.format())
+        this.updateData()
     }
 
-    getEndTime() {
+    getEndTime(): string {
         return `<t:${this.startTimestampUnix + this.maxTime}>`
     }
 
-    getEmbed() {
+    get payload(): Payload {
         return {
             embeds: [new EmbedBuilder()
                 .setColor(0x0099FF)
@@ -98,8 +105,8 @@ export default class Poll {
                     { name: 'Totaal:', value: this.percentageLabel + "", inline: true },
                     { name: 'Vote eindigt op:', value: this.getEndTime() },
                 )
-            ]
-            , components: [new ActionRowBuilder()
+            ], components: [
+                new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId('yes')
@@ -113,9 +120,9 @@ export default class Poll {
         }
     }
 
-    async update(interaction: any) {
-        await this.message.edit(this.getEmbed())
-        await interaction.update({ fetchReply: true })
+    async updateMessage(interaction: ButtonInteraction) {
+        await this.message.edit(this.payload)
+        interaction.update({ fetchReply: true })
     }
 
     format(): PollJSON {
