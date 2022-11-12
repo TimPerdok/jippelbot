@@ -1,8 +1,8 @@
 import { ActionRowBuilder, Client, Embed, EmbedBuilder, MessageEditOptions, MessagePayload } from "discord.js"
+import { PollJSON } from "../types/PollJSON"
+import { ServerdataJSON } from "../types/ServerdataJSON"
 
-export type DataJSON = {
-    
-}
+export type DataJSON = PollJSON | ServerdataJSON
 
 export type Payload = {
     content?: string

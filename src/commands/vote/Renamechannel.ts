@@ -1,5 +1,5 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, GuildMember, Interaction, InteractionReplyOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
-import DataHandler from "../../classes/DataHandler";
+import DataHandler from "../../classes/datahandlers/DataHandler";
 import Poll from "../../classes/Poll";
 import Subcommand from "../../classes/Subcommand";
 

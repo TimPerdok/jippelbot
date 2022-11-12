@@ -1,6 +1,7 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction } from "discord.js";
 import Classfinder from "./Classfinder";
 import Command from "./Command";
+import DataHandler from "./datahandlers/DataHandler";
 import ServerREST from "./ServerRest";
 
 
@@ -46,6 +47,10 @@ export default class DiscordBot {
             })
         });
 
+        DiscordBot.client.on("guildCreate", guild => {
+            console.log("Joined a new guild: " + guild.name);
+            DataHandler.addServer(guild.id)
+        })
 
 
 

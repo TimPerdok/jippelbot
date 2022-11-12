@@ -1,18 +1,9 @@
 import { ActionRow, ActionRowBuilder, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, Interaction, Message, MessageEditOptions, MessagePayload, MessageReference } from "discord.js";
-import MessageCarrier, { Payload } from "../interfaces/MessageCarrier";
-import DataHandler from "./DataHandler";
+import MessageCarrier, { DataJSON, Payload } from "../interfaces/MessageCarrier";
+import { PollJSON } from "../types/PollJSON";
+import DataHandler from "./datahandlers/DataHandler";
 
-export type PollJSON = {
-    question: string
-    initiatorId: string
-    votes: {
-        [key: string]: boolean
-    }
-    startTimestampUnix: number
-    subcommand: string
-    messageId: string
-    channelId: string
-};
+
 
 export default class Poll implements MessageCarrier {
 
@@ -76,7 +67,7 @@ export default class Poll implements MessageCarrier {
     }
 
     updateData(): void {
-        DataHandler.setPoll(this.format())
+        DataHandler.setPoll(this.format)
     }
 
     setRef(message: Message): void {
@@ -125,7 +116,7 @@ export default class Poll implements MessageCarrier {
         interaction.update({ fetchReply: true })
     }
 
-    format(): PollJSON {
+    get format() {
         return {
             question: this.question,
             initiatorId: this.initiator.user.id,
