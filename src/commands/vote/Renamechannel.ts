@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Client, GuildMember, Interaction, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, Client, GuildMember, Interaction, InteractionReplyOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
 import DataHandler from "../../classes/DataHandler";
 import Poll from "../../classes/Poll";
 import Subcommand from "../../classes/Subcommand";
@@ -23,7 +23,7 @@ export default class Renamechannel extends Subcommand {
         const channel = channels.get(interaction.options.getChannel('channel').id)
         const newName = interaction.options.getString('name')
         const poll = new Poll(`Moet het kanaal ${channel} vernoemd worden naar '${newName}'`, interaction.member as GuildMember, this.name);
-        const message = await interaction.reply({...poll.payload, fetchReply: true})
+        const message = await interaction.reply({...poll.payload as InteractionReplyOptions , fetchReply: true})
         this.polls.set(message.id, poll)
         poll.setRef(message)
         poll.onPass = (poll) => {

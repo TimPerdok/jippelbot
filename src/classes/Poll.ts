@@ -1,4 +1,4 @@
-import { ActionRow, ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, Interaction, Message, MessageEditOptions, MessagePayload, MessageReference } from "discord.js";
+import { ActionRow, ActionRowBuilder, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, Interaction, Message, MessageEditOptions, MessagePayload, MessageReference } from "discord.js";
 import MessageCarrier, { Payload } from "../interfaces/MessageCarrier";
 import DataHandler from "./DataHandler";
 
@@ -121,7 +121,7 @@ export default class Poll implements MessageCarrier {
     }
 
     async updateMessage(interaction: ButtonInteraction) {
-        await this.message.edit(this.payload)
+        await this.message.edit(this.payload as MessageEditOptions)
         interaction.update({ fetchReply: true })
     }
 

@@ -7,7 +7,7 @@ export type DataJSON = {
 export type Payload = {
     content?: string
     embeds?: EmbedBuilder[]
-    components?: ActionRowBuilder[]
+    components?: ActionRowBuilder[] 
 }
 
 export default interface ExecutableCommand {
