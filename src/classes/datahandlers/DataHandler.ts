@@ -34,8 +34,8 @@ export default class DataHandler {
         return JSON.parse(fs.readFileSync(file, 'utf8'))
     }
 
-    static async getPoll(id: string) {
-        const polls = await DataHandler.read(DataHandler.files.polls)
+    static async getPoll(id: string): Promise<PollJSON> {
+        const polls = await DataHandler.read(DataHandler.files.polls) as DataFile<PollJSON>
         return polls[id]
     }
 
@@ -47,11 +47,12 @@ export default class DataHandler {
         if (!searchSubcommand || !Object.entries(polls).length) return pollsMap
         if (!polls) return pollsMap
         Object.entries(polls).forEach(async ([key, {question, initiatorId, subcommand, startTimestampUnix, votes, messageId, channelId}]: [string, PollJSON])=>{
-            const channel: TextChannel = DiscordBot.client.channels.cache.get(channelId) as TextChannel
-            const message: Message = await channel.messages.fetch(messageId)
-            const guild: Guild = DiscordBot.client.guilds.cache.get(channel.guild.id)
-            const initiator: GuildMember = await guild.members.fetch(initiatorId)
-            if (subcommand === searchSubcommand) pollsMap.set(key, new Poll(question, initiator, subcommand, startTimestampUnix, new Map(Object.entries(votes)), message))
+                const channel: TextChannel = DiscordBot.client.channels.cache.get(channelId) as TextChannel
+                if (!channel) return console.log("Channel not found", channelId)
+                const message: Message = await channel.messages.fetch(messageId)
+                const guild: Guild = DiscordBot.client.guilds.cache.get(channel.guild.id)
+                const initiator: GuildMember = await guild.members.fetch(initiatorId)
+                if (subcommand === searchSubcommand) pollsMap.set(key, new Poll(question, initiator, subcommand, startTimestampUnix, new Map(Object.entries(votes)), message))
         })
         return pollsMap
     }
@@ -75,7 +76,7 @@ export default class DataHandler {
     }
 
     
-    static async addServer(id: string) {
+    static async addServerdata(id: string) {
         const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
         serverdata[id] = {id: id, voteChannel: ""}
         DataHandler.write(DataHandler.files.serverdata, serverdata)

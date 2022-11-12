@@ -6,7 +6,8 @@
       "target": "es2015",
       "sourceMap": true,
       "emitDecoratorMetadata": true,
-      "experimentalDecorators": true
+      "experimentalDecorators": true,
+      "allowJs": true,
     },
     "exclude": [
       "node_modules"

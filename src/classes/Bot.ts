@@ -1,4 +1,5 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction } from "discord.js";
+import { PollJSON } from "../types/PollJSON";
 import Classfinder from "./Classfinder";
 import Command from "./Command";
 import DataHandler from "./datahandlers/DataHandler";
@@ -49,7 +50,7 @@ export default class DiscordBot {
 
         DiscordBot.client.on("guildCreate", guild => {
             console.log("Joined a new guild: " + guild.name);
-            DataHandler.addServer(guild.id)
+            DataHandler.addServerdata(guild.id)
         })
 
 
@@ -66,13 +67,13 @@ export default class DiscordBot {
                     case 'ChatInputCommandInteraction':
                         interaction = interaction as ChatInputCommandInteraction
                         command = this.commands.get(interaction?.commandName)
-                        console.log(command)
-                        command.onReply(interaction);
+                        command.onCommand(interaction);
                         break;
                     case "ButtonInteraction":
                         interaction = interaction as ButtonInteraction
-                        command = this.commands.get(interaction.message.interaction.commandName.split(' ')[0] ?? "")
-                        console.log(command)
+                        let commandName = interaction.message.interaction?.commandName?.split(' ')[0]
+                        if (!commandName) commandName = (await DataHandler.getPoll(interaction.message.id) as PollJSON).subcommand ? "vote" : ""
+                        command = this.commands.get(commandName)
                         command.onButtonPress(interaction);
                         break;
                 }

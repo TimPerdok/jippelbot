@@ -10,7 +10,7 @@ export default class Wanneerbenikgejoined extends Command {
     }
 
 
-    async onReply(interaction: ChatInputCommandInteraction) {
+    async onCommand(interaction: ChatInputCommandInteraction) {
 		return await interaction.reply(`Jij bent gejoined op ${(interaction.member as GuildMember).joinedAt}.`);
 	}
 

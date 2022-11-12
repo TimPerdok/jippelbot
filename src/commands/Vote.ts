@@ -3,6 +3,8 @@ import Command from "../classes/Command";
 import Poll from "../classes/Poll";
 import Classfinder from "../classes/Classfinder";
 import Subcommand from "../classes/Subcommand";
+import DataHandler from "../classes/datahandlers/DataHandler";
+import { PollJSON } from "../types/PollJSON";
 
 
 export default class Vote extends Command {
@@ -25,16 +27,15 @@ export default class Vote extends Command {
     }
 
     async onButtonPress(interaction: ButtonInteraction) {
-        const subcommand: Subcommand | undefined = this.subcommands.get(interaction.message.interaction.commandName.split(' ')[1])
+        const subcommand: Subcommand | undefined = this.subcommands.get((await DataHandler.getPoll(interaction.message.id) as PollJSON).subcommand)
         if (subcommand) return subcommand.onButtonPress(interaction)
     }
 
 
     
-    async onReply(interaction: ChatInputCommandInteraction) {
-        
+    async onCommand(interaction: ChatInputCommandInteraction) {
         const subcommand: Subcommand | undefined = this.subcommands.get(interaction.options.getSubcommand())
-        if (subcommand) return subcommand.onReply(interaction)
+        if (subcommand) return subcommand.onCommand(interaction)
 	}
 
 

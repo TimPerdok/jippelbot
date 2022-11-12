@@ -17,7 +17,6 @@ export default class ServerREST {
     }
 
     updateCommands(commands: Collection<string, Command>) {
-        console.log(commands)
         this.rest.put(
             Routes.applicationGuildCommands(this.clientId, this.server.id),
             {

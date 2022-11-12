@@ -16,7 +16,7 @@ export default abstract class Subcommand implements ExecutableCommand {
         this.description = description
     }
 
-    abstract onReply(interaction: ChatInputCommandInteraction): void
+    abstract onCommand(interaction: ChatInputCommandInteraction): void
     abstract onButtonPress(interaction: ButtonInteraction): void
 
 

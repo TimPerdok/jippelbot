@@ -32,7 +32,7 @@ export default abstract class Command implements ExecutableCommand {
     }
 
 
-    onReply(interaction: ChatInputCommandInteraction): void { }
+    onCommand(interaction: ChatInputCommandInteraction): void { }
     onButtonPress(interaction: ButtonInteraction): void { }
 
 
