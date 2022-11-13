@@ -28,8 +28,7 @@ export default class Poll implements MessageCarrier {
     votes: Map<string, boolean>
     startTimestampUnix: number;
 
-    // maxTime = 86400
-    maxTime = 10
+    maxTime = 86400
 
     minimumPercentage = 0.50
 
