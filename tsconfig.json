@@ -3,16 +3,17 @@
     "compilerOptions": {
       "outDir": "./dist",
       "strict": false,
+      "strictNullChecks": false,
       "esModuleInterop": true,
       "module": "commonjs",
       "target": "ES6",
-      "sourceMap": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "allowJs": true,
+      "skipLibCheck": true,
+      "rootDir": "src",
     },
     "exclude": [
       "node_modules"
     ],
-    "typeRoots": ["./node_modules/@types", "./src/types"]
   }
