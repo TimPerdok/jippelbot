@@ -21,7 +21,7 @@ export default class Classfinder {
 
     static async getSubcommands(subpath: string): Promise<Subcommand[]> {
         try {
-            const classesPath = path.join(ROOTDIR, "commands/" + subpath);
+            const classesPath = path.join(ROOTDIR, "commands", subpath);
             const classes: Subcommand[] = fs.readdirSync(classesPath).filter(file => file.endsWith('.ts')).map((file) => {
                 const filePath = path.join(classesPath, file);
                 const obj = require(filePath);
@@ -34,7 +34,7 @@ export default class Classfinder {
     }
 
     static async getSubcommand(commandPath: string): Promise<Subcommand> {
-        const classPath = path.join(ROOTDIR, "commands/" + commandPath);
+        const classPath = path.join(ROOTDIR, "commands", commandPath);
         const obj = require(classPath);
         return new obj.default()
     }
