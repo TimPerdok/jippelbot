@@ -88,7 +88,7 @@ export default class DataHandler {
     
     static async addServerdata(id: string) {
         const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
-        serverdata[id] = {id: id, voteChannel: ""}
+        serverdata[id] = {id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "" }
         DataHandler.write(DataHandler.files.serverdata, serverdata)
     }
 

@@ -101,14 +101,13 @@ export default class Poll implements MessageCarrier {
     addCount(user: GuildMember, value: boolean = false): boolean {
         this.votes.set(user.id, value)
         this.updateData()
-        if (this.yesCount > 0) {
+        if (this.yesCount > 6) {
             this.done = true
             this.command.onPass(this)
             DataHandler.removePoll(this.message.id)
             return true
         }
         return false
-        
     }
 
     getEndTime(): string {

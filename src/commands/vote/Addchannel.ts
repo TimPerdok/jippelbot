@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Client, GuildMember, Interaction, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, VoiceChannel } from "discord.js";
+import { APIApplicationCommandOptionChoice, ButtonInteraction, ChannelType, ChatInputCommandInteraction, Client, Guild, GuildMember, Interaction, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, VoiceChannel } from "discord.js";
 import DiscordBot from "../../classes/Bot";
 import DataHandler from "../../classes/datahandlers/DataHandler";
 import Poll from "../../classes/Poll";
@@ -9,22 +9,31 @@ import { ServerdataJSON } from "../../types/ServerdataJSON";
 
 
 
-export default class Renamechannel extends PollSubcommand  {
-
+export default class Addchannel extends PollSubcommand  {
 
 
     constructor() {
-        super("renamechannel", "Rename a channel", "vote");
+        super("addchannel", "Add a channel", "vote");
     }
+
     
     onPass(poll: Poll): void {
-        const channel: TextChannel = DiscordBot.client.channels.cache.get(poll.params.channelId) as TextChannel
-        poll.message.edit({
-            embeds: [],
-            components: [],
-            content: `De naam van het kanaal ${channel.name} is veranderd naar '${poll.params.newName}!'`
+        const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild.id) as Guild
+        (DataHandler.getServerdata(guild.id)).then((serverData: ServerdataJSON)=>{
+            const parent = poll.params.type === "GUILD_TEXT" ? serverData.textChannelCategory : serverData.voiceChannelCategory
+            poll.message.edit({
+                embeds: [],
+                components: [],
+                content: `Het kanaal ${poll.params.newName} is aangemaakt!`
+            })
+            guild.channels.create({
+                name: poll.params.newName,
+                type: poll.params.type === "GUILD_TEXT" ? ChannelType.GuildText : ChannelType.GuildVoice,
+                parent
+            })
+
         })
-        channel.setName(poll.params.newName)
+        
     }
     onFail(poll: Poll): void {
         poll.message.edit({
@@ -37,13 +46,14 @@ export default class Renamechannel extends PollSubcommand  {
 
     async onCommand(interaction: ChatInputCommandInteraction) {
         const channels = (interaction.member as GuildMember).guild.channels.cache
-        const toBeRenamedChannel = channels.get(interaction.options.getChannel('channel').id)
         const newName = interaction.options.getString('name')
+        const type = interaction.options.getString('channeltype')
+        const typeLabel = type === "GUILD_TEXT" ? "textchannel" : "voicechannel"
         const poll = new Poll({
-            question: `Moet het kanaal ${toBeRenamedChannel} vernoemd worden naar '${newName}'`,
+            question: `Moet de ${typeLabel}, '${newName}' worden aangemaakt?`,
             initiator: interaction.member as GuildMember,
             command: this,
-            params: { newName, channelId: toBeRenamedChannel.id }
+            params: { newName, type}
         });
         const serverData = await DataHandler.getServerdata(interaction.guildId as string) as ServerdataJSON
         const voteChannel = channels.get(serverData.voteChannel) as TextChannel
@@ -65,17 +75,25 @@ export default class Renamechannel extends PollSubcommand  {
         return subcommand
             .setName(this.name)
             .setDescription(this.description)
-            .addChannelOption((option: SlashCommandChannelOption) => {
-                return option
-                    .setName('channel')
-                    .setDescription('The channel to rename')
-                    .setRequired(true)
-            })
             .addStringOption((option: SlashCommandStringOption) => {
                 return option
                     .setName('name')
                     .setDescription('The new name of the channel')
                     .setRequired(true)
+            })
+            .addStringOption((option: SlashCommandStringOption) => {
+                return option
+                    .setName('channeltype')
+                    .setDescription('Type of the channel')
+                    .setRequired(true)
+                    .setChoices({
+                        name: 'Text',
+                        value: "GUILD_TEXT"
+                    },
+                    {
+                        name: 'Voice',
+                        value: "GUILD_VOICE"
+                    })
             })
     }
 

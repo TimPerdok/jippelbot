@@ -1,5 +1,4 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, Interaction, SlashCommandSubcommandBuilder } from "discord.js";
-import Option from "./Option"
 import ExecutableCommand from "../interfaces/ExecutableCommand";
 
 
