@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll --config ./jest.config.js",
-    "start": "ts-node index.ts --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "start": "ts-node index.ts --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "build": "tsc",
+    "runBuild": "pm2 start ecosystem.yml --only node-app"
   },
   "repository": {
     "type": "git",
