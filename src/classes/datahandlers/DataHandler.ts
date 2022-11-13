@@ -43,20 +43,26 @@ export default class DataHandler {
     }
 
 
-    static async getPolls(linkedSubcommand?: PollSubcommand) {	
-
+    static async getPolls(commandObject: PollSubcommand) {	
         const polls: DataFile<PollJSON> = await DataHandler.read(DataHandler.files.polls) as DataFile<PollJSON>
         const pollsMap = new Map<string, Poll>()
-        if (!linkedSubcommand || !Object.entries(polls).length) return pollsMap
+        if (!Object.entries(polls).length) return pollsMap
         if (!polls) return pollsMap
-        Object.entries(polls).forEach(async ([key, {question, initiatorId, subcommand, startTimestampUnix, votes, messageId, channelId, params}]: [string, PollJSON])=>{
+        Object.entries(polls).forEach(async ([key, {question, initiatorId, command, startTimestampUnix, votes, messageId, channelId, params}]: [string, PollJSON])=>{
                 const channel: TextChannel = DiscordBot.client.channels.cache.get(channelId) as TextChannel
                 if (!channel) return console.log("Channel not found", channelId)
                 const message: Message = await channel.messages.fetch(messageId)
                 const guild: Guild = DiscordBot.client.guilds.cache.get(channel.guild.id)
                 const initiator: GuildMember = await guild.members.fetch(initiatorId)
-                if (!linkedSubcommand) linkedSubcommand = await Classfinder.getSubcommand("vote", subcommand) as PollSubcommand
-                if (linkedSubcommand.name === subcommand) pollsMap.set(key, new Poll(question, initiator, linkedSubcommand, startTimestampUnix, new Map(Object.entries(votes)), message, params))
+                if (commandObject.name === command.split("/")[1]) pollsMap.set(key, new Poll({
+                    question,
+                    initiator,
+                    command: commandObject,
+                    startTimestampUnix,
+                    votes: new Map(Object.entries(votes)),
+                    message,
+                    params
+                }))
         })
         return pollsMap
     }

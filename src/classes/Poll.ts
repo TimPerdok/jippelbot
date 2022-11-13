@@ -3,11 +3,23 @@ import MessageCarrier, { DataJSON, Payload } from "../interfaces/MessageCarrier"
 import { PollSubcommand } from "../types/PollSubcommand";
 import Classfinder from "./Classfinder";
 import DataHandler from "./datahandlers/DataHandler";
+import Subcommand from "./Subcommand";
 
+export type PollConfig = {
+    question: string,
+    initiator: GuildMember,
+    command: PollSubcommand,
+    params: {
+        [key: string]: any
+    }
+    message?: Message
+    startTimestampUnix?: number,
+    votes?: Map<string, boolean>
+}
 
 export default class Poll implements MessageCarrier {
 
-    subcommand: string
+    command: PollSubcommand
     question: string;
     initiator: GuildMember;
 
@@ -22,35 +34,37 @@ export default class Poll implements MessageCarrier {
     minimumPercentage = 0.50
 
     params: { [key: string]: string } = {};
+    done: boolean = false;
 
     get timeLeft(): number {
         return (this.startTimestampUnix + this.maxTime) * 1000 - Date.now()
     }
 
-    constructor(question: string, initiator: GuildMember, subcommand: PollSubcommand, startTimestampUnix?: number, votes: Map<string, boolean> = new Map<string, boolean>(), message: Message = null, params: { [key: string]: string } = {}) {
+    constructor({ question, initiator, command, params, startTimestampUnix, votes, message }: PollConfig) {
         this.question = question
         this.initiator = initiator
-        this.subcommand = subcommand.name
+        this.command = command
         this.startTimestampUnix = startTimestampUnix ?? Math.round(Date.now() / 1000)
-        this.votes = votes
+        this.votes = votes ?? new Map()
         this.message = message
         this.params = params
+        if (message) this.updateData()
         setTimeout(async () => {
-            if (!subcommand) subcommand = await Classfinder.getSubcommand(subcommand.parentCommand, subcommand.name) as unknown as PollSubcommand
+            if (this.done) return
+            this.done = true
             if (this.percentage > this.minimumPercentage) {
                 try {
-                    subcommand.onPass(this)
+                    this.command.onPass(this)
                     DataHandler.removePoll(this.message.id)
                 } catch (e) {
                     console.error(e)
                 }
             } else {
-                subcommand.onFail(this)
+                this.command.onFail(this)
                 DataHandler.removePoll(this.message.id)
             }
         }, this.timeLeft > 0 ? this.timeLeft : 0)
     }
-
 
     get voteCount(): number {
         return [...this.votes.values()].length
@@ -79,19 +93,21 @@ export default class Poll implements MessageCarrier {
         DataHandler.setPoll(this.format)
     }
 
-    setRef(message: Message): void {
+    setMessage(message: Message): void {
         this.message = message
         this.updateData()
     }
 
-    addCount(user: GuildMember, value: boolean = false): void {
+    addCount(user: GuildMember, value: boolean = false): boolean {
         this.votes.set(user.id, value)
         this.updateData()
-        if (this.yesCount < 6) return
-        Classfinder.getSubcommand("vote", this.subcommand).then((subcommandObject: PollSubcommand)=>{
-            subcommandObject.onPass(this)
+        if (this.yesCount > 0) {
+            this.done = true
+            this.command.onPass(this)
             DataHandler.removePoll(this.message.id)
-        })
+            return true
+        }
+        return false
         
     }
 
@@ -137,7 +153,7 @@ export default class Poll implements MessageCarrier {
             initiatorId: this.initiator.user.id,
             votes: Object.fromEntries(this.votes),
             startTimestampUnix: this.startTimestampUnix,
-            subcommand: this.subcommand,
+            command: `${this.command.parentCommand}/${this.command.name}`,
             messageId: this.message.id,
             channelId: this.message.channelId,
             params: {

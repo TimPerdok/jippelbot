@@ -5,7 +5,7 @@ export type PollJSON = {
         [key: string]: boolean
     }
     startTimestampUnix: number
-    subcommand: string
+    command: string
     messageId: string
     channelId: string
     params: {

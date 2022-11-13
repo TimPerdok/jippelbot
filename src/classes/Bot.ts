@@ -70,7 +70,7 @@ export default class DiscordBot {
                     case "ButtonInteraction":
                         interaction = interaction as ButtonInteraction
                         let commandName = interaction.message.interaction?.commandName?.split(' ')[0]
-                        if (!commandName) commandName = (await DataHandler.getPoll(interaction.message.id) as PollJSON).subcommand ? "vote" : ""
+                        if (!commandName) commandName = (await DataHandler.getPoll(interaction.message.id) as PollJSON).command.split('/')[0]
                         command = this.commands.get(commandName)
                         command.onButtonPress(interaction);
                         break;

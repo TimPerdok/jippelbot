@@ -27,7 +27,7 @@ export default class Vote extends Command {
     }
 
     async onButtonPress(interaction: ButtonInteraction) {
-        const subcommand: Subcommand | undefined = this.subcommands.get((await DataHandler.getPoll(interaction.message.id) as PollJSON).subcommand)
+        const subcommand: Subcommand | undefined = this.subcommands.get((await DataHandler.getPoll(interaction.message.id) as PollJSON).command.split("/")[1])
         if (subcommand) return subcommand.onButtonPress(interaction)
     }
 

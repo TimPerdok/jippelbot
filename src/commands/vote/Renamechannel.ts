@@ -23,7 +23,6 @@ export default class Renamechannel extends Subcommand implements PollCarrier {
     }
     onPass(poll: Poll): void {
         const channel: TextChannel = DiscordBot.client.channels.cache.get(poll.params.channelId) as TextChannel
-        console.log(channel)
         poll.message.edit({
             embeds: [],
             components: [],
@@ -44,20 +43,25 @@ export default class Renamechannel extends Subcommand implements PollCarrier {
         const channels = (interaction.member as GuildMember).guild.channels.cache
         const toBeRenamedChannel = channels.get(interaction.options.getChannel('channel').id)
         const newName = interaction.options.getString('name')
-        const poll = new Poll(`Moet het kanaal ${toBeRenamedChannel} vernoemd worden naar '${newName}'`, interaction.member as GuildMember, this, undefined, undefined, undefined, { newName, channelId: toBeRenamedChannel.id });
+        const poll = new Poll({
+            question: `Moet het kanaal ${toBeRenamedChannel} vernoemd worden naar '${newName}'`,
+            initiator: interaction.member as GuildMember,
+            command: this,
+            params: { newName, channelId: toBeRenamedChannel.id }
+        });
         const serverData = await DataHandler.getServerdata(interaction.guildId as string) as ServerdataJSON
         const voteChannel = channels.get(serverData.voteChannel) as TextChannel
         await interaction.reply({ content: "Je vote is aangemaakt!", ephemeral: true }) as MessageEditOptions
         const message = await voteChannel.send({ ...poll.payload, fetchReply: true } as MessageCreateOptions);
+        poll.setMessage(message)
         this.polls.set(message.id, poll)
-        poll.setRef(message)
     }
 
     async onButtonPress(interaction: ButtonInteraction) {
         const poll = this.polls.get(interaction.message.id)
         if (!poll) return
-        poll.addCount(interaction.member as GuildMember, interaction.customId === 'yes')
-        poll.updateMessage(interaction)
+        const done = poll.addCount(interaction.member as GuildMember, interaction.customId === 'yes')
+        if (!done) poll.updateMessage(interaction)
     }
 
 
