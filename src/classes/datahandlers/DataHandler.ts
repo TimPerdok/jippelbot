@@ -7,6 +7,9 @@ import DiscordBot from "../Bot";
 import { DataJSON } from "../../interfaces/MessageCarrier";
 import { ServerdataJSON } from "../../types/ServerdataJSON";
 import { PollJSON } from "../../types/PollJSON";
+import Classfinder from "../Classfinder";
+import Subcommand from "../Subcommand";
+import { PollSubcommand } from "../../types/PollSubcommand";
 
 type DataFile<DataJSON> = {
     [key: string]: DataJSON
@@ -40,19 +43,20 @@ export default class DataHandler {
     }
 
 
-    static async getPolls(searchSubcommand: string = "") {	
+    static async getPolls(linkedSubcommand?: PollSubcommand) {	
 
         const polls: DataFile<PollJSON> = await DataHandler.read(DataHandler.files.polls) as DataFile<PollJSON>
         const pollsMap = new Map<string, Poll>()
-        if (!searchSubcommand || !Object.entries(polls).length) return pollsMap
+        if (!linkedSubcommand || !Object.entries(polls).length) return pollsMap
         if (!polls) return pollsMap
-        Object.entries(polls).forEach(async ([key, {question, initiatorId, subcommand, startTimestampUnix, votes, messageId, channelId}]: [string, PollJSON])=>{
+        Object.entries(polls).forEach(async ([key, {question, initiatorId, subcommand, startTimestampUnix, votes, messageId, channelId, params}]: [string, PollJSON])=>{
                 const channel: TextChannel = DiscordBot.client.channels.cache.get(channelId) as TextChannel
                 if (!channel) return console.log("Channel not found", channelId)
                 const message: Message = await channel.messages.fetch(messageId)
                 const guild: Guild = DiscordBot.client.guilds.cache.get(channel.guild.id)
                 const initiator: GuildMember = await guild.members.fetch(initiatorId)
-                if (subcommand === searchSubcommand) pollsMap.set(key, new Poll(question, initiator, subcommand, startTimestampUnix, new Map(Object.entries(votes)), message))
+                if (!linkedSubcommand) linkedSubcommand = await Classfinder.getSubcommand("vote", subcommand) as PollSubcommand
+                if (linkedSubcommand.name === subcommand) pollsMap.set(key, new Poll(question, initiator, linkedSubcommand, startTimestampUnix, new Map(Object.entries(votes)), message, params))
         })
         return pollsMap
     }

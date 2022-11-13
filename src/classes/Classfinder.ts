@@ -33,5 +33,16 @@ export default class Classfinder {
         }
     }
 
+    static async getSubcommand(parentCommand: string, subcommandName: string): Promise<Subcommand> {
+        const classesPath = path.join(ROOTDIR, "commands/" + parentCommand);
+        const classes: Subcommand[] = fs.readdirSync(classesPath).filter(file => file.endsWith('.ts') && file.toLowerCase().startsWith(subcommandName.toLowerCase())).map((file) => {
+            console.log(file, subcommandName, parentCommand)
+            const filePath = path.join(classesPath, file);
+            const obj = require(filePath);
+            return new obj.default()
+        })
+        return classes[0]
+    }
+
 
 }

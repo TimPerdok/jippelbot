@@ -8,4 +8,7 @@ export type PollJSON = {
     subcommand: string
     messageId: string
     channelId: string
+    params: {
+        [key: string]: string
+    }
 };

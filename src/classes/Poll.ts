@@ -1,8 +1,8 @@
-import { ActionRow, ActionRowBuilder, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, embedLength, Guild, GuildMember, Interaction, Message, MessageEditOptions, MessagePayload, MessageReference } from "discord.js";
+import { ActionRow, ActionRowBuilder, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, Channel, ChannelType, EmbedBuilder, embedLength, Guild, GuildMember, Interaction, Message, MessageEditOptions, MessagePayload, MessageReference, TextChannel, VoiceChannel } from "discord.js";
 import MessageCarrier, { DataJSON, Payload } from "../interfaces/MessageCarrier";
-import { PollJSON } from "../types/PollJSON";
+import { PollSubcommand } from "../types/PollSubcommand";
+import Classfinder from "./Classfinder";
 import DataHandler from "./datahandlers/DataHandler";
-
 
 
 export default class Poll implements MessageCarrier {
@@ -16,32 +16,41 @@ export default class Poll implements MessageCarrier {
     votes: Map<string, boolean>
     startTimestampUnix: number;
 
-    maxTime = 86400
+    // maxTime = 86400
+    maxTime = 10
 
     minimumPercentage = 0.50
+
+    params: { [key: string]: string } = {};
 
     get timeLeft(): number {
         return (this.startTimestampUnix + this.maxTime) * 1000 - Date.now()
     }
 
-    constructor(question: string, initiator: GuildMember, subcommand: string, startTimestampUnix?: number, votes: Map<string, boolean> = new Map<string, boolean>(), message: Message = null) {
+    constructor(question: string, initiator: GuildMember, subcommand: PollSubcommand, startTimestampUnix?: number, votes: Map<string, boolean> = new Map<string, boolean>(), message: Message = null, params: { [key: string]: string } = {}) {
         this.question = question
         this.initiator = initiator
-        this.subcommand = subcommand
+        this.subcommand = subcommand.name
         this.startTimestampUnix = startTimestampUnix ?? Math.round(Date.now() / 1000)
         this.votes = votes
         this.message = message
+        this.params = params
         setTimeout(async () => {
-            DataHandler.removePoll(this.message.id)
-            if (this.percentage > this.minimumPercentage) this.onPass(this)
-            else this.onFail(this)
+            if (!subcommand) subcommand = await Classfinder.getSubcommand(subcommand.parentCommand, subcommand.name) as unknown as PollSubcommand
+            if (this.percentage > this.minimumPercentage) {
+                try {
+                    subcommand.onPass(this)
+                    DataHandler.removePoll(this.message.id)
+                } catch (e) {
+                    console.error(e)
+                }
+            } else {
+                subcommand.onFail(this)
+                DataHandler.removePoll(this.message.id)
+            }
         }, this.timeLeft > 0 ? this.timeLeft : 0)
     }
 
-
-
-    onPass(poll: Poll) { }
-    onFail(poll: Poll) { }
 
     get voteCount(): number {
         return [...this.votes.values()].length
@@ -78,6 +87,12 @@ export default class Poll implements MessageCarrier {
     addCount(user: GuildMember, value: boolean = false): void {
         this.votes.set(user.id, value)
         this.updateData()
+        if (this.yesCount < 6) return
+        Classfinder.getSubcommand("vote", this.subcommand).then((subcommandObject: PollSubcommand)=>{
+            subcommandObject.onPass(this)
+            DataHandler.removePoll(this.message.id)
+        })
+        
     }
 
     getEndTime(): string {
@@ -98,16 +113,16 @@ export default class Poll implements MessageCarrier {
                 )
             ], components: [
                 new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId('yes')
-                        .setLabel('Ja')
-                        .setStyle(ButtonStyle.Success),
-                    new ButtonBuilder()
-                        .setCustomId('no')
-                        .setLabel('Nee')
-                        .setStyle(ButtonStyle.Danger),
-                )]
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('yes')
+                            .setLabel('Ja')
+                            .setStyle(ButtonStyle.Success),
+                        new ButtonBuilder()
+                            .setCustomId('no')
+                            .setLabel('Nee')
+                            .setStyle(ButtonStyle.Danger),
+                    )]
         }
     }
 
@@ -125,6 +140,9 @@ export default class Poll implements MessageCarrier {
             subcommand: this.subcommand,
             messageId: this.message.id,
             channelId: this.message.channelId,
+            params: {
+                ...this.params
+            }
         }
     }
 

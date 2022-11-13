@@ -53,8 +53,6 @@ export default class DiscordBot {
             DataHandler.addServerdata(guild.id)
         })
 
-
-
         DiscordBot.client.on(Events.InteractionCreate, this.onInteractionCreate.bind(this));
         DiscordBot.client.login(token);
     }
