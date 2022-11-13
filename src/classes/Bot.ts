@@ -3,7 +3,7 @@ import { PollJSON } from "../types/PollJSON";
 import Classfinder from "./Classfinder";
 import Command from "./Command";
 import DataHandler from "./datahandlers/DataHandler";
-import ServerREST from "./ServerRest";
+import ServerREST from "./ServerREST";
 
 
 
