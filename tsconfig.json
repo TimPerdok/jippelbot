@@ -1,9 +1,11 @@
 {
     "esModuleInterop": true,
     "compilerOptions": {
+      "outDir": "./dist",
+      "strict": false,
       "esModuleInterop": true,
       "module": "commonjs",
-      "target": "es2015",
+      "target": "ES6",
       "sourceMap": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
