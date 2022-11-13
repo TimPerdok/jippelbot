@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll --config ./jest.config.js",
-    "dev": "ts-node index.ts --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "ts-node dist/index.js",
     "build": "tsc"
   },
