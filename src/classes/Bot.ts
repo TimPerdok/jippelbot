@@ -4,6 +4,7 @@ import Classfinder from "./Classfinder";
 import Command from "./Command";
 import DataHandler from "./datahandlers/DataHandler";
 import ServerREST from "./ServerRest";
+import StatLoop from "./StatLoop";
 
 
 
@@ -34,7 +35,7 @@ export default class DiscordBot {
 
         DiscordBot.client.on('ready', async () => {
             console.log(`Logged in as ${DiscordBot.client?.user?.tag}!`);
-
+            
             const commands: Command[] = await Classfinder.getCommands()
             commands.forEach((command: Command) => {
                 this.commands.set(command.name, command)
@@ -46,6 +47,8 @@ export default class DiscordBot {
             this.serverRESTS.forEach((rest) => {
                 rest.updateCommands(this.commands)
             })
+
+            StatLoop.start(DiscordBot.client);
         });
 
         DiscordBot.client.on("guildCreate", guild => {
