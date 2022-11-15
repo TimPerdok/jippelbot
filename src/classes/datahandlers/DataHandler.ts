@@ -2,7 +2,7 @@ import { Channel, Collection, Guild, GuildMember, Invite, Message, TextChannel }
 import path from 'path';
 import fs from 'fs';
 import Poll from '../Poll';
-import { ROOTDIR } from "../../../Constants";
+import { ROOTDIR } from "../../Constants";
 import DiscordBot from "../Bot";
 import { DataJSON } from "../../interfaces/MessageCarrier";
 import { ServerdataJSON } from "../../types/ServerdataJSON";

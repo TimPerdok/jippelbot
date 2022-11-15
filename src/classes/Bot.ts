@@ -33,12 +33,14 @@ export default class DiscordBot {
         this.commands = new Collection<string, Command>();
 
         DiscordBot.client.on('ready', async () => {
-            console.log(`Logged in as ${DiscordBot.client?.user?.tag}!`);
-
+            console.log(`Logged in as ${DiscordBot.client?.user?.tag}`);
+            
             const commands: Command[] = await Classfinder.getCommands()
+
             commands.forEach((command: Command) => {
                 this.commands.set(command.name, command)
             });
+
 
             this.serverRESTS = this.servers.map((server: Guild) => {
                 return new ServerREST(this.rest, server, clientId)

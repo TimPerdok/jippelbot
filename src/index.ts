@@ -1,8 +1,8 @@
 import { Collection } from 'discord.js';
 import { promises as fspromises } from 'fs';
-import Discordbot from './src/classes/Bot';
-import Classfinder from './src/classes/Classfinder';
-import Command from './src/classes/Command';
+import Discordbot from './classes/Bot';
+import Classfinder from './classes/Classfinder';
+import Command from './classes/Command';
 
 
 

@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --watchAll --config ./jest.config.js",
     "start": "ts-node dist/index.js",
+    "dev": "ts-node src/index.ts",
     "build": "tsc"
   },
   "repository": {

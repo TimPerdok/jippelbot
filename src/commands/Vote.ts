@@ -17,7 +17,6 @@ export default class Vote extends Command {
         this.subcommands.forEach((subcommand: Subcommand) => {
             builder.addSubcommand(subcommand.data.bind(subcommand))
         })
-        
         return builder
     }
     
