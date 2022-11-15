@@ -11,7 +11,6 @@
       "experimentalDecorators": true,
       "allowJs": true,
       "skipLibCheck": true,
-      "rootDir": "src",
     },
     "exclude": [
       "node_modules"
