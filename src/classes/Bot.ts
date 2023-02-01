@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction, Message } from "discord.js";
 import { PollJSON } from "../types/PollJSON";
 import Classfinder from "./Classfinder";
 import Command from "./Command";
@@ -50,6 +50,15 @@ export default class DiscordBot {
             })
         });
 
+        DiscordBot.client.on("messageCreate", async (message: Message) => {
+            if (message.channel.id === "1012046912960077884" && message.member.id != "1039277723190825131"){//Knappe koppen
+                if (message.attachments.size == 0){
+                    message.channel.send("HEY <@"+message.member.id+"> ALLEEN FOTO'S IN DIT KANAAL, COMMENTAAR KAN GEGEVEN WORDEN IN <#1070408486552338483>");
+                    message.delete();
+                }
+            }
+        });
+        
         DiscordBot.client.on("guildCreate", guild => {
             console.log("Joined a new guild: " + guild.name);
             DataHandler.addServerdata(guild.id)
