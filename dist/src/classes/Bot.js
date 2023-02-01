@@ -41,6 +41,14 @@ class DiscordBot {
                 rest.updateCommands(this.commands);
             });
         }));
+        DiscordBot.client.on("messageCreate", (message) => __awaiter(this, void 0, void 0, function* () {
+            if (message.channel.id === "1012046912960077884" && message.member.id != "1039277723190825131") { //Knappe koppen
+                if (message.attachments.size == 0) {
+                    message.channel.send("HEY <@" + message.member.id + "> ALLEEN FOTO'S IN DIT KANAAL, COMMENTAAR KAN GEGEVEN WORDEN IN <#1070408486552338483>");
+                    message.delete();
+                }
+            }
+        }));
         DiscordBot.client.on("guildCreate", guild => {
             console.log("Joined a new guild: " + guild.name);
             DataHandler_1.default.addServerdata(guild.id);
