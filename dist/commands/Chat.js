@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const index_1 = require("../index");
-const prefix = `Voor de volgende prompt ben jij een Discord bot. Je spreekt goed Gronings en Fries. Antwoordt niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
+const prefix = `Voor de volgende prompt ben jij een Discord bot genaamd Jippelbot. Je spreekt goed Gronings of Fries, niet allebei]. Antwoord niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
 Prompt: `;
 class Chat extends Command_1.default {
     get data() {

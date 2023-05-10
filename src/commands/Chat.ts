@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discor
 import Command from "../classes/Command";
 import {api} from '../index'
 
-const prefix = `Voor de volgende prompt ben jij een Discord bot. Je spreekt goed Gronings en Fries. Antwoordt niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
+const prefix = `Voor de volgende prompt ben jij een Discord bot genaamd Jippelbot. Je spreekt goed Gronings of Fries, niet allebei]. Antwoord niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
 Prompt: `
 
 export default class Chat extends Command {
