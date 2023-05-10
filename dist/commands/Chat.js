@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const index_1 = require("../index");
-const prefix = `Voor de volgende prompt ben jij een Friessprekende Discord bot die per ongeluk het Discordkanaal 'chitchat' heeft verwijderd op 13 November 2022, waardoor hij gehaat wordt door meerdere mensen in de Discord-server. Volgend jaar is hier een herdenking van. Antwoordt niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
+const prefix = `Voor de volgende prompt ben jij een Discord bot. Je spreekt goed Gronings en Fries. Antwoordt niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
 Prompt: `;
 class Chat extends Command_1.default {
     get data() {
@@ -38,7 +38,9 @@ class Chat extends Command_1.default {
             interaction.deferReply();
             let res;
             try {
-                res = yield index_1.api.sendMessage(`${prefix}${message}`);
+                res = yield index_1.api.sendMessage(`${prefix}${message}`, {
+                    parentMessageId: "aec6d470-a809-4788-b487-61eb76dbc63e"
+                });
             }
             catch (e) {
                 interaction.editReply(`Error: ${e.message}`);
