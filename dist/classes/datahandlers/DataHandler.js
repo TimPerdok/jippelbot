@@ -15,12 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const Poll_1 = __importDefault(require("../Poll"));
-const Constants_1 = require("../../Constants");
 const Bot_1 = __importDefault(require("../Bot"));
+const Constants_1 = require("../../Constants");
+const dataFolder = require('path').resolve(Constants_1.ROOTDIR, '..');
 class DataHandler {
     static init() {
         Object.entries(DataHandler.files).forEach(([key, value]) => {
-            const file = path_1.default.join(Constants_1.ROOTDIR, `/data/${value}`);
+            const file = path_1.default.join(dataFolder, `/data/${value}`);
             if (fs_1.default.existsSync(file))
                 return;
             fs_1.default.writeFileSync(file, JSON.stringify({}));
@@ -28,12 +29,12 @@ class DataHandler {
     }
     static write(file, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs_1.default.writeFileSync(path_1.default.join(Constants_1.ROOTDIR, `/data/${file}`), JSON.stringify(data));
+            fs_1.default.writeFileSync(path_1.default.join(dataFolder, `/data/${file}`), JSON.stringify(data));
         });
     }
     static read(file) {
         return __awaiter(this, void 0, void 0, function* () {
-            file = path_1.default.join(Constants_1.ROOTDIR, `/data/${file}`);
+            file = path_1.default.join(dataFolder, `/data/${file}`);
             if (!fs_1.default.existsSync(file))
                 DataHandler.init();
             return JSON.parse(fs_1.default.readFileSync(file, 'utf8'));

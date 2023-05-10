@@ -22,7 +22,6 @@ function init() {
 }
 init();
 function getToken() {
-    console.log(path.dirname(process.mainModule.filename));
     return {
         appid: process.env.appid,
         pubkey: process.env.pubkey,
