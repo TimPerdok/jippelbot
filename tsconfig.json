@@ -1,18 +1,18 @@
 {
+  "esModuleInterop": true,
+  "compilerOptions": {
+    "outDir": "./dist",
+    "strict": false,
+    "strictNullChecks": false,
     "esModuleInterop": true,
-    "compilerOptions": {
-      "outDir": "./dist",
-      "strict": false,
-      "strictNullChecks": false,
-      "esModuleInterop": true,
-      "module": "commonjs",
-      "target": "ES6",
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "allowJs": true,
-      "skipLibCheck": true,
-    },
-    "exclude": [
-      "node_modules"
-    ],
-  }
+    "module": "commonjs",
+    "target": "ES6",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

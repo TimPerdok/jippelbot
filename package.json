@@ -7,7 +7,8 @@
     "test": "jest --watchAll --config ./jest.config.js",
     "start": "ts-node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "build": "tsc"
+    "build": "npm-run-all \"pre-transpile\" & tsc",
+    "pre-transpile": "ts-node ./build-scripts/pre-transpile"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,9 @@
   },
   "homepage": "https://github.com/TimPerdok/jippelbot#readme",
   "dependencies": {
-    "discord.js": "^14.6.0"
+    "discord.js": "^14.6.0",
+    "npm-run-all": "^4.1.5",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@types/jest": "^29.2.2",
