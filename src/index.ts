@@ -12,7 +12,6 @@ async function init() {
 init()
 
 function getToken() {
-    console.log(process.env)
     return {
         appid: process.env.appid,
         pubkey: process.env.pubkey,

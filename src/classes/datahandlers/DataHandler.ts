@@ -2,7 +2,6 @@ import { Channel, Collection, Guild, GuildMember, Invite, Message, TextChannel }
 import path from 'path';
 import fs from 'fs';
 import Poll from '../Poll';
-import { ROOTDIR } from "../../Constants";
 import DiscordBot from "../Bot";
 import { DataJSON } from "../../interfaces/MessageCarrier";
 import { ServerdataJSON } from "../../types/ServerdataJSON";
@@ -10,29 +9,31 @@ import { PollJSON } from "../../types/PollJSON";
 import Classfinder from "../Classfinder";
 import Subcommand from "../Subcommand";
 import { PollSubcommand } from "../../types/PollSubcommand";
+import { ROOTDIR } from "../../Constants";
 
 type DataFile<DataJSON> = {
     [key: string]: DataJSON
 }
 
+const dataFolder = require('path').resolve(ROOTDIR, '..')
 export default class DataHandler {
 
     static files = {polls:"polls.json", serverdata: "serverdata.json"}
 
     static init() {
         Object.entries(DataHandler.files).forEach(([key, value])=>{
-            const file = path.join(ROOTDIR, `/data/${value}`)
+            const file = path.join(dataFolder, `/data/${value}`)
             if (fs.existsSync(file)) return
             fs.writeFileSync(file, JSON.stringify({}))
         })
     }
 
     static async write(file: string, data: DataFile<DataJSON>) {
-        fs.writeFileSync(path.join(ROOTDIR, `/data/${file}`), JSON.stringify(data))
+        fs.writeFileSync(path.join(dataFolder, `/data/${file}`), JSON.stringify(data))
     }
 
     static async read(file: string): Promise<DataFile<DataJSON>> {
-        file = path.join(ROOTDIR, `/data/${file}`)
+        file = path.join(dataFolder, `/data/${file}`)
         if (!fs.existsSync(file)) DataHandler.init()
         return JSON.parse(fs.readFileSync(file, 'utf8'))
     }
