@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 class ServerREST {
+    server;
+    rest;
+    clientId;
     constructor(rest, server, clientId) {
         this.rest = rest;
         this.server = server;

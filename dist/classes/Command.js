@@ -6,6 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Classfinder_1 = __importDefault(require("./Classfinder"));
 class Command {
+    name;
+    description;
+    subcommands;
+    get data() {
+        return new discord_js_1.SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+    }
     constructor(name, description) {
         this.name = name.toLowerCase();
         this.description = description;
@@ -15,11 +23,6 @@ class Command {
                 this.subcommands.set(subcommand.name, subcommand);
             });
         });
-    }
-    get data() {
-        return new discord_js_1.SlashCommandBuilder()
-            .setName(this.name)
-            .setDescription(this.description);
     }
     onCommand(interaction) { }
     onButtonPress(interaction) { }

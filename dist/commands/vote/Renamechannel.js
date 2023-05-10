@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -36,34 +27,30 @@ class Renamechannel extends PollCarrier_1.default {
             content: `Deze vote is niet doorgevoerd.`
         });
     }
-    onCommand(interaction) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const channels = interaction.member.guild.channels.cache;
-            const toBeRenamedChannel = channels.get(interaction.options.getChannel('channel').id);
-            const newName = interaction.options.getString('name');
-            const poll = new Poll_1.default({
-                question: `Moet het kanaal ${toBeRenamedChannel} vernoemd worden naar '${newName}'`,
-                initiator: interaction.member,
-                command: this,
-                params: { newName, channelId: toBeRenamedChannel.id }
-            });
-            const serverData = yield DataHandler_1.default.getServerdata(interaction.guildId);
-            const voteChannel = channels.get(serverData.voteChannel);
-            yield interaction.reply({ content: "Je vote is aangemaakt!", ephemeral: true });
-            const message = yield voteChannel.send(Object.assign(Object.assign({}, poll.payload), { fetchReply: true }));
-            poll.setMessage(message);
-            this.polls.set(message.id, poll);
+    async onCommand(interaction) {
+        const channels = interaction.member.guild.channels.cache;
+        const toBeRenamedChannel = channels.get(interaction.options.getChannel('channel').id);
+        const newName = interaction.options.getString('name');
+        const poll = new Poll_1.default({
+            question: `Moet het kanaal ${toBeRenamedChannel} vernoemd worden naar '${newName}'`,
+            initiator: interaction.member,
+            command: this,
+            params: { newName, channelId: toBeRenamedChannel.id }
         });
+        const serverData = await DataHandler_1.default.getServerdata(interaction.guildId);
+        const voteChannel = channels.get(serverData.voteChannel);
+        await interaction.reply({ content: "Je vote is aangemaakt!", ephemeral: true });
+        const message = await voteChannel.send({ ...poll.payload, fetchReply: true });
+        poll.setMessage(message);
+        this.polls.set(message.id, poll);
     }
-    onButtonPress(interaction) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const poll = this.polls.get(interaction.message.id);
-            if (!poll)
-                return;
-            const done = poll.addCount(interaction.member, interaction.customId === 'yes');
-            if (!done)
-                poll.updateMessage(interaction);
-        });
+    async onButtonPress(interaction) {
+        const poll = this.polls.get(interaction.message.id);
+        if (!poll)
+            return;
+        const done = poll.addCount(interaction.member, interaction.customId === 'yes');
+        if (!done)
+            poll.updateMessage(interaction);
     }
     data(subcommand) {
         return subcommand

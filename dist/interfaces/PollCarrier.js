@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
 const Subcommand_1 = __importDefault(require("../classes/Subcommand"));
 class PollSubcommand extends Subcommand_1.default {
+    polls;
     constructor(name, description, parentCommand) {
         super(name, description, parentCommand);
         this.polls = new Map();
