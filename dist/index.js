@@ -12,8 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = require("fs");
 const Bot_1 = __importDefault(require("./classes/Bot"));
+require('dotenv').config();
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
         const { botsecret, appid } = yield getToken();
@@ -22,7 +22,11 @@ function init() {
 }
 init();
 function getToken() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return JSON.parse(yield fs_1.promises.readFile('creds.json', 'utf8'));
-    });
+    console.log(process.env);
+    return {
+        appid: process.env.appid,
+        pubkey: process.env.pubkey,
+        secret: process.env.secret,
+        botsecret: process.env.botsecret
+    };
 }
