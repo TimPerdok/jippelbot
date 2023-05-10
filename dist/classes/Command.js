@@ -6,9 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Classfinder_1 = __importDefault(require("./Classfinder"));
 class Command {
-    name;
-    description;
-    subcommands;
     get data() {
         return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)

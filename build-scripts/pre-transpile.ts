@@ -1,12 +1,10 @@
-// import fs
-import fs from "fs";
 
-(function(){
+
+async function pretranspile() {
+    const fs = await import("fs");
+
     fs.rmSync("./dist", { recursive: true });
     fs.mkdirSync("./dist");
-
+}
     
-    
-
-
-})()
+pretranspile()

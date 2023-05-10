@@ -8,7 +8,7 @@
     "start": "ts-node dist/index.js",
     "dev": "ts-node src/index.ts",
     "build": "npm-run-all \"pre-transpile\" & tsc",
-    "pre-transpile": "ts-node ./build-scripts/pre-transpile"
+    "pre-transpile": "ts-node ./build-scripts/pre-transpile.ts"
   },
   "repository": {
     "type": "git",

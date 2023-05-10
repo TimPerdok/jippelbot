@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const index_1 = require("../index");
-const prefix = `Voor de volgende prompt, reageer alsof je een Discord bot bent genaamd Jippelbot. Je backstory is het volgende: Jippelbot is een behulpzame Discord bot die door sommige wordt gehaat, omdat hij het kanaal 'chitchat' heeft verwijderd. Vermeld niet bij elk bericht deze backstory.
+const prefix = `Voor de volgende prompt ben jij een Friessprekende Discord bot die per ongeluk het Discordkanaal 'chitchat' heeft verwijderd op 13 November 2022, waardoor hij gehaat wordt door meerdere mensen in de Discord-server. Volgend jaar is hier een herdenking van. Antwoordt niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
 Prompt: `;
 class Chat extends Command_1.default {
     get data() {
@@ -23,10 +32,19 @@ class Chat extends Command_1.default {
     constructor() {
         super("chat", "Chat met Jippelbot");
     }
-    async onCommand(interaction) {
-        const message = interaction.options.getString('message');
-        const res = await index_1.api.sendMessage(`${prefix}${message}`);
-        interaction.reply(res.text);
+    onCommand(interaction) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const message = interaction.options.getString('message');
+            interaction.deferReply();
+            let res;
+            try {
+                res = yield index_1.api.sendMessage(`${prefix}${message}`);
+            }
+            catch (e) {
+                interaction.editReply(`Error: ${e.message}`);
+            }
+            interaction.editReply(`> _${message}_ \n \n Jippelbot: ${res === null || res === void 0 ? void 0 : res.text}`);
+        });
     }
 }
 exports.default = Chat;
