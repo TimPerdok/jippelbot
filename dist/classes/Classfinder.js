@@ -23,7 +23,6 @@ class Classfinder {
                 const obj = require(filePath);
                 return new obj.default();
             });
-            console.log(classes);
             return classes;
         });
     }

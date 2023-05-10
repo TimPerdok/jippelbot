@@ -31,7 +31,7 @@ export default class DiscordBot {
         });
         this.serverRESTS = []
         this.commands = new Collection<string, Command>();
-
+        console.log(`Logging in...`);
         DiscordBot.client.on('ready', async () => {
             console.log(`Logged in as ${DiscordBot.client?.user?.tag}`);
             

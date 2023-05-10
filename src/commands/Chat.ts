@@ -33,7 +33,7 @@ export default class Chat extends Command {
         } catch(e: any){
             interaction.editReply(`Error: ${e.message}`)
         }
-        interaction.editReply(`> _${message}_ \n \n Jippelbot: ${res?.text}`)
+        interaction.editReply(`> _${message}_ \n\n${res?.text}`)
 	}
 
 }

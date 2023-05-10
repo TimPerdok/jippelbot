@@ -43,7 +43,7 @@ class Chat extends Command_1.default {
             catch (e) {
                 interaction.editReply(`Error: ${e.message}`);
             }
-            interaction.editReply(`> _${message}_ \n \n Jippelbot: ${res === null || res === void 0 ? void 0 : res.text}`);
+            interaction.editReply(`> _${message}_ \n\n${res === null || res === void 0 ? void 0 : res.text}`);
         });
     }
 }

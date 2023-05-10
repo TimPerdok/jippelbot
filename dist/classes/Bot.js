@@ -30,6 +30,7 @@ class DiscordBot {
         });
         this.serverRESTS = [];
         this.commands = new discord_js_1.Collection();
+        console.log(`Logging in...`);
         DiscordBot.client.on('ready', () => __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             console.log(`Logged in as ${(_b = (_a = DiscordBot.client) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.tag}`);
