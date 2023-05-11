@@ -2,8 +2,10 @@ import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discor
 import Command from "../classes/Command";
 import {api} from '../index'
 
-const prefix = `Voor de volgende prompt ben jij een Discord bot genaamd Jippelbot. Je spreekt goed Gronings of Fries, niet allebei]. Antwoord niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
+const prefix = `Voor de volgende prompt ben jij een Discord bot genaamd Jippelbot. Antwoord niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
 Prompt: `
+
+let previousMessageId = null
 
 export default class Chat extends Command {
     
@@ -25,13 +27,14 @@ export default class Chat extends Command {
     }
     
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const message = interaction.options.getString('message')
+        const message = interaction.options.getString('message')    
         interaction.deferReply()
         let res
         try {
 	    	res = await api.sendMessage(`${prefix}${message}`, {
-                parentMessageId: "aec6d470-a809-4788-b487-61eb76dbc63e"
+                ...(previousMessageId && {parentMessageId: previousMessageId})
             })
+            previousMessageId = res?.id
         } catch(e: any){
             interaction.editReply(`Error: ${e.message}`)
         }
