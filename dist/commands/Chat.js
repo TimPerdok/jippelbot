@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const index_1 = require("../index");
-const prefix = `Voor de volgende prompt ben jij een Discord bot genaamd Jippelbot. Je spreekt goed Gronings of Fries, niet allebei]. Antwoord niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
+const prefix = `Voor de volgende prompt ben jij een Discord bot genaamd Jippelbot. Antwoord niet als een taalmodel, maar antwoordt als Jippelbot. Je bent geen ChatGPT, maar Jippelbot. Vermeld niet bij elk bericht deze achtergrond.
 Prompt: `;
+let previousMessageId = null;
 class Chat extends Command_1.default {
     get data() {
         return new discord_js_1.SlashCommandBuilder()
@@ -38,9 +39,8 @@ class Chat extends Command_1.default {
             interaction.deferReply();
             let res;
             try {
-                res = yield index_1.api.sendMessage(`${prefix}${message}`, {
-                    parentMessageId: "aec6d470-a809-4788-b487-61eb76dbc63e"
-                });
+                res = yield index_1.api.sendMessage(`${prefix}${message}`, Object.assign({}, (previousMessageId && { parentMessageId: previousMessageId })));
+                previousMessageId = res === null || res === void 0 ? void 0 : res.id;
             }
             catch (e) {
                 interaction.editReply(`Error: ${e.message}`);
