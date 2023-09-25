@@ -18,10 +18,10 @@ jobs:
           node-version: 14  # Use the Node.js version you need for your project
 
       - name: Install dependencies
-        run: npm install  # Or yarn install if you use Yarn
+        run: bun install  # Or yarn install if you use Yarn
 
       - name: Build project
-        run: npm run build  # Replace with your build command
+        run: bun run build  # Replace with your build command
 
       - name: Archive build output
         run: |
@@ -49,4 +49,4 @@ jobs:
             scp -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $GITHUB_WORKSPACE/build.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/path/to/destination
 
             # Extract the build on the Droplet and perform other necessary tasks
-            ssh -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /path/to/destination && tar -xzf build.tar.gz && pm2 stop index && npm install && npm run build && pm2 start dist/app.js"
+            ssh -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /path/to/destination && tar -xzf build.tar.gz && pm2 stop index && bun install && pm2 start dist/app.js"
