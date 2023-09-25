@@ -1,27 +1,52 @@
-name: Deploy to DigitalOcean Droplet
-'on':
+name: Build and Deploy to DigitalOcean Droplet
+
+on:
   push:
     branches:
       - master
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14  # Use the Node.js version you need for your project
+
+      - name: Install dependencies
+        run: npm install  # Or yarn install if you use Yarn
+
+      - name: Build project
+        run: npm run build  # Replace with your build command
+
+      - name: Archive build output
+        run: |
+          tar -czf build.tar.gz dist  # Create a compressed archive of your build output
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to DigitalOcean Droplet
         uses: appleboy/ssh-action@master
         with:
-          host: ${{secrets.HOST}}
-          username: ${{secrets.USERNAME}}
-          key: ${{secrets.KEY}}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
           script: |
             rm -rf bot
             mkdir bot
             cd bot
             git clone git@github.com:TimPerdok/jippelbot.git
-            echo 'Deployment to digital ocean finished'
+            echo 'Deployment to Digital Ocean finished'
             cd jippelbot
-            pm2 stop index
-            bun install
-            bun run build
-            pm2 start dist/app.js
+
+            # Transfer the compressed build output to the Droplet
+            scp -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $GITHUB_WORKSPACE/build.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/path/to/destination
+
+            # Extract the build on the Droplet and perform other necessary tasks
+            ssh -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /path/to/destination && tar -xzf build.tar.gz && pm2 stop index && npm install && npm run build && pm2 start dist/app.js"
