@@ -2,7 +2,7 @@ name: Deploy to DigitalOcean Droplet
 'on':
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -20,5 +20,5 @@ jobs:
             rm -rf test
             mkdir test
             cd test
-            git clone git@github.com:username/projectname
+            git clone git@github.com:TimPerdok/jippelbot.git
             echo 'Deployment to digital ocean finished'
