@@ -17,8 +17,9 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            rm -rf test
-            mkdir test
-            cd test
+            rm -rf bot
+            mkdir bot
+            cd bot
             git clone git@github.com:TimPerdok/jippelbot.git
             echo 'Deployment to digital ocean finished'
+            pm2 restart index
