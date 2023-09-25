@@ -22,4 +22,7 @@ jobs:
             cd bot
             git clone git@github.com:TimPerdok/jippelbot.git
             echo 'Deployment to digital ocean finished'
-            pm2 restart index
+            pm2 stop index
+            cd jippelbot
+            bun install
+            pm2 start index
