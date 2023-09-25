@@ -46,7 +46,7 @@ jobs:
             cd jippelbot
 
             # Transfer the compressed build output to the Droplet
-            scp -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $GITHUB_WORKSPACE/build.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/path/to/destination
+            scp -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $GITHUB_WORKSPACE/build.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/bot/jippelbot
 
             # Extract the build on the Droplet and perform other necessary tasks
-            ssh -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /path/to/destination && tar -xzf build.tar.gz && pm2 stop index && bun install && pm2 start dist/app.js"
+            ssh -i ${{ secrets.KEY }} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd ~/bot/jippelbot && tar -xzf build.tar.gz && pm2 stop index && bun install && pm2 start dist/app.js"
