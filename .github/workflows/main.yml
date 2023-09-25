@@ -24,4 +24,4 @@ jobs:
             pm2 stop index
             bun install
             bun run build
-            pm2 start dist/index
+            pm2 start dist/app.js
