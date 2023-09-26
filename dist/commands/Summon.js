@@ -29,6 +29,7 @@ class Summon extends Command_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const user = interaction.options.getUser("user");
             yield user.send(`Je wordt gesummoned door ${interaction.user.username} in ${interaction.guild.name}. Klik <#${interaction.channelId}> om te reageren.`);
+            yield interaction.reply({ content: `Je hebt ${user.username} gesummoned.`, ephemeral: true });
         });
     }
 }
