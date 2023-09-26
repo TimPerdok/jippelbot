@@ -7,7 +7,7 @@ import DataHandler from "../classes/datahandlers/DataHandler";
 import { PollJSON } from "../types/PollJSON";
 
 
-export default class Vote extends Command {
+export default class Summon extends Command {
 
 
     get data(): SlashCommandBuilder {
