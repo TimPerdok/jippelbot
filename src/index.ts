@@ -19,8 +19,6 @@ async function init() {
 
     // @ts-ignore
 
-    
-
     const { botsecret, appid } = await getToken();
     const bot = new Discordbot(botsecret, appid);
 }

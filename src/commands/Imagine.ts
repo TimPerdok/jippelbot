@@ -25,6 +25,7 @@ export default class Summon extends Command {
 
     
     async onCommand(interaction: ChatInputCommandInteraction) {
+        if (!(await DataHandler.getServerdata(interaction.guildId as string)).isDalleEnabled) return await interaction.reply("Joop zijn euro's zijn op. Momenteel kunnen er geen afbeeldingen gegenereerd worden.");
 
         const prompt = interaction.options.getString("prompt");
         interaction.deferReply();

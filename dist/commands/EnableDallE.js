@@ -15,34 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
-const index_1 = require("../index");
-class Summon extends Command_1.default {
+class Ping extends Command_1.default {
     get data() {
-        const builder = new discord_js_1.SlashCommandBuilder()
+        return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("prompt").setDescription("De prompt voor de afbeelding").setRequired(true));
-        return builder;
+            .addBooleanOption(option => option.setName("enabled").setDescription("Enable or disable dall-e").setRequired(true))
+            .addStringOption(option => option.setName("password").setDescription("Pasword").setRequired(true));
     }
     constructor() {
-        super("imagine", "Imagine een afbeelding");
+        super("enabledalle", "Enable or disable dall-e");
     }
     onCommand(interaction) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(yield DataHandler_1.default.getServerdata(interaction.guildId)).isDalleEnabled)
-                return yield interaction.reply("Joop zijn euro's zijn op. Momenteel kunnen er geen afbeeldingen gegenereerd worden.");
-            const prompt = interaction.options.getString("prompt");
-            interaction.deferReply();
-            const response = yield index_1.openai.images.generate({
-                prompt,
-                n: 1,
-                size: "1024x1024",
-                response_format: "url"
-            });
-            console.log(response);
-            yield interaction.editReply({ content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. \n${(_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a[0].url} ` });
+            const enabled = interaction.options.getBoolean("enabled", true);
+            const password = interaction.options.getString("password", true);
+            if (password !== process.env.disablepass)
+                return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true });
+            yield DataHandler_1.default.setServerdata(interaction.guildId, { isDalleEnabled: enabled });
+            yield interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true });
         });
     }
 }
-exports.default = Summon;
+exports.default = Ping;

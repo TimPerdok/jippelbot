@@ -96,13 +96,20 @@ class DataHandler {
             return serverdata[serverId];
         });
     }
+    static setServerdata(serverId, mergeObject) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverdata = yield DataHandler.read(DataHandler.files.serverdata);
+            serverdata[serverId] = Object.assign(Object.assign({}, serverdata[serverId]), mergeObject);
+            yield DataHandler.write(DataHandler.files.serverdata, serverdata);
+        });
+    }
     static addServerdata(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const serverdata = yield DataHandler.read(DataHandler.files.serverdata);
-            serverdata[id] = { id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "" };
+            serverdata[id] = { id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false };
             DataHandler.write(DataHandler.files.serverdata, serverdata);
         });
     }
 }
 exports.default = DataHandler;
-DataHandler.files = { polls: "polls.json", serverdata: "serverdata.json" };
+DataHandler.files = { polls: "polls.json", serverdata: "serverdata.json", config: "config.json" };

@@ -4,7 +4,7 @@ import fs from 'fs';
 import Poll from '../Poll';
 import DiscordBot from "../Bot";
 import { DataJSON } from "../../interfaces/MessageCarrier";
-import { ServerdataJSON } from "../../types/ServerdataJSON";
+import { ServerdataJSON, ServerdataJSONKey } from "../../types/ServerdataJSON";
 import { PollJSON } from "../../types/PollJSON";
 import Classfinder from "../Classfinder";
 import Subcommand from "../Subcommand";
@@ -18,7 +18,7 @@ type DataFile<DataJSON> = {
 const dataFolder = require('path').resolve(ROOTDIR, '..')
 export default class DataHandler {
 
-    static files = {polls:"polls.json", serverdata: "serverdata.json"}
+    static files = {polls:"polls.json", serverdata: "serverdata.json", config: "config.json"}
 
     static init() {
         Object.entries(DataHandler.files).forEach(([key, value])=>{
@@ -80,17 +80,28 @@ export default class DataHandler {
         DataHandler.write(DataHandler.files.polls, polls)
     }
 
-    static async getServerdata(serverId: String): Promise<ServerdataJSON>{
+    static async getServerdata(serverId: string): Promise<ServerdataJSON>{
         const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
         // @ts-ignore
         return serverdata[serverId] as ServerdataJSON
     }
 
+
+
+
+    static async setServerdata(serverId: string, mergeObject: Partial<ServerdataJSON>) {
+        const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
+        serverdata[serverId] = {...serverdata[serverId], ...mergeObject};
+        await DataHandler.write(DataHandler.files.serverdata, serverdata)
+    }
+
     
     static async addServerdata(id: string) {
         const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
-        serverdata[id] = {id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "" }
+        serverdata[id] = {id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false }
         DataHandler.write(DataHandler.files.serverdata, serverdata)
     }
+
+    
 
 }
