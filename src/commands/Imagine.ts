@@ -30,14 +30,19 @@ export default class Summon extends Command {
         const prompt = interaction.options.getString("prompt");
         interaction.deferReply();
 
-        const response = await openai.images.generate({
-            prompt,
-            n: 1,
-            size: "1024x1024",
-            response_format: "url"
-          });
-        console.log(response)
-        await interaction.editReply({content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. \n${response?.data?.[0].url} `});
+        try {
+            const response = await openai.images.generate({
+                prompt,
+                n: 1,
+                size: "1024x1024",
+                response_format: "url"
+              });
+            await interaction.editReply({content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. \n${response?.data?.[0].url} `});
+        } catch (error) {
+            await interaction.editReply({content: `Oh nee een error. \nPrompt was ${prompt}. \n${error?.error?.message}`});
+        }
+     
+        
     }
 
 

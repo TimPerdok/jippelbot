@@ -28,20 +28,24 @@ class Summon extends Command_1.default {
         super("imagine", "Imagine een afbeelding");
     }
     onCommand(interaction) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (!(yield DataHandler_1.default.getServerdata(interaction.guildId)).isDalleEnabled)
                 return yield interaction.reply("Joop zijn euro's zijn op. Momenteel kunnen er geen afbeeldingen gegenereerd worden.");
             const prompt = interaction.options.getString("prompt");
             interaction.deferReply();
-            const response = yield index_1.openai.images.generate({
-                prompt,
-                n: 1,
-                size: "1024x1024",
-                response_format: "url"
-            });
-            console.log(response);
-            yield interaction.editReply({ content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. \n${(_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a[0].url} ` });
+            try {
+                const response = yield index_1.openai.images.generate({
+                    prompt,
+                    n: 1,
+                    size: "1024x1024",
+                    response_format: "url"
+                });
+                yield interaction.editReply({ content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. \n${(_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a[0].url} ` });
+            }
+            catch (error) {
+                yield interaction.editReply({ content: `Oh nee een error. \nPrompt was ${prompt}. \n${(_b = error === null || error === void 0 ? void 0 : error.error) === null || _b === void 0 ? void 0 : _b.message}` });
+            }
         });
     }
 }
