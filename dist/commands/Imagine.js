@@ -16,6 +16,7 @@ const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
 const index_1 = require("../index");
+const node_fetch_1 = __importDefault(require("node-fetch"));
 class Summon extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
@@ -41,9 +42,14 @@ class Summon extends Command_1.default {
                     size: "1024x1024",
                     response_format: "url"
                 });
-                yield interaction.editReply({ content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. \n${(_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a[0].url} ` });
+                const imageBuffer = yield (yield (0, node_fetch_1.default)((_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a[0].url)).arrayBuffer();
+                yield interaction.editReply({
+                    content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. `,
+                    files: [{ attachment: Buffer.from(imageBuffer), name: "image.png" }]
+                });
             }
             catch (error) {
+                console.error(error);
                 yield interaction.editReply({ content: `Oh nee een error. \nPrompt was ${prompt}. \n${(_b = error === null || error === void 0 ? void 0 : error.error) === null || _b === void 0 ? void 0 : _b.message}` });
             }
         });
