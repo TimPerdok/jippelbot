@@ -26,7 +26,7 @@ export default class Addchannel extends PollSubcommand  {
             poll.message.edit({
                 embeds: [],
                 components: [],
-                content: `De user ${member.user.username} is gekickt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})}`
+                content: `De user ${member.user.username} is gekickt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
             })
         } catch (error) {
             poll.message.edit({

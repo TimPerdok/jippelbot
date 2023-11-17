@@ -21,7 +21,7 @@ class Poll {
     constructor({ question, initiator, command, params, startTimestampUnix, votes, message }) {
         this.maxTime = 86400;
         this.minimumPercentage = 0.50;
-        this.debug = true;
+        this.debug = false;
         this.params = {};
         this.done = false;
         this.question = question;

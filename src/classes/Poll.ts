@@ -32,7 +32,7 @@ export default class Poll implements MessageCarrier {
 
     minimumPercentage = 0.50
 
-    debug = true;
+    debug = false;
 
     params: { [key: string]: string } = {};
     done: boolean = false;
