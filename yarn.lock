@@ -2501,9 +2501,9 @@
     "mimic-fn" "^2.1.0"
 
 "openai@^4.11.1":
-  "integrity" "sha512-GU0HQWbejXuVAQlDjxIE8pohqnjptFDIm32aPlNT1H9ucMz1VJJD0DaTJRQsagNaJ97awWjjVLEG7zCM6sm4SA=="
-  "resolved" "https://registry.npmjs.org/openai/-/openai-4.11.1.tgz"
-  "version" "4.11.1"
+  "integrity" "sha512-ThRFkl6snLbcAKS58St7N3CaKuI5WdYUvIjPvf4s+8SdymgNtOfzmZcZXVcCefx04oKFnvZJvIcTh3eAFUUhAQ=="
+  "resolved" "https://registry.npmjs.org/openai/-/openai-4.17.4.tgz"
+  "version" "4.17.4"
   dependencies:
     "@types/node" "^18.11.18"
     "@types/node-fetch" "^2.6.4"
@@ -2513,6 +2513,7 @@
     "form-data-encoder" "1.7.2"
     "formdata-node" "^4.3.2"
     "node-fetch" "^2.6.7"
+    "web-streams-polyfill" "^3.2.1"
 
 "p-limit@^2.2.0":
   "integrity" "sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w=="
@@ -3151,6 +3152,11 @@
   "version" "1.0.8"
   dependencies:
     "makeerror" "1.0.12"
+
+"web-streams-polyfill@^3.2.1":
+  "integrity" "sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q=="
+  "resolved" "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz"
+  "version" "3.2.1"
 
 "web-streams-polyfill@4.0.0-beta.3":
   "integrity" "sha512-QW95TCTaHmsYfHDybGMwO5IJIM93I/6vTRk+daHTWFPhwh+C8Cg7j7XyKrwrj8Ib6vYXe0ocYNrmzY4xAAN6ug=="

@@ -16,18 +16,16 @@ const Bot_1 = __importDefault(require("../../classes/Bot"));
 const DataHandler_1 = __importDefault(require("../../classes/datahandlers/DataHandler"));
 const Poll_1 = __importDefault(require("../../classes/Poll"));
 const PollCarrier_1 = __importDefault(require("../../interfaces/PollCarrier"));
-class Deletechannel extends PollCarrier_1.default {
+class Addchannel extends PollCarrier_1.default {
     constructor() {
-        super("deletechannel", "Delete a channel", "vote");
+        super("kick", "Kick a person", "vote");
     }
     onPass(poll) {
-        const channel = Bot_1.default.client.channels.cache.get(poll.params.channelId);
-        poll.message.edit({
-            embeds: [],
-            components: [],
-            content: `Het kanaal ${channel.name} is verwijderd!`
-        });
-        channel.delete();
+        const guild = Bot_1.default.client.guilds.cache.get(poll.message.guild.id);
+        // kick user
+        const userId = poll.params.userId;
+        const member = guild.members.cache.get(userId);
+        member.kick();
     }
     onFail(poll) {
         poll.message.edit({
@@ -39,12 +37,12 @@ class Deletechannel extends PollCarrier_1.default {
     onCommand(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
             const channels = interaction.member.guild.channels.cache;
-            const toBeDeletedChannel = channels.get(interaction.options.getChannel('channel').id);
+            const user = interaction.options.getUser('user');
             const poll = new Poll_1.default({
-                question: `Moet het kanaal ${toBeDeletedChannel} verwijderd worden?`,
+                question: `Moet de user ${user.username} gekickt worden?`,
                 initiator: interaction.member,
                 command: this,
-                params: { channelId: toBeDeletedChannel.id }
+                params: { userId: user.id }
             });
             const serverData = yield DataHandler_1.default.getServerdata(interaction.guildId);
             const voteChannel = channels.get(serverData.voteChannel);
@@ -68,12 +66,7 @@ class Deletechannel extends PollCarrier_1.default {
         return subcommand
             .setName(this.name)
             .setDescription(this.description)
-            .addChannelOption((option) => {
-            return option
-                .setName('channel')
-                .setDescription('The channel to rename')
-                .setRequired(true);
-        });
+            .addUserOption(option => option.setName('user').setDescription('The user to kick').setRequired(true));
     }
 }
-exports.default = Deletechannel;
+exports.default = Addchannel;

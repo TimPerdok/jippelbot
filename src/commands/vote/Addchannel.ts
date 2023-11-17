@@ -39,7 +39,7 @@ export default class Addchannel extends PollSubcommand  {
         poll.message.edit({
             embeds: [],
             components: [],
-            content: `Deze vote is niet doorgevoerd.`
+            content: `Deze vote is niet doorgevoerd. ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
         })
     }
 
