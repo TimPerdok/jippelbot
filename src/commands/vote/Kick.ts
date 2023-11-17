@@ -1,4 +1,4 @@
-import { APIApplicationCommandOptionChoice, ButtonInteraction, ChannelType, ChatInputCommandInteraction, Client, Guild, GuildMember, Interaction, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, User, VoiceChannel } from "discord.js";
+import { APIApplicationCommandOptionChoice, ButtonInteraction, ChannelType, ChatInputCommandInteraction, Client, DiscordAPIError, Guild, GuildMember, Interaction, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, User, VoiceChannel } from "discord.js";
 import DiscordBot from "../../classes/Bot";
 import DataHandler from "../../classes/datahandlers/DataHandler";
 import Poll from "../../classes/Poll";
@@ -19,10 +19,22 @@ export default class Addchannel extends PollSubcommand  {
     
     onPass(poll: Poll): void {
         const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild.id) as Guild
-        // kick user
         const userId: string = poll.params.userId
         const member: GuildMember = guild.members.cache.get(userId) as GuildMember
-        member.kick();
+        try {
+            member.kick();
+            poll.message.edit({
+                embeds: [],
+                components: [],
+                content: `De user ${member.user.username} is gekickt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})}`
+            })
+        } catch (error) {
+            poll.message.edit({
+                embeds: [],
+                components: [],
+                content: `Deze vote zou doorgevoerd worden maar er is een error ontstaan. ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel}). Error: ${error.message}`
+            })
+        }
     }
     onFail(poll: Poll): void {
         poll.message.edit({

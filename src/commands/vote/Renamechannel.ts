@@ -22,7 +22,7 @@ export default class Renamechannel extends PollSubcommand  {
         poll.message.edit({
             embeds: [],
             components: [],
-            content: `De naam van het kanaal ${channel.name} is veranderd naar '${poll.params.newName}!'`
+            content: `De naam van het kanaal ${channel.name} is veranderd naar '${poll.params.newName}!' ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
         })
         channel.setName(poll.params.newName)
     }

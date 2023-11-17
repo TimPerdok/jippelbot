@@ -21,6 +21,7 @@ class Poll {
     constructor({ question, initiator, command, params, startTimestampUnix, votes, message }) {
         this.maxTime = 86400;
         this.minimumPercentage = 0.50;
+        this.debug = true;
         this.params = {};
         this.done = false;
         this.question = question;
@@ -36,7 +37,7 @@ class Poll {
             if (this.done)
                 return;
             this.done = true;
-            if (this.percentage > this.minimumPercentage) {
+            if (this.percentage > this.minimumPercentage || this.debug) {
                 try {
                     this.command.onPass(this);
                     DataHandler_1.default.removePoll(this.message.id);
@@ -81,7 +82,7 @@ class Poll {
     addCount(user, value = false) {
         this.votes.set(user.id, value);
         this.updateData();
-        if (this.yesCount > 5) {
+        if (this.yesCount > 5 || this.debug) {
             this.done = true;
             this.command.onPass(this);
             DataHandler_1.default.removePoll(this.message.id);

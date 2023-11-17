@@ -22,10 +22,23 @@ class Addchannel extends PollCarrier_1.default {
     }
     onPass(poll) {
         const guild = Bot_1.default.client.guilds.cache.get(poll.message.guild.id);
-        // kick user
         const userId = poll.params.userId;
         const member = guild.members.cache.get(userId);
-        member.kick();
+        try {
+            member.kick();
+            poll.message.edit({
+                embeds: [],
+                components: [],
+                content: `De user ${member.user.username} is gekickt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})}`
+            });
+        }
+        catch (error) {
+            poll.message.edit({
+                embeds: [],
+                components: [],
+                content: `Deze vote zou doorgevoerd worden maar er is een error ontstaan. ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel}). Error: ${error.message}`
+            });
+        }
     }
     onFail(poll) {
         poll.message.edit({

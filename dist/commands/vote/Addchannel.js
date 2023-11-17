@@ -28,7 +28,7 @@ class Addchannel extends PollCarrier_1.default {
             poll.message.edit({
                 embeds: [],
                 components: [],
-                content: `Het kanaal ${poll.params.newName} is aangemaakt!`
+                content: `Het kanaal ${poll.params.newName} is aangemaakt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})}`
             });
             guild.channels.create({
                 name: poll.params.newName,

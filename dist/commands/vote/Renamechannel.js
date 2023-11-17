@@ -25,7 +25,7 @@ class Renamechannel extends PollCarrier_1.default {
         poll.message.edit({
             embeds: [],
             components: [],
-            content: `De naam van het kanaal ${channel.name} is veranderd naar '${poll.params.newName}!'`
+            content: `De naam van het kanaal ${channel.name} is veranderd naar '${poll.params.newName}!' ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
         });
         channel.setName(poll.params.newName);
     }

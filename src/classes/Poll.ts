@@ -32,6 +32,8 @@ export default class Poll implements MessageCarrier {
 
     minimumPercentage = 0.50
 
+    debug = true;
+
     params: { [key: string]: string } = {};
     done: boolean = false;
 
@@ -51,7 +53,7 @@ export default class Poll implements MessageCarrier {
         setTimeout(async () => {
             if (this.done) return
             this.done = true
-            if (this.percentage > this.minimumPercentage) {
+            if (this.percentage > this.minimumPercentage || this.debug) {
                 try {
                     this.command.onPass(this)
                     DataHandler.removePoll(this.message.id)
@@ -100,7 +102,7 @@ export default class Poll implements MessageCarrier {
     addCount(user: GuildMember, value: boolean = false): boolean {
         this.votes.set(user.id, value)
         this.updateData()
-        if (this.yesCount > 5) {
+        if (this.yesCount > 5 || this.debug) {
             this.done = true
             this.command.onPass(this)
             DataHandler.removePoll(this.message.id)

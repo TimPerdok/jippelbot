@@ -18,7 +18,7 @@ export default class Deletechannel extends PollSubcommand  {
         poll.message.edit({
             embeds: [],
             components: [],
-            content: `Het kanaal ${channel.name} is verwijderd!`
+            content: `Het kanaal ${channel.name} is verwijderd! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
         })
         channel.delete()
     }
