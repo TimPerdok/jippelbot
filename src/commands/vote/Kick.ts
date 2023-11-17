@@ -21,12 +21,13 @@ export default class Addchannel extends PollSubcommand  {
         const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild.id) as Guild
         const userId: string = poll.params.userId
         const member: GuildMember = guild.members.cache.get(userId) as GuildMember
+        
         try {
             member.kick();
             poll.message.edit({
                 embeds: [],
                 components: [],
-                content: `De user ${member.user.username} is gekickt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
+                content: `De user ${member.displayName} is gekickt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
             })
         } catch (error) {
             poll.message.edit({
