@@ -155,9 +155,10 @@ class DataHandler {
         });
     }
     static getGameSubscription(serverId, name) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const serverdata = yield DataHandler.read(DataHandler.files.gameSubscriptions);
-            return serverdata[serverId].find(game => game.name.toLowerCase() === name.toLowerCase());
+            return (_a = serverdata[serverId]) === null || _a === void 0 ? void 0 : _a.find(game => game.name.toLowerCase() === name.toLowerCase());
         });
     }
 }

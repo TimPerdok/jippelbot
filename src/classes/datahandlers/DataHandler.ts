@@ -135,9 +135,9 @@ export default class DataHandler {
         DiscordBot.rescheduleGameReleaseAlerts()
     }
 
-    static async getGameSubscription(serverId: string, name: string) {
+    static async getGameSubscription(serverId: string, name: string): Promise<Game> {
         const serverdata = await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>
-        return serverdata[serverId].find(game => game.name.toLowerCase() === name.toLowerCase())
+        return serverdata[serverId]?.find(game => game.name.toLowerCase() === name.toLowerCase()) as Game;
     }
 
 }
