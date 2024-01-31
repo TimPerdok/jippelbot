@@ -22,10 +22,11 @@ export default class TwitchAccessTokenHandler {
     }
 
     public async getAccessToken(): Promise<string> {
-        if (!this.isExpired()) return await this.fetch();
+        if (this.isExpired()) return await this.fetch();
         return TokenHandler.getTwitchAccessToken().accessToken;
     }
     public async fetch(): Promise<string> {
+        
         const response = await axios.post('https://id.twitch.tv/oauth2/token', null, {
             params: {
                 client_id: this.clientId,
@@ -33,6 +34,7 @@ export default class TwitchAccessTokenHandler {
                 grant_type: this.grantType,
             },
         });
+        
         TokenHandler.setTwitchAccessToken({
             accessToken: response.data.access_token,
             expireTimestamp: Date.now() + response.data.expires_in * 1000,

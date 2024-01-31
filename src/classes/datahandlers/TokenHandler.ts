@@ -12,6 +12,8 @@ export default class TokenHandler {
     static files = {twitchaccesstoken: "twitchaccesstoken.json"}
 
     static init() {
+        const folder = path.join(dataFolder, `/shareddata`)
+        if (!fs.existsSync(folder)) fs.mkdirSync(folder)
         Object.entries(TokenHandler.files).forEach(([key, value])=>{
             const file = path.join(dataFolder, `/shareddata/${value}`)
             if (fs.existsSync(file)) return;
