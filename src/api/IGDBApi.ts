@@ -36,7 +36,6 @@ class IGDBApi {
     static baseUrl = 'https://api.igdb.com/v4';
 
     static async post(url: string, data: string) {
-        console.log(url,data)
         return await axios.post(
             url,
             data,
