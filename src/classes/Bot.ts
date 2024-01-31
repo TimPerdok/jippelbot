@@ -90,14 +90,18 @@ export default class DiscordBot {
 
         DiscordBot.client.on(Events.InteractionCreate, this.onInteractionCreate.bind(this));
         DiscordBot.client.login(token);
-
-        this.twitchAccessTokenHandler = new TwitchAccessTokenHandler(twitchToken)
-        DiscordBot.rescheduleGameReleaseAlerts()
-        DiscordBot.scheduleUpdateGames()
-
         this.listenstdin()
 
-        this.setInstance(this)
+        try {
+            this.twitchAccessTokenHandler = new TwitchAccessTokenHandler(twitchToken)
+            DiscordBot.rescheduleGameReleaseAlerts()
+            DiscordBot.scheduleUpdateGames()
+
+
+            this.setInstance(this)
+        } catch (error) {
+            console.error(error)
+        }
     }
     listenstdin() {
         const rl = readline.createInterface({
