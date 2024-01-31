@@ -17,6 +17,7 @@ const Bot_1 = __importDefault(require("../classes/Bot"));
 class IGDBApi {
     static post(url, data) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(url, data);
             return yield axios_1.default.post(url, data, {
                 headers: {
                     'Client-ID': Bot_1.default.getInstance().twitchAccessTokenHandler.clientId,
