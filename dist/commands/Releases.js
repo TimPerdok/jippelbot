@@ -54,9 +54,10 @@ class Subscribe extends Command_1.default {
                             value: game.nextReleaseDate ?
                                 `${IGDBApi_1.default.statusToString((_c = game === null || game === void 0 ? void 0 : game.nextReleaseStatus) !== null && _c !== void 0 ? _c : 0)} op <t:${Math.round(date.getTime() / 1000)}>
                             <t:${Math.round(date.getTime() / 1000)}:R>`
-                                : "Geen datum bekend"
+                                : "Geen datum bekend",
+                            inline: true
                         };
-                    }),
+                    }).slice(0, 25)
                 };
                 yield interaction.reply({ embeds: [embed] });
             }

@@ -130,7 +130,7 @@ class DataHandler {
             if (!serverdata[serverId])
                 return;
             const game = serverdata[serverId].find(g => g.name.toLowerCase() === gameName.toLowerCase());
-            serverdata[serverId] = serverdata[serverId].filter(g => g.name.toLowerCase() === gameName.toLowerCase());
+            serverdata[serverId] = serverdata[serverId].filter(g => g.name.toLowerCase() !== gameName.toLowerCase());
             DataHandler.write(DataHandler.files.gameSubscriptions, serverdata);
             Bot_1.default.rescheduleGameReleaseAlerts();
             return game;

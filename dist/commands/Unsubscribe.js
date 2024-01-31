@@ -29,11 +29,10 @@ class Subscribe extends Command_1.default {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const name = interaction.options.getString("name", true);
-            interaction.deferReply();
             const game = yield DataHandler_1.default.removeGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", name);
             if (!game)
-                return yield interaction.editReply("De server was niet geabonneerd op deze game.");
-            yield interaction.editReply(`De server is niet meer geabonneerd op ${game.name}.`);
+                return yield interaction.reply("De server was niet geabonneerd op deze game.");
+            yield interaction.reply(`De server is niet meer geabonneerd op ${game.name}.`);
         });
     }
 }

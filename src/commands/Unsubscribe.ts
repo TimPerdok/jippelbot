@@ -18,10 +18,9 @@ export default class Subscribe extends Command {
 
     async onCommand(interaction: ChatInputCommandInteraction) {
         const name = interaction.options.getString("name", true);
-        interaction.deferReply();
         const game = await DataHandler.removeGameSubscription(interaction.guildId ?? "", name);
-        if (!game) return await interaction.editReply("De server was niet geabonneerd op deze game.");
-        await interaction.editReply(`De server is niet meer geabonneerd op ${game.name}.`);
+        if (!game) return await interaction.reply("De server was niet geabonneerd op deze game.");
+        await interaction.reply(`De server is niet meer geabonneerd op ${game.name}.`);
     }
 
 }

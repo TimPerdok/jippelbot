@@ -37,9 +37,10 @@ export default class Subscribe extends Command {
                         value: game.nextReleaseDate ?
                             `${IGDBApi.statusToString(game?.nextReleaseStatus ?? 0)} op <t:${Math.round(date.getTime() / 1000)}>
                             <t:${Math.round(date.getTime() / 1000)}:R>`
-                            : "Geen datum bekend"
+                            : "Geen datum bekend",
+                        inline: true
                     }
-                }),
+                }).slice(0, 25)
             };
             await interaction.reply({ embeds: [embed] });    
         } catch (error) {
