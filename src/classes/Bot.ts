@@ -50,6 +50,11 @@ export default class DiscordBot {
         });
         this.serverRESTS = []
         this.commands = new Collection<string, Command>();
+
+        console.log(`------------------------`);
+        console.log(`JIPPELBOT VERSION 0.0.1`);
+        console.log(`------------------------`);
+
         console.log(`Logging in...`);
         DiscordBot.client.on('ready', async () => {
             console.log(`Logged in as ${DiscordBot.client?.user?.tag}`);
