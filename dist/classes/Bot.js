@@ -41,6 +41,9 @@ class DiscordBot {
         });
         this.serverRESTS = [];
         this.commands = new discord_js_1.Collection();
+        console.log(`------------------------`);
+        console.log(`JIPPELBOT VERSION 0.0.1`);
+        console.log(`------------------------`);
         console.log(`Logging in...`);
         DiscordBot.client.on('ready', () => __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
@@ -70,11 +73,16 @@ class DiscordBot {
         });
         DiscordBot.client.on(discord_js_1.Events.InteractionCreate, this.onInteractionCreate.bind(this));
         DiscordBot.client.login(token);
-        this.twitchAccessTokenHandler = new TwitchAccessToken_1.default(twitchToken);
-        DiscordBot.rescheduleGameReleaseAlerts();
-        DiscordBot.scheduleUpdateGames();
         this.listenstdin();
-        this.setInstance(this);
+        try {
+            this.twitchAccessTokenHandler = new TwitchAccessToken_1.default(twitchToken);
+            DiscordBot.rescheduleGameReleaseAlerts();
+            DiscordBot.scheduleUpdateGames();
+            this.setInstance(this);
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
     listenstdin() {
         const rl = readline_1.default.createInterface({

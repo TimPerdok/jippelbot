@@ -9,6 +9,9 @@ const Constants_1 = require("../../Constants");
 const dataFolder = require('path').resolve(Constants_1.ROOTDIR, '..');
 class TokenHandler {
     static init() {
+        const folder = path_1.default.join(dataFolder, `/shareddata`);
+        if (!fs_1.default.existsSync(folder))
+            fs_1.default.mkdirSync(folder);
         Object.entries(TokenHandler.files).forEach(([key, value]) => {
             const file = path_1.default.join(dataFolder, `/shareddata/${value}`);
             if (fs_1.default.existsSync(file))

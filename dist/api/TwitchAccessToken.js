@@ -22,7 +22,7 @@ class TwitchAccessTokenHandler {
     }
     getAccessToken() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.isExpired())
+            if (this.isExpired())
                 return yield this.fetch();
             return TokenHandler_1.default.getTwitchAccessToken().accessToken;
         });
