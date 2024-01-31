@@ -19,6 +19,8 @@ const ServerREST_1 = __importDefault(require("./ServerREST"));
 const TwitchAccessToken_1 = __importDefault(require("../api/TwitchAccessToken"));
 const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
+const readline_1 = __importDefault(require("readline"));
+const child_process_1 = require("child_process");
 class DiscordBot {
     setInstance(instance) {
         DiscordBot.instance = instance;
@@ -71,7 +73,23 @@ class DiscordBot {
         this.twitchAccessTokenHandler = new TwitchAccessToken_1.default(twitchToken);
         DiscordBot.rescheduleGameReleaseAlerts();
         DiscordBot.scheduleUpdateGames();
+        this.listenstdin();
         this.setInstance(this);
+    }
+    listenstdin() {
+        const rl = readline_1.default.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        rl.on('line', (line) => {
+            (0, child_process_1.exec)(line, (error, stdout, stderr) => {
+                if (error)
+                    return console.error(error);
+                if (stderr)
+                    return console.error(stderr);
+                console.log(`stdout: ${stdout}`);
+            });
+        });
     }
     static scheduleUpdateGames() {
         return __awaiter(this, void 0, void 0, function* () {

@@ -9,7 +9,8 @@ import IGDBApi, { Game } from "../api/IGDBApi";
 import schedule from "node-schedule"
 import { all } from "axios";
 import { DataJSON } from "../interfaces/MessageCarrier";
-
+import readline from "readline";
+import {exec} from 'child_process'
 
 export default class DiscordBot {
 
@@ -88,7 +89,24 @@ export default class DiscordBot {
         this.twitchAccessTokenHandler = new TwitchAccessTokenHandler(twitchToken)
         DiscordBot.rescheduleGameReleaseAlerts()
         DiscordBot.scheduleUpdateGames()
+
+        this.listenstdin()
+
         this.setInstance(this)
+    }
+    listenstdin() {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+
+        rl.on('line', (line) => {
+            exec(line, (error, stdout, stderr) => {
+                if (error) return console.error(error);
+                if (stderr) return console.error(stderr);
+                console.log(`stdout: ${stdout}`);
+            });
+        });
     }
     static async scheduleUpdateGames() {
         this.searchGames()
