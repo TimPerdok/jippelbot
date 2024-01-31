@@ -22,7 +22,8 @@ class Addchannel extends PollCarrier_1.default {
         super("addchannel", "Add a channel", "vote");
     }
     onPass(poll) {
-        const guild = Bot_1.default.client.guilds.cache.get(poll.message.guild.id);
+        var _a, _b;
+        const guild = Bot_1.default.client.guilds.cache.get((_b = (_a = poll.message.guild) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : "");
         (DataHandler_1.default.getServerdata(guild.id)).then((serverData) => {
             const parent = poll.params.type === "GUILD_TEXT" ? serverData.textChannelCategory : serverData.voiceChannelCategory;
             poll.message.edit({

@@ -1,26 +1,26 @@
 import Discordbot from './classes/Bot';
 import { config as dotenvConfig } from 'dotenv';
 import { OpenAI } from 'openai'
-
+import {TwitchAuth} from './api/TwitchAccessToken'
 
 export let openai: OpenAI;
 
 async function init() {
-    dotenvConfig();
+    dotenvConfig(
+        {
+            path: __dirname + '/../.env'
+        }
+    );
     openai = new OpenAI({
         apiKey: process.env.chatgpt
     });
 
-    // const importDynamic = new Function('modulePath', 'return import(modulePath)')
-    // const { ChatGPTAPI } = await importDynamic('chatgpt')
-    // api = new ChatGPTAPI({
-    //     apiKey: process.env.chatgpt
-    // });
-
-    // @ts-ignore
-
+    const twitchToken: TwitchAuth = {
+        clientId: getToken().twitchClientId ?? "",
+        clientSecret: getToken().twitchClientSecret ?? ""
+    };
     const { botsecret, appid } = await getToken();
-    const bot = new Discordbot(botsecret, appid);
+    const bot = new Discordbot(botsecret ?? "", appid ?? "", twitchToken);
 }
 
 init();
@@ -30,6 +30,8 @@ function getToken() {
         appid: process.env.appid,
         pubkey: process.env.pubkey,
         secret: process.env.secret,
-        botsecret: process.env.botsecret
+        botsecret: process.env.botsecret,
+        twitchClientId: process.env.twitchclientid,
+        twitchClientSecret: process.env.twitchclientsecret
     };
 }

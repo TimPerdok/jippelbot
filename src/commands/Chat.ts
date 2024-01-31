@@ -28,21 +28,21 @@ export default class Chat extends Command {
     }
     
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const message = interaction.options.getString('message')    
-        interaction.deferReply()
-        let res
-        try {
+        // const message = interaction.options.getString('message')    
+        // interaction.deferReply()
+        // let res
+        // try {
 
-            const chatCompletion = await openai.chat.completions.create({
-                messages: [{ role: 'user', content: `${prefix}${message}` }],
-                model: 'gpt-3.5-turbo',
-            });
+        //     const chatCompletion = await openai.chat.completions.create({
+        //         messages: [{ role: 'user', content: `${prefix}${message}` }],
+        //         model: 'gpt-3.5-turbo',
+        //     });
 	    	
-            previousMessageId = res?.id
-        } catch(e: any){
-            interaction.editReply(`Error: ${e.message}`)
-        }
-        interaction.editReply(`> _${message}_ \n\n${res?.text}`.substring(0, 2000))
+        //     previousMessageId = res?.id
+        // } catch(e: any){
+        //     interaction.editReply(`Error: ${e.message}`)
+        // }
+        // interaction.editReply(`> _${message}_ \n\n${res?.text}`.substring(0, 2000))
 	}
 
 }

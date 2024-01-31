@@ -18,7 +18,7 @@ export default class Addchannel extends PollSubcommand  {
 
     
     onPass(poll: Poll): void {
-        const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild.id) as Guild
+        const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild?.id ?? "") as Guild
         const userId: string = poll.params.userId
         const member: GuildMember = guild.members.cache.get(userId) as GuildMember
         

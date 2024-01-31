@@ -60,6 +60,8 @@ class DataHandler {
                     return console.log("Channel not found", channelId);
                 const message = yield channel.messages.fetch(messageId);
                 const guild = Bot_1.default.client.guilds.cache.get(channel.guild.id);
+                if (!guild)
+                    return;
                 const initiator = yield guild.members.fetch(initiatorId);
                 if (commandObject.name === command.split("/")[1])
                     pollsMap.set(key, new Poll_1.default({
@@ -106,10 +108,58 @@ class DataHandler {
     static addServerdata(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const serverdata = yield DataHandler.read(DataHandler.files.serverdata);
-            serverdata[id] = { id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false };
+            serverdata[id] = { id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false, botspamChannel: "" };
             DataHandler.write(DataHandler.files.serverdata, serverdata);
+        });
+    }
+    static addGameSubscription(serverId, game) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverdata = yield DataHandler.read(DataHandler.files.gameSubscriptions);
+            if (!serverdata[serverId])
+                serverdata[serverId] = [];
+            if (serverdata[serverId].find(g => g.id === game.id))
+                return;
+            serverdata[serverId].push(game);
+            DataHandler.write(DataHandler.files.gameSubscriptions, serverdata);
+            Bot_1.default.rescheduleGameReleaseAlerts();
+        });
+    }
+    static removeGameSubscription(serverId, gameName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverdata = yield DataHandler.read(DataHandler.files.gameSubscriptions);
+            if (!serverdata[serverId])
+                return;
+            const game = serverdata[serverId].find(g => g.name.toLowerCase() === gameName.toLowerCase());
+            serverdata[serverId] = serverdata[serverId].filter(g => g.name.toLowerCase() === gameName.toLowerCase());
+            DataHandler.write(DataHandler.files.gameSubscriptions, serverdata);
+            Bot_1.default.rescheduleGameReleaseAlerts();
+            return game;
+        });
+    }
+    static getGameSubscriptions(serverId) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverdata = yield DataHandler.read(DataHandler.files.gameSubscriptions);
+            return (_a = serverdata[serverId]) !== null && _a !== void 0 ? _a : [];
+        });
+    }
+    static getAllGameSubscriptions() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield DataHandler.read(DataHandler.files.gameSubscriptions);
+        });
+    }
+    static updateGameSubscriptions(serverdata) {
+        return __awaiter(this, void 0, void 0, function* () {
+            DataHandler.write(DataHandler.files.gameSubscriptions, serverdata);
+            Bot_1.default.rescheduleGameReleaseAlerts();
+        });
+    }
+    static getGameSubscription(serverId, name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverdata = yield DataHandler.read(DataHandler.files.gameSubscriptions);
+            return serverdata[serverId].find(game => game.name.toLowerCase() === name.toLowerCase());
         });
     }
 }
 exports.default = DataHandler;
-DataHandler.files = { polls: "polls.json", serverdata: "serverdata.json", config: "config.json" };
+DataHandler.files = { polls: "polls.json", serverdata: "serverdata.json", config: "config.json", gameSubscriptions: "gameSubscriptions.json" };

@@ -18,7 +18,7 @@ export default class Addchannel extends PollSubcommand  {
 
     
     onPass(poll: Poll): void {
-        const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild.id) as Guild
+        const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild?.id ?? "") as Guild
         (DataHandler.getServerdata(guild.id)).then((serverData: ServerdataJSON)=>{
             const parent = poll.params.type === "GUILD_TEXT" ? serverData.textChannelCategory : serverData.voiceChannelCategory
             poll.message.edit({

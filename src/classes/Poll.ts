@@ -47,7 +47,7 @@ export default class Poll implements MessageCarrier {
         this.command = command
         this.startTimestampUnix = startTimestampUnix ?? Math.round(Date.now() / 1000)
         this.votes = votes ?? new Map()
-        this.message = message
+        this.message = message as Message<boolean>
         this.params = params
         if (message) this.updateData()
         setTimeout(async () => {
@@ -119,7 +119,7 @@ export default class Poll implements MessageCarrier {
         return {
             embeds: [new EmbedBuilder()
                 .setColor(0x0099FF)
-                .setTitle(`${this.initiator.nickname ?? this.initiator.user.username} heeft een vote gestart.`)
+                .setTitle(`${this.initiator.nickname ?? this.initiator.user.username} heeft een vote gestart. (Minimaal 6 stemmen nodig of >50% na een dag)`)
                 .setDescription(this.question)
                 .addFields(
                     { name: 'Voor:', value: this.yesCount + "", inline: true },

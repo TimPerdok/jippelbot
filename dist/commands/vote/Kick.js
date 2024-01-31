@@ -21,7 +21,8 @@ class Addchannel extends PollCarrier_1.default {
         super("kick", "Kick a person", "vote");
     }
     onPass(poll) {
-        const guild = Bot_1.default.client.guilds.cache.get(poll.message.guild.id);
+        var _a, _b;
+        const guild = Bot_1.default.client.guilds.cache.get((_b = (_a = poll.message.guild) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : "");
         const userId = poll.params.userId;
         const member = guild.members.cache.get(userId);
         try {

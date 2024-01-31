@@ -28,7 +28,7 @@ export default class Summon extends Command {
     async onCommand(interaction: ChatInputCommandInteraction) {
         if (!(await DataHandler.getServerdata(interaction.guildId as string)).isDalleEnabled) return await interaction.reply("Joop zijn euro's zijn op. Momenteel kunnen er geen afbeeldingen gegenereerd worden.");
 
-        const prompt = interaction.options.getString("prompt");
+        const prompt = interaction.options.getString("prompt", true);
         interaction.deferReply();
 
         try {
@@ -39,13 +39,14 @@ export default class Summon extends Command {
                 size: "1024x1024",
                 response_format: "url"
             });
-            const imageBuffer = await (await fetch(response?.data?.[0].url)).arrayBuffer();
+            const imageBuffer = await (await fetch(response?.data?.[0].url ?? '')).arrayBuffer();
             await interaction.editReply({
                 content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. `,
                 files: [{ attachment:  Buffer.from(imageBuffer), name: "image.png" }]
             });
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
+            
             await interaction.editReply({ content: `Oh nee een error. \nPrompt was ${prompt}. \n${error?.error?.message}` });
         }
 

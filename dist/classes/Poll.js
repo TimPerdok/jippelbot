@@ -98,7 +98,7 @@ class Poll {
         return {
             embeds: [new discord_js_1.EmbedBuilder()
                     .setColor(0x0099FF)
-                    .setTitle(`${(_a = this.initiator.nickname) !== null && _a !== void 0 ? _a : this.initiator.user.username} heeft een vote gestart.`)
+                    .setTitle(`${(_a = this.initiator.nickname) !== null && _a !== void 0 ? _a : this.initiator.user.username} heeft een vote gestart. (Minimaal 6 stemmen nodig of >50% na een dag)`)
                     .setDescription(this.question)
                     .addFields({ name: 'Voor:', value: this.yesCount + "", inline: true }, { name: 'Tegen:', value: this.noCount + "", inline: true }, { name: 'Totaal:', value: this.percentageLabel + "", inline: true }, { name: 'Vote eindigt op:', value: this.getEndTime() })
             ], components: [

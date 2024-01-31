@@ -6,24 +6,23 @@ import DiscordBot from "../Bot";
 import { DataJSON } from "../../interfaces/MessageCarrier";
 import { ServerdataJSON, ServerdataJSONKey } from "../../types/ServerdataJSON";
 import { PollJSON } from "../../types/PollJSON";
-import Classfinder from "../Classfinder";
-import Subcommand from "../Subcommand";
 import { PollSubcommand } from "../../types/PollSubcommand";
 import { ROOTDIR } from "../../Constants";
+import { Game } from "../../api/IGDBApi";
 
-type DataFile<DataJSON> = {
-    [key: string]: DataJSON
+export type DataFile<DataJSON> = {
+    [guildId: string]: DataJSON
 }
 
 const dataFolder = require('path').resolve(ROOTDIR, '..')
 export default class DataHandler {
-
-    static files = {polls:"polls.json", serverdata: "serverdata.json", config: "config.json"}
+    
+    static files = {polls:"polls.json", serverdata: "serverdata.json", config: "config.json", gameSubscriptions: "gameSubscriptions.json"}
 
     static init() {
         Object.entries(DataHandler.files).forEach(([key, value])=>{
             const file = path.join(dataFolder, `/data/${value}`)
-            if (fs.existsSync(file)) return
+            if (fs.existsSync(file)) return;
             fs.writeFileSync(file, JSON.stringify({}))
         })
     }
@@ -43,7 +42,6 @@ export default class DataHandler {
         return polls[id]
     }
 
-
     static async getPolls(commandObject: PollSubcommand) {	
         const polls: DataFile<PollJSON> = await DataHandler.read(DataHandler.files.polls) as DataFile<PollJSON>
         const pollsMap = new Map<string, Poll>()
@@ -53,7 +51,8 @@ export default class DataHandler {
                 const channel: TextChannel = DiscordBot.client.channels.cache.get(channelId) as TextChannel
                 if (!channel) return console.log("Channel not found", channelId)
                 const message: Message = await channel.messages.fetch(messageId)
-                const guild: Guild = DiscordBot.client.guilds.cache.get(channel.guild.id)
+                const guild = DiscordBot.client.guilds.cache.get(channel.guild.id)
+                if (!guild) return;
                 const initiator: GuildMember = await guild.members.fetch(initiatorId)
                 if (commandObject.name === command.split("/")[1]) pollsMap.set(key, new Poll({
                     question,
@@ -98,10 +97,47 @@ export default class DataHandler {
     
     static async addServerdata(id: string) {
         const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
-        serverdata[id] = {id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false }
+        serverdata[id] = {id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false, botspamChannel: "" }
         DataHandler.write(DataHandler.files.serverdata, serverdata)
     }
 
-    
+    static async addGameSubscription(serverId: string, game: Game) {
+        const serverdata = await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>
+        if (!serverdata[serverId]) serverdata[serverId] = []
+        if (serverdata[serverId].find(g => g.id === game.id)) return;
+        serverdata[serverId].push(game);
+        DataHandler.write(DataHandler.files.gameSubscriptions, serverdata)
+        DiscordBot.rescheduleGameReleaseAlerts()
+    }
+
+    static async removeGameSubscription(serverId: string, gameName: string): Promise<Game> {        
+        const serverdata = await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>
+        if (!serverdata[serverId]) return;
+        const game = serverdata[serverId].find(g => g.name.toLowerCase() === gameName.toLowerCase())
+        serverdata[serverId] = serverdata[serverId].filter(g => g.name.toLowerCase() === gameName.toLowerCase())
+        DataHandler.write(DataHandler.files.gameSubscriptions, serverdata)
+        DiscordBot.rescheduleGameReleaseAlerts()
+        return game;
+    }
+
+
+    static async getGameSubscriptions(serverId: string): Promise<Game[]> {
+        const serverdata = await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>
+        return serverdata[serverId] ?? []
+    }
+
+    static async getAllGameSubscriptions(): Promise<DataFile<Game[]>> {
+        return await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>
+    }
+
+    static async updateGameSubscriptions(serverdata: DataFile<Game[]>) {
+        DataHandler.write(DataHandler.files.gameSubscriptions, serverdata)
+        DiscordBot.rescheduleGameReleaseAlerts()
+    }
+
+    static async getGameSubscription(serverId: string, name: string) {
+        const serverdata = await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>
+        return serverdata[serverId].find(game => game.name.toLowerCase() === name.toLowerCase())
+    }
 
 }

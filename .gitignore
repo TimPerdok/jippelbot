@@ -2,3 +2,6 @@
 creds.json
 creds.*.json
 *.env
+data/gameSubscriptions.json
+data/config.json
+shareddata/twitchaccesstoken.json
