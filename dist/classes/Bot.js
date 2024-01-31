@@ -67,10 +67,6 @@ class DiscordBot {
         //         }
         //     }
         // });
-        DiscordBot.client.on("guildCreate", guild => {
-            console.log("Joined a new guild: " + guild.name);
-            DataHandler_1.default.addServerdata(guild.id);
-        });
         DiscordBot.client.on(discord_js_1.Events.InteractionCreate, this.onInteractionCreate.bind(this));
         DiscordBot.client.login(token);
         this.listenstdin();

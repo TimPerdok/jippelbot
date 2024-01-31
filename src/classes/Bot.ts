@@ -82,11 +82,6 @@ export default class DiscordBot {
         //         }
         //     }
         // });
-        
-        DiscordBot.client.on("guildCreate", guild => {
-            console.log("Joined a new guild: " + guild.name);
-            DataHandler.addServerdata(guild.id)
-        })
 
         DiscordBot.client.on(Events.InteractionCreate, this.onInteractionCreate.bind(this));
         DiscordBot.client.login(token);

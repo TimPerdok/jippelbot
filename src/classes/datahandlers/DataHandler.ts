@@ -17,10 +17,12 @@ export type DataFile<DataJSON> = {
 const dataFolder = require('path').resolve(ROOTDIR, '..')
 export default class DataHandler {
     
-    static files = {polls:"polls.json", serverdata: "serverdata.json", config: "config.json", gameSubscriptions: "gameSubscriptions.json"}
+    static files = {polls:"polls.json", config: "config.json", gameSubscriptions: "gameSubscriptions.json"}
 
     static init() {
         Object.entries(DataHandler.files).forEach(([key, value])=>{
+            const folder = path.join(dataFolder, `/data`)
+            if (!fs.existsSync(folder)) fs.mkdirSync(folder)
             const file = path.join(dataFolder, `/data/${value}`)
             if (fs.existsSync(file)) return;
             fs.writeFileSync(file, JSON.stringify({}))
@@ -79,27 +81,32 @@ export default class DataHandler {
         DataHandler.write(DataHandler.files.polls, polls)
     }
 
+    static isDalleEnabled = false
+
     static async getServerdata(serverId: string): Promise<ServerdataJSON>{
-        const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
-        // @ts-ignore
-        return serverdata[serverId] as ServerdataJSON
+       return {
+            "230013544827977728": {
+                "voteChannel": "1040955433654943774",
+                "voiceChannelCategory": "360841239374987265",
+                "textChannelCategory": "360841063373471744",
+                "isDalleEnabled": this.isDalleEnabled,
+                "botspamChannel": "1041333197549613116"
+            },
+            "617369917158850590": {
+                "voteChannel": "1040971723299881010",
+                "voiceChannelCategory": "617369917158850593",
+                "textChannelCategory": "617369917158850591",
+                "isDalleEnabled": this.isDalleEnabled,
+                "botspamChannel": "617369917158850592"
+            }
+       }?.[serverId] ?? {} as ServerdataJSON
     }
 
 
-
-
-    static async setServerdata(serverId: string, mergeObject: Partial<ServerdataJSON>) {
-        const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
-        serverdata[serverId] = {...serverdata[serverId], ...mergeObject};
-        await DataHandler.write(DataHandler.files.serverdata, serverdata)
+    static async setDalleEnabled(enabled: boolean) {
+        this.isDalleEnabled = enabled
     }
 
-    
-    static async addServerdata(id: string) {
-        const serverdata: DataFile<ServerdataJSON> = await DataHandler.read(DataHandler.files.serverdata) as DataFile<ServerdataJSON>
-        serverdata[id] = {id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false, botspamChannel: "" }
-        DataHandler.write(DataHandler.files.serverdata, serverdata)
-    }
 
     static async addGameSubscription(serverId: string, game: Game) {
         const serverdata = await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>

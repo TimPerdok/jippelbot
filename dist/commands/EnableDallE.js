@@ -32,7 +32,7 @@ class Ping extends Command_1.default {
             const password = interaction.options.getString("password", true);
             if (password !== process.env.disablepass)
                 return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true });
-            yield DataHandler_1.default.setServerdata(interaction.guildId, { isDalleEnabled: enabled });
+            yield DataHandler_1.default.setDalleEnabled(enabled);
             yield interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true });
         });
     }

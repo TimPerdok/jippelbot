@@ -21,6 +21,9 @@ const dataFolder = require('path').resolve(Constants_1.ROOTDIR, '..');
 class DataHandler {
     static init() {
         Object.entries(DataHandler.files).forEach(([key, value]) => {
+            const folder = path_1.default.join(dataFolder, `/data`);
+            if (!fs_1.default.existsSync(folder))
+                fs_1.default.mkdirSync(folder);
             const file = path_1.default.join(dataFolder, `/data/${value}`);
             if (fs_1.default.existsSync(file))
                 return;
@@ -92,24 +95,29 @@ class DataHandler {
         });
     }
     static getServerdata(serverId) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            const serverdata = yield DataHandler.read(DataHandler.files.serverdata);
-            // @ts-ignore
-            return serverdata[serverId];
+            return (_b = (_a = {
+                "230013544827977728": {
+                    "voteChannel": "1040955433654943774",
+                    "voiceChannelCategory": "360841239374987265",
+                    "textChannelCategory": "360841063373471744",
+                    "isDalleEnabled": this.isDalleEnabled,
+                    "botspamChannel": "1041333197549613116"
+                },
+                "617369917158850590": {
+                    "voteChannel": "1040971723299881010",
+                    "voiceChannelCategory": "617369917158850593",
+                    "textChannelCategory": "617369917158850591",
+                    "isDalleEnabled": this.isDalleEnabled,
+                    "botspamChannel": "617369917158850592"
+                }
+            }) === null || _a === void 0 ? void 0 : _a[serverId]) !== null && _b !== void 0 ? _b : {};
         });
     }
-    static setServerdata(serverId, mergeObject) {
+    static setDalleEnabled(enabled) {
         return __awaiter(this, void 0, void 0, function* () {
-            const serverdata = yield DataHandler.read(DataHandler.files.serverdata);
-            serverdata[serverId] = Object.assign(Object.assign({}, serverdata[serverId]), mergeObject);
-            yield DataHandler.write(DataHandler.files.serverdata, serverdata);
-        });
-    }
-    static addServerdata(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const serverdata = yield DataHandler.read(DataHandler.files.serverdata);
-            serverdata[id] = { id: id, voteChannel: "", voiceChannelCategory: "", textChannelCategory: "", isDalleEnabled: false, botspamChannel: "" };
-            DataHandler.write(DataHandler.files.serverdata, serverdata);
+            this.isDalleEnabled = enabled;
         });
     }
     static addGameSubscription(serverId, game) {
@@ -163,4 +171,5 @@ class DataHandler {
     }
 }
 exports.default = DataHandler;
-DataHandler.files = { polls: "polls.json", serverdata: "serverdata.json", config: "config.json", gameSubscriptions: "gameSubscriptions.json" };
+DataHandler.files = { polls: "polls.json", config: "config.json", gameSubscriptions: "gameSubscriptions.json" };
+DataHandler.isDalleEnabled = false;

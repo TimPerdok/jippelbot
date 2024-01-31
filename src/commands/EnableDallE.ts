@@ -22,7 +22,7 @@ export default class Ping extends Command {
         const enabled = interaction.options.getBoolean("enabled", true);
         const password = interaction.options.getString("password", true);
         if (password !== process.env.disablepass) return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true })
-        await DataHandler.setServerdata(interaction.guildId as string, { isDalleEnabled: enabled })
+        await DataHandler.setDalleEnabled(enabled)
         await interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true })
     }
 
