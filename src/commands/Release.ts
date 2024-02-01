@@ -19,9 +19,13 @@ export default class Subscribe extends Command {
     async onCommand(interaction: ChatInputCommandInteraction) {
         try {
             const name = interaction.options.getString("name", true);
-            const game = (await DataHandler.getGameSubscriptions(interaction.guildId ?? ""))
+            let subscribed = true;
+            let game = (await DataHandler.getGameSubscriptions(interaction.guildId ?? ""))
                 .find(game => game.name.toLowerCase() == name.toLowerCase());
-            if (!game) return await interaction.reply("Geen game gevonden met deze naam.");
+            if (!game) {
+                game = await IGDBApi.searchGame(name);
+                subscribed = false;
+            }
             const coverUrl = (await IGDBApi.searchGameCover(game.cover))
             const embed = {
                 title: game.name,
@@ -41,6 +45,14 @@ export default class Subscribe extends Command {
                         value: game.nextReleaseStatus ?
                             IGDBApi.statusToString(game.nextReleaseStatus)
                             : "Geen status bekend"
+                    },
+                    {
+                        name: "Omschrijving",
+                        value: game?.userDescription
+                    },
+                    {
+                        name: "Subscribed",
+                        value: subscribed ? "Ja" : "Nee"
                     }
                 ],
                 url: game.url,

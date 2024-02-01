@@ -76,12 +76,11 @@ export default class ReleaseList extends Command {
     }
 
     toValue(game: Game) {
-        
         const date = new Date((game?.nextReleaseDate ?? 0) * 1000);
         const status = game?.currentReleaseStatus != undefined
             ? `(${IGDBApi.statusToString(game.currentReleaseStatus ?? 0)})`
             : "";
-        return `- ${game.name} ${status}
+        return `- [${game.name}](${game.url}) ${status}
             ${game?.nextReleaseDate ?
                 `<t:${Math.round(date.getTime() / 1000)}:R>`
                 : ""}

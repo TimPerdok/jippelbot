@@ -39,7 +39,7 @@ class Subscribe extends Command_1.default {
             game.userDescription = userDescription;
             yield DataHandler_1.default.addGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", game);
             const gameInData = yield DataHandler_1.default.getGameSubscription((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", name);
-            return gameInData ? yield interaction.editReply("De game is geupdatet.")
+            return gameInData ? yield interaction.editReply(`${game.name} is geupdatet.`)
                 : yield interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
         });
     }

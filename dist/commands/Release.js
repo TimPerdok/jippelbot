@@ -31,10 +31,13 @@ class Subscribe extends Command_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const name = interaction.options.getString("name", true);
-                const game = (yield DataHandler_1.default.getGameSubscriptions((_a = interaction.guildId) !== null && _a !== void 0 ? _a : ""))
+                let subscribed = true;
+                let game = (yield DataHandler_1.default.getGameSubscriptions((_a = interaction.guildId) !== null && _a !== void 0 ? _a : ""))
                     .find(game => game.name.toLowerCase() == name.toLowerCase());
-                if (!game)
-                    return yield interaction.reply("Geen game gevonden met deze naam.");
+                if (!game) {
+                    game = yield IGDBApi_1.default.searchGame(name);
+                    subscribed = false;
+                }
                 const coverUrl = (yield IGDBApi_1.default.searchGameCover(game.cover));
                 const embed = {
                     title: game.name,
@@ -54,6 +57,14 @@ class Subscribe extends Command_1.default {
                             value: game.nextReleaseStatus ?
                                 IGDBApi_1.default.statusToString(game.nextReleaseStatus)
                                 : "Geen status bekend"
+                        },
+                        {
+                            name: "Omschrijving",
+                            value: game === null || game === void 0 ? void 0 : game.userDescription
+                        },
+                        {
+                            name: "Subscribed",
+                            value: subscribed ? "Ja" : "Nee"
                         }
                     ],
                     url: game.url,

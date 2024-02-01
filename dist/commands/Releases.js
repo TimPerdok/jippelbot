@@ -79,7 +79,7 @@ class ReleaseList extends Command_1.default {
         const status = (game === null || game === void 0 ? void 0 : game.currentReleaseStatus) != undefined
             ? `(${IGDBApi_1.default.statusToString((_b = game.currentReleaseStatus) !== null && _b !== void 0 ? _b : 0)})`
             : "";
-        return `- ${game.name} ${status}
+        return `- [${game.name}](${game.url}) ${status}
             ${(game === null || game === void 0 ? void 0 : game.nextReleaseDate) ?
             `<t:${Math.round(date.getTime() / 1000)}:R>`
             : ""}

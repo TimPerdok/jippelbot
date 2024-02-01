@@ -29,7 +29,7 @@ export default class Subscribe extends Command {
         game.userDescription = userDescription;
         await DataHandler.addGameSubscription(interaction.guildId ?? "", game);
         const gameInData = await DataHandler.getGameSubscription(interaction.guildId ?? "", name);
-        return gameInData ? await interaction.editReply("De game is geupdatet.")
+        return gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
     }
 
