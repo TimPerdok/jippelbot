@@ -32,19 +32,17 @@ export default class ReleaseList extends Command {
             if (!games?.length) return await interaction.reply({ content: "Er zijn nog geen games toegevoegd.", ephemeral: true });
 
             const months = [...new Set<MonthMapping>(
-                games
+                this.uniqueArray(games
                     .filter(game => game?.nextReleaseDate != undefined)
                     .map(game => new Date((game.nextReleaseDate) * 1000))
-                    .map(date => {
-                        return {
-                            key: `${date.getMonth()}-${date.getFullYear()}`,
-                            value: date
-                        }
-                    })
+                    .map(date => ({
+                        key: `${date.getMonth()}-${date.getFullYear()}`,
+                        value: date
+                    }))
+                )
             )]
             .map(month => month.value)
             .sort((a, b) => a.getTime() - b.getTime())
-            
             
             let fields = [...months].map(month => {
                 const gamesOfMonth = games.filter(game => {
