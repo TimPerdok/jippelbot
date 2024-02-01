@@ -111,7 +111,11 @@ class DiscordBot {
                 return console.log("No games to update");
             const newGames = yield IGDBApi_1.default.searchGames(ids);
             const newAllGamesServer = Object.fromEntries(Object.entries(allGamesServer).map(([serverId, oldGames]) => {
-                return [serverId, oldGames.map((game) => newGames.find((newGame) => newGame.id === game.id) || game)];
+                const games = oldGames.map((game) => {
+                    const newGame = newGames.find((newGame) => newGame.id === game.id) || game;
+                    return Object.assign(Object.assign({}, game), newGame);
+                });
+                return [serverId, games];
             }));
             yield DataHandler_1.default.updateGameSubscriptions(newAllGamesServer);
             console.log("Updating game info done!");

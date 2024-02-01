@@ -122,13 +122,15 @@ class DataHandler {
     }
     static addGameSubscription(serverId, game) {
         return __awaiter(this, void 0, void 0, function* () {
-            const serverdata = yield DataHandler.read(DataHandler.files.gameSubscriptions);
-            if (!serverdata[serverId])
-                serverdata[serverId] = [];
-            if (serverdata[serverId].find(g => g.id === game.id))
-                return;
-            serverdata[serverId].push(game);
-            DataHandler.write(DataHandler.files.gameSubscriptions, serverdata);
+            const data = yield DataHandler.read(DataHandler.files.gameSubscriptions);
+            const serverData = (data === null || data === void 0 ? void 0 : data[serverId]) || [];
+            const existingGameIndex = serverData.findIndex(g => g.id === game.id);
+            if (existingGameIndex !== -1)
+                serverData[existingGameIndex] = Object.assign(Object.assign({}, serverData[existingGameIndex]), game);
+            else
+                serverData.push(game);
+            data[serverId] = serverData;
+            yield DataHandler.write(DataHandler.files.gameSubscriptions, data);
             Bot_1.default.rescheduleGameReleaseAlerts();
         });
     }

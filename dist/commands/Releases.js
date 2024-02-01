@@ -16,48 +16,48 @@ const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
 const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
-class Subscribe extends Command_1.default {
+class ReleaseList extends Command_1.default {
     get data() {
         return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description);
     }
     constructor() {
-        super("releases", "Laat de toegevoegde upcoming game releases zien");
+        super("releases", "Laat alle upcoming game releases zien");
     }
     onCommand(interaction) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let games = yield DataHandler_1.default.getGameSubscriptions((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "");
-                games = games === null || games === void 0 ? void 0 : games.sort((a, b) => {
-                    if (!a.nextReleaseDate && !b.nextReleaseDate)
-                        return 0;
-                    if (!a.nextReleaseDate)
-                        return 1;
-                    if (!b.nextReleaseDate)
-                        return -1;
-                    return a.nextReleaseDate - b.nextReleaseDate;
-                });
                 if (!(games === null || games === void 0 ? void 0 : games.length))
-                    return yield interaction.reply("Er zijn nog geen games toegevoegd.");
+                    return yield interaction.reply({ content: "Er zijn nog geen games toegevoegd.", ephemeral: true });
+                const months = new Set(games
+                    .filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined)
+                    .map(game => new Date((game.nextReleaseDate) * 1000))
+                    .sort((a, b) => a.getTime() - b.getTime())
+                    .filter((date, index, array) => index == 0 || date.getMonth() != array[index - 1].getMonth()));
+                let fields = [...months].map(month => {
+                    const gamesOfMonth = games.filter(game => {
+                        var _a;
+                        const date = new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
+                        return date.getMonth() == month.getMonth() && date.getFullYear() == month.getFullYear();
+                    });
+                    return {
+                        name: this.uppercaseFirstLetter(month.toLocaleString("nl-NL", { month: "long", year: "numeric" })),
+                        value: gamesOfMonth.map((game) => this.toValue(game)).join("\n"),
+                    };
+                });
+                const unknownDateField = {
+                    name: "Onbekend",
+                    value: games
+                        .filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) == undefined)
+                        .map(game => this.toValue(game)).join("\n"),
+                };
+                fields.push(unknownDateField);
                 const embed = {
                     title: "Upcoming game releases",
-                    fields: games.map((game, index) => {
-                        var _a, _b, _c;
-                        const date = new Date(((_a = game === null || game === void 0 ? void 0 : game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
-                        const status = (game === null || game === void 0 ? void 0 : game.currentReleaseStatus) != undefined
-                            ? `(${IGDBApi_1.default.statusToString((_b = game.currentReleaseStatus) !== null && _b !== void 0 ? _b : 0)})`
-                            : "";
-                        return {
-                            name: `${++index}. ${game.name} ${status}`,
-                            value: game.nextReleaseDate ?
-                                `${IGDBApi_1.default.statusToString((_c = game === null || game === void 0 ? void 0 : game.nextReleaseStatus) !== null && _c !== void 0 ? _c : 0)} op <t:${Math.round(date.getTime() / 1000)}>
-                            <t:${Math.round(date.getTime() / 1000)}:R>`
-                                : "Geen datum bekend",
-                            inline: true
-                        };
-                    }).slice(0, 25)
+                    fields
                 };
                 yield interaction.reply({ embeds: [embed] });
             }
@@ -66,5 +66,21 @@ class Subscribe extends Command_1.default {
             }
         });
     }
+    toValue(game) {
+        var _a, _b;
+        const date = new Date(((_a = game === null || game === void 0 ? void 0 : game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
+        const status = (game === null || game === void 0 ? void 0 : game.currentReleaseStatus) != undefined
+            ? `(${IGDBApi_1.default.statusToString((_b = game.currentReleaseStatus) !== null && _b !== void 0 ? _b : 0)})`
+            : "";
+        return `- ${game.name} ${status}
+            ${(game === null || game === void 0 ? void 0 : game.nextReleaseDate) ?
+            `<t:${Math.round(date.getTime() / 1000)}:R>`
+            : ""}
+                ${(game === null || game === void 0 ? void 0 : game.userDescription) ?
+            `  - ${game.userDescription}` : ""}`;
+    }
+    uppercaseFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 }
-exports.default = Subscribe;
+exports.default = ReleaseList;

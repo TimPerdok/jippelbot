@@ -21,7 +21,8 @@ class Subscribe extends Command_1.default {
         return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("name").setDescription("De naam van de game").setRequired(true));
+            .addStringOption(option => option.setName("name").setDescription("De naam van de game").setRequired(true))
+            .addStringOption(option => option.setName("description").setDescription("Een beschrijving van de game").setRequired(false));
     }
     constructor() {
         super("subscribe", "Voeg een game toe om naar uit te kijken.");
@@ -30,15 +31,16 @@ class Subscribe extends Command_1.default {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const name = interaction.options.getString("name", true);
-            const gameInData = yield DataHandler_1.default.getGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", name);
-            if (gameInData)
-                return yield interaction.reply("Deze game is al toegevoegd.");
+            const userDescription = interaction.options.getString("description", false);
             interaction.deferReply();
             const game = yield IGDBApi_1.default.searchGame(name);
             if (!game)
                 return yield interaction.editReply("Geen game gevonden met deze naam die nog uit moet komen.");
-            yield DataHandler_1.default.addGameSubscription((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", game);
-            yield interaction.editReply(`Je hebt de server geabonneerd op ${game.name}.`);
+            game.userDescription = userDescription;
+            yield DataHandler_1.default.addGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", game);
+            const gameInData = yield DataHandler_1.default.getGameSubscription((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", name);
+            return gameInData ? yield interaction.editReply("De game is geupdatet.")
+                : yield interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
         });
     }
 }
