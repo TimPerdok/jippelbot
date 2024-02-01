@@ -2,32 +2,36 @@ import { ChatInputCommandInteraction, Client, Embed, EmbedField, SlashCommandBui
 import Command from "../classes/Command";
 import DataHandler from "../classes/datahandlers/DataHandler";
 import IGDBApi, { Game } from "../api/IGDBApi";
-import { gameToValue, uniqueArray, uppercaseFirstLetter } from "../util/util";
+import { gameToValue as gameToValue, uniqueArray, uppercaseFirstLetter } from "../util/util";
 
-type MonthMapping = {
-    key: string,
-    value: Date
-}
-export default class ReleaseList extends Command {
+export default class ReleaseMonth extends Command {
+
+    months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December" ];
 
     get data(): SlashCommandBuilder {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
+            .addStringOption(option => option.setName("month").setDescription("Een maand").setRequired(true).setChoices(...this.months.map(month => ({ name: month, value: month }))))
+            .addNumberOption(option => option.setName("year").setDescription("Een jaar").setRequired(false)) as SlashCommandBuilder;
+            
     }
 
     constructor() {
-        super("releases", "Laat alle upcoming game releases zien")
+        super("releasemonth", "Bekijk een maand met releases.")
     }
-
-
 
     async onCommand(interaction: ChatInputCommandInteraction) {
         try {
-            let games = await DataHandler.getGameSubscriptions(interaction.guildId ?? "");
-            if (!games?.length) return await interaction.reply({ content: "Er zijn nog geen games toegevoegd.", ephemeral: true });
+            const month = interaction.options.getString("month", true);
+            const year = interaction.options.getNumber("year", false) ?? new Date().getFullYear();
+            let subscribed = true;
+            let games: Game[] = (await DataHandler.getGameSubscriptions(interaction.guildId ?? ""))
+                .filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == this.months.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);
 
-            const months = [...new Set<MonthMapping>(
+            if (!games?.length) return await interaction.reply({ content: "Deze maand heeft nog geen releases", ephemeral: true });
+
+            const months = [...new Set<{key:string,value:Date}>(
                 uniqueArray(games
                     .filter(game => game?.nextReleaseDate != undefined)
                     .map(game => new Date((game.nextReleaseDate) * 1000))
@@ -48,7 +52,7 @@ export default class ReleaseList extends Command {
                 let exceededCount = 0;
                 const truncated: string[] = []
                 gamesOfMonth.forEach((game) => {
-                    if (truncated.join("\n").length > 950) return exceededCount++;
+                    if (truncated.join("\n").length > 1000) return exceededCount++;
                     truncated.push(gameToValue(game));
                 })
                 if (exceededCount > 0) truncated.push(`& ${exceededCount} meer`)
@@ -58,32 +62,16 @@ export default class ReleaseList extends Command {
                     inline: false
                 }
             })
-
-            let exceededCount = 0;
-            const truncated: string[] = []
-            games.filter(game => game?.nextReleaseDate == undefined)
-                .forEach((game) => {
-                    if (truncated.join("\n").length > 950) return exceededCount++;
-                    truncated.push(gameToValue(game));
-                })
-            if (exceededCount > 0) truncated.push(`& ${exceededCount} meer`)
-            const unknownDateField: EmbedField = {
-                name: "Onbekend",
-                value: truncated.join("\n"),
-                inline: false
-            };
-                
-            fields.push(unknownDateField);
+            
             const embed = {
-                title: "Upcoming game releases",
+                title: `Releases`,
                 fields
-            };
-            await interaction.reply({ embeds: [embed] });
+            } as Embed;
+            await interaction.reply({ embeds: [embed] });    
         } catch (error) {
             interaction.reply(`Er is iets fout gegaan. ${error}`);
         }
-
+        
     }
 
 }
-
