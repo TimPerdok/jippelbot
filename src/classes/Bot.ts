@@ -138,10 +138,10 @@ export default class DiscordBot {
     }
 
     static async rescheduleGameReleaseAlerts() {
-        console.log("Scheduling game releases...")
+        console.log("Rescheduling game releases...")
         await schedule.gracefulShutdown();
         await this.scheduleGameReleaseAlerts();
-        console.log("Scheduling game releases done!")
+        console.log("Rescheduling game releases done!")
     }
 
     static async scheduleGameReleaseAlerts() {

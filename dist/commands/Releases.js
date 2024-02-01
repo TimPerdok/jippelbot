@@ -25,6 +25,9 @@ class ReleaseList extends Command_1.default {
     constructor() {
         super("releases", "Laat alle upcoming game releases zien");
     }
+    uniqueArray(array) {
+        return array.filter((obj, index, self) => index === self.findIndex((o) => o.key === obj.key));
+    }
     onCommand(interaction) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -32,11 +35,17 @@ class ReleaseList extends Command_1.default {
                 let games = yield DataHandler_1.default.getGameSubscriptions((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "");
                 if (!(games === null || games === void 0 ? void 0 : games.length))
                     return yield interaction.reply({ content: "Er zijn nog geen games toegevoegd.", ephemeral: true });
-                const months = new Set(games
-                    .filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined)
-                    .map(game => new Date((game.nextReleaseDate) * 1000))
-                    .sort((a, b) => a.getTime() - b.getTime())
-                    .filter((date, index, array) => index == 0 || date.getMonth() != array[index - 1].getMonth()));
+                const months = [...new Set(games
+                        .filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined)
+                        .map(game => new Date((game.nextReleaseDate) * 1000))
+                        .map(date => {
+                        return {
+                            key: `${date.getMonth()}-${date.getFullYear()}`,
+                            value: date
+                        };
+                    }))]
+                    .map(month => month.value)
+                    .sort((a, b) => a.getTime() - b.getTime());
                 let fields = [...months].map(month => {
                     const gamesOfMonth = games.filter(game => {
                         var _a;

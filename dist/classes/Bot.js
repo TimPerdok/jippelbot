@@ -123,10 +123,10 @@ class DiscordBot {
     }
     static rescheduleGameReleaseAlerts() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("Scheduling game releases...");
+            console.log("Rescheduling game releases...");
             yield node_schedule_1.default.gracefulShutdown();
             yield this.scheduleGameReleaseAlerts();
-            console.log("Scheduling game releases done!");
+            console.log("Rescheduling game releases done!");
         });
     }
     static scheduleGameReleaseAlerts() {

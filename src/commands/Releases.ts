@@ -3,6 +3,10 @@ import Command from "../classes/Command";
 import DataHandler from "../classes/datahandlers/DataHandler";
 import IGDBApi, { Game } from "../api/IGDBApi";
 
+type MonthMapping = {
+    key: string,
+    value: Date
+}
 export default class ReleaseList extends Command {
 
     get data(): SlashCommandBuilder {
@@ -15,17 +19,33 @@ export default class ReleaseList extends Command {
         super("releases", "Laat alle upcoming game releases zien")
     }
 
+    uniqueArray(array) {
+        return array.filter((obj, index, self) =>
+            index === self.findIndex((o) => o.key === obj.key)
+        );
+    }
+
+
     async onCommand(interaction: ChatInputCommandInteraction) {
         try {
             let games = await DataHandler.getGameSubscriptions(interaction.guildId ?? "");
             if (!games?.length) return await interaction.reply({ content: "Er zijn nog geen games toegevoegd.", ephemeral: true });
-            const months = new Set<Date>(
+
+            const months = [...new Set<MonthMapping>(
                 games
                     .filter(game => game?.nextReleaseDate != undefined)
                     .map(game => new Date((game.nextReleaseDate) * 1000))
-                    .sort((a, b) => a.getTime() - b.getTime())
-                    .filter((date, index, array) => index == 0 || date.getMonth() != array[index - 1].getMonth())
-            );
+                    .map(date => {
+                        return {
+                            key: `${date.getMonth()}-${date.getFullYear()}`,
+                            value: date
+                        }
+                    })
+            )]
+            .map(month => month.value)
+            .sort((a, b) => a.getTime() - b.getTime())
+            
+            
             let fields = [...months].map(month => {
                 const gamesOfMonth = games.filter(game => {
                     const date = new Date((game.nextReleaseDate ?? 0) * 1000);
