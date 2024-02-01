@@ -9,7 +9,8 @@ export default class Subscribe extends Command {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("name").setDescription("De naam van de game").setRequired(true)) as SlashCommandBuilder;
+            .addStringOption(option => option.setName("name").setDescription("De naam van de game").setRequired(true))
+            .addStringOption(option => option.setName("description").setDescription("Een beschrijving van de game").setRequired(false)) as SlashCommandBuilder;
     }
 
     constructor() {
@@ -18,16 +19,18 @@ export default class Subscribe extends Command {
 
     async onCommand(interaction: ChatInputCommandInteraction) {
         const name = interaction.options.getString("name", true);
-
-        const gameInData = await DataHandler.getGameSubscription(interaction.guildId ?? "", name);
-        if (gameInData) return await interaction.reply("Deze game is al toegevoegd.");
+        const userDescription = interaction.options.getString("description", false);
 
         interaction.deferReply();
 
         const game = await IGDBApi.searchGame(name);
         if (!game) return await interaction.editReply("Geen game gevonden met deze naam die nog uit moet komen.");
+
+        game.userDescription = userDescription;
         await DataHandler.addGameSubscription(interaction.guildId ?? "", game);
-        await interaction.editReply(`Je hebt de server geabonneerd op ${game.name}.`);
+        const gameInData = await DataHandler.getGameSubscription(interaction.guildId ?? "", name);
+        return gameInData ? await interaction.editReply("De game is geupdatet.")
+            : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
     }
 
 }

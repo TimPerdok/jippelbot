@@ -124,7 +124,14 @@ export default class DiscordBot {
         if (!ids.length) return console.log("No games to update");
         const newGames = await IGDBApi.searchGames(ids);
         const newAllGamesServer = Object.fromEntries(Object.entries(allGamesServer).map(([serverId, oldGames]: [string, Game[]]) => {
-            return [serverId, oldGames.map((game) => newGames.find((newGame) => newGame.id === game.id) || game)] as [string, Game[]];
+            const games = oldGames.map((game) => {
+                const newGame = newGames.find((newGame) => newGame.id === game.id) || game
+                return {
+                    ...game,
+                    ...newGame
+                }
+            })
+            return [serverId, games] as [string, Game[]];
         })) as DataFile<Game[]>;
         await DataHandler.updateGameSubscriptions(newAllGamesServer);
         console.log("Updating game info done!")

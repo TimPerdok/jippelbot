@@ -10,6 +10,7 @@ export type Game = {
     nextReleaseDate?: number
     nextReleaseStatus?: number
     cover: number
+    userDescription?: string
 }
 
 export type ReleaseDate = {
