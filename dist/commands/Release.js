@@ -72,7 +72,7 @@ class Subscribe extends Command_1.default {
                         url: `https:${coverUrl}`
                     }
                 };
-                yield interaction.reply({ embeds: [embed] });
+                yield interaction.reply({ embeds: [embed], ephemeral: true });
             }
             catch (error) {
                 interaction.reply(`Er is iets fout gegaan. ${error}`);

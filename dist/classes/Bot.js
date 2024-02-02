@@ -21,6 +21,7 @@ const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
 const readline_1 = __importDefault(require("readline"));
 const child_process_1 = require("child_process");
+const util_1 = require("../util/util");
 class DiscordBot {
     setInstance(instance) {
         DiscordBot.instance = instance;
@@ -97,11 +98,11 @@ class DiscordBot {
     }
     static scheduleUpdateGames() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.searchGames();
-            node_schedule_1.default.scheduleJob('0 0 * * *', this.searchGames);
+            this.updateGameSubscriptions();
+            node_schedule_1.default.scheduleJob('0 0 * * *', this.updateGameSubscriptions);
         });
     }
-    static searchGames() {
+    static updateGameSubscriptions() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("Updating game info...");
             const allGamesServer = yield DataHandler_1.default.getAllGameSubscriptions();
@@ -119,6 +120,29 @@ class DiscordBot {
             }));
             yield DataHandler_1.default.updateGameSubscriptions(newAllGamesServer);
             console.log("Updating game info done!");
+            yield this.updateMessages();
+        });
+    }
+    static updateMessages() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let allGames = yield DataHandler_1.default.getAllGameSubscriptions();
+            Object.entries(allGames).forEach(([serverId, games]) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const serverdata = yield DataHandler_1.default.getServerdata(serverId);
+                    const embed = yield (0, util_1.createEmbed)(games, serverId);
+                    const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel);
+                    if (!channel)
+                        return;
+                    const messages = yield channel.messages.fetch({ limit: 25 });
+                    const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length > 0);
+                    message
+                        ? message.edit({ embeds: [embed] })
+                        : channel.send({ embeds: [embed] });
+                }
+                catch (error) {
+                    console.error(error);
+                }
+            }));
         });
     }
     static rescheduleGameReleaseAlerts() {
@@ -137,13 +161,16 @@ class DiscordBot {
                     if (!game.nextReleaseDate)
                         return;
                     node_schedule_1.default.scheduleJob(new Date(game.nextReleaseDate * 1000), () => __awaiter(this, void 0, void 0, function* () {
-                        const botspamChannel = (yield DataHandler_1.default.getServerdata(serverId)).botspamChannel;
-                        if (!botspamChannel)
+                        const releaseChannel = (yield DataHandler_1.default.getServerdata(serverId)).releaseChannel;
+                        if (!releaseChannel)
                             return;
-                        const channel = DiscordBot.client.channels.cache.get(botspamChannel);
+                        const channel = DiscordBot.client.channels.cache.get(releaseChannel);
                         if (!channel)
                             return;
-                        channel.send(`@everyone ${game.name} is gereleased!`);
+                        const messages = yield channel.messages.fetch({ limit: 25 });
+                        const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length == 0);
+                        message.delete();
+                        channel.send({ content: `**${game.name} is gereleased!**` });
                     }));
                 });
             });

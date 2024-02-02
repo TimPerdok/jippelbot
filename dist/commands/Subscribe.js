@@ -16,6 +16,7 @@ const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
 const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
+const Bot_1 = __importDefault(require("../classes/Bot"));
 class Subscribe extends Command_1.default {
     get data() {
         return new discord_js_1.SlashCommandBuilder()
@@ -32,15 +33,16 @@ class Subscribe extends Command_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const name = interaction.options.getString("name", true);
             const userDescription = interaction.options.getString("description", false);
-            interaction.deferReply();
+            interaction.deferReply({ ephemeral: true });
             const game = yield IGDBApi_1.default.searchGame(name);
             if (!game)
                 return yield interaction.editReply("Geen game gevonden met deze naam die nog uit moet komen.");
             game.userDescription = userDescription;
             yield DataHandler_1.default.addGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", game);
             const gameInData = yield DataHandler_1.default.getGameSubscription((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", name);
-            return gameInData ? yield interaction.editReply(`${game.name} is geupdatet.`)
+            gameInData ? yield interaction.editReply(`${game.name} is geupdatet.`)
                 : yield interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
+            yield Bot_1.default.updateMessages();
         });
     }
 }

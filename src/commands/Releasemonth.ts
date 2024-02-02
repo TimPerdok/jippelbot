@@ -2,17 +2,17 @@ import { ChatInputCommandInteraction, Client, Embed, EmbedField, SlashCommandBui
 import Command from "../classes/Command";
 import DataHandler from "../classes/datahandlers/DataHandler";
 import IGDBApi, { Game } from "../api/IGDBApi";
-import { gameToValue as gameToValue, uniqueArray, uppercaseFirstLetter } from "../util/util";
+import { MONTHS, gameToValue as gameToValue, uniqueArray, uppercaseFirstLetter } from "../util/util";
 
 export default class ReleaseMonth extends Command {
 
-    months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December" ];
+    
 
     get data(): SlashCommandBuilder {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("month").setDescription("Een maand").setRequired(true).setChoices(...this.months.map(month => ({ name: month, value: month }))))
+            .addStringOption(option => option.setName("month").setDescription("Een maand").setRequired(true).setChoices(...MONTHS.map(month => ({ name: month, value: month }))))
             .addNumberOption(option => option.setName("year").setDescription("Een jaar").setRequired(false)) as SlashCommandBuilder;
             
     }
@@ -25,9 +25,8 @@ export default class ReleaseMonth extends Command {
         try {
             const month = interaction.options.getString("month", true);
             const year = interaction.options.getNumber("year", false) ?? new Date().getFullYear();
-            let subscribed = true;
             let games: Game[] = (await DataHandler.getGameSubscriptions(interaction.guildId ?? ""))
-                .filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == this.months.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);
+                .filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == MONTHS.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);
 
             if (!games?.length) return await interaction.reply({ content: "Deze maand heeft nog geen releases", ephemeral: true });
 
@@ -67,7 +66,7 @@ export default class ReleaseMonth extends Command {
                 title: `Releases`,
                 fields
             } as Embed;
-            await interaction.reply({ embeds: [embed] });    
+            await interaction.reply({ embeds: [embed], ephemeral: true });    
         } catch (error) {
             interaction.reply(`Er is iets fout gegaan. ${error}`);
         }

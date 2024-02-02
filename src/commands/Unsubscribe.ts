@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discor
 import Command from "../classes/Command";
 import DataHandler from "../classes/datahandlers/DataHandler";
 import IGDBApi from "../api/IGDBApi";
+import DiscordBot from "../classes/Bot";
 
 export default class Subscribe extends Command {
 
@@ -20,7 +21,8 @@ export default class Subscribe extends Command {
         const name = interaction.options.getString("name", true);
         const game = await DataHandler.removeGameSubscription(interaction.guildId ?? "", name);
         if (!game) return await interaction.reply("De server was niet geabonneerd op deze game.");
-        await interaction.reply(`De server is niet meer geabonneerd op ${game.name}.`);
+        await interaction.reply({content: `De server is niet meer geabonneerd op ${game.name}.`, ephemeral: true});
+        await DiscordBot.updateMessages()
     }
 
 }

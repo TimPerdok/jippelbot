@@ -3,7 +3,7 @@ export type ServerdataJSON = {
     voiceChannelCategory: string
     textChannelCategory: string
     isDalleEnabled: boolean
-    botspamChannel: string
+    releaseChannel: string
 }
 
 export type ServerdataJSONKey = keyof ServerdataJSON

@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction, Message, TextChannel } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction, Message, TextChannel, Embed, EmbedField } from "discord.js";
 import { PollJSON } from "../types/PollJSON";
 import Classfinder from "./Classfinder";
 import Command from "./Command";
@@ -11,6 +11,7 @@ import { all } from "axios";
 import { DataJSON } from "../interfaces/MessageCarrier";
 import readline from "readline";
 import {exec} from 'child_process'
+import { uniqueArray, gameToValue, uppercaseFirstLetter, MONTHS, createEmbed } from "../util/util";
 
 export default class DiscordBot {
 
@@ -113,10 +114,10 @@ export default class DiscordBot {
         });
     }
     static async scheduleUpdateGames() {
-        this.searchGames()
-        schedule.scheduleJob('0 0 * * *', this.searchGames)
+        this.updateGameSubscriptions()
+        schedule.scheduleJob('0 0 * * *', this.updateGameSubscriptions)
     }
-    static async searchGames() {
+    static async updateGameSubscriptions() {
         console.log("Updating game info...")
         const allGamesServer = await DataHandler.getAllGameSubscriptions();
         const allGames = Object.values(allGamesServer);
@@ -135,7 +136,31 @@ export default class DiscordBot {
         })) as DataFile<Game[]>;
         await DataHandler.updateGameSubscriptions(newAllGamesServer);
         console.log("Updating game info done!")
+
+        await this.updateMessages()
+
     }
+
+    static async updateMessages() {
+        let allGames = await DataHandler.getAllGameSubscriptions();
+        Object.entries(allGames).forEach(async ([serverId, games]: [string, Game[]]) => {
+            try {
+                const serverdata = await DataHandler.getServerdata(serverId);
+                const embed = await createEmbed(games, serverId)
+                const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
+                if (!channel) return;
+                const messages = await channel.messages.fetch({ limit: 25 })
+                const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length > 0)
+                message
+                    ? message.edit({ embeds: [embed] })
+                    : channel.send({ embeds: [embed] })
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    }
+
+
 
     static async rescheduleGameReleaseAlerts() {
         console.log("Rescheduling game releases...")
@@ -150,11 +175,14 @@ export default class DiscordBot {
             games.forEach((game) => {
                 if (!game.nextReleaseDate) return;
                 schedule.scheduleJob(new Date(game.nextReleaseDate * 1000), async () => {
-                    const botspamChannel = (await DataHandler.getServerdata(serverId)).botspamChannel;
-                    if (!botspamChannel) return;
-                    const channel = DiscordBot.client.channels.cache.get(botspamChannel) as TextChannel;
+                    const releaseChannel = (await DataHandler.getServerdata(serverId)).releaseChannel;
+                    if (!releaseChannel) return;
+                    const channel = DiscordBot.client.channels.cache.get(releaseChannel) as TextChannel;
                     if (!channel) return;
-                    channel.send(`@everyone ${game.name} is gereleased!`);
+                    const messages = await channel.messages.fetch({ limit: 25 })
+                    const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length == 0)
+                    message.delete()
+                    channel.send({ content: `**${game.name} is gereleased!**` })
                 })
             })
         })

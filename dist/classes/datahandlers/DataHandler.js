@@ -98,19 +98,21 @@ class DataHandler {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             return (_b = (_a = {
+                // jippel:
                 "230013544827977728": {
                     "voteChannel": "1040955433654943774",
                     "voiceChannelCategory": "360841239374987265",
                     "textChannelCategory": "360841063373471744",
                     "isDalleEnabled": this.isDalleEnabled,
-                    "botspamChannel": "1041333197549613116"
+                    "releaseChannel": "1202969536119185479"
                 },
+                // onmo test server:
                 "617369917158850590": {
                     "voteChannel": "1040971723299881010",
                     "voiceChannelCategory": "617369917158850593",
                     "textChannelCategory": "617369917158850591",
                     "isDalleEnabled": this.isDalleEnabled,
-                    "botspamChannel": "617369917158850592"
+                    "releaseChannel": "617369917158850592"
                 }
             }) === null || _a === void 0 ? void 0 : _a[serverId]) !== null && _b !== void 0 ? _b : {};
         });

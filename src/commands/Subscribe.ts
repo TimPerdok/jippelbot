@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discor
 import Command from "../classes/Command";
 import DataHandler from "../classes/datahandlers/DataHandler";
 import IGDBApi from "../api/IGDBApi";
+import DiscordBot from "../classes/Bot";
 
 export default class Subscribe extends Command {
 
@@ -21,7 +22,7 @@ export default class Subscribe extends Command {
         const name = interaction.options.getString("name", true);
         const userDescription = interaction.options.getString("description", false);
 
-        interaction.deferReply();
+        interaction.deferReply({ ephemeral: true });
 
         const game = await IGDBApi.searchGame(name);
         if (!game) return await interaction.editReply("Geen game gevonden met deze naam die nog uit moet komen.");
@@ -29,8 +30,10 @@ export default class Subscribe extends Command {
         game.userDescription = userDescription;
         await DataHandler.addGameSubscription(interaction.guildId ?? "", game);
         const gameInData = await DataHandler.getGameSubscription(interaction.guildId ?? "", name);
-        return gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
+        gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
+
+        await DiscordBot.updateMessages()
     }
 
 }

@@ -60,7 +60,7 @@ export default class Subscribe extends Command {
                     url: `https:${coverUrl}`
                 }
             } as Embed;
-            await interaction.reply({ embeds: [embed] });    
+            await interaction.reply({ embeds: [embed], ephemeral: true});    
         } catch (error) {
             interaction.reply(`Er is iets fout gegaan. ${error}`);
         }

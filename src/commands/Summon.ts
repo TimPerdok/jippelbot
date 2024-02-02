@@ -20,7 +20,6 @@ export default class Summon extends Command {
     
     constructor() {
         super("summon", "Summon iemand");
-        
     }
 
     
