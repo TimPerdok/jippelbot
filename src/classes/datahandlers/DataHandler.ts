@@ -81,7 +81,7 @@ export default class DataHandler {
         DataHandler.write(DataHandler.files.polls, polls)
     }
 
-    static isDalleEnabled = false
+    static isDalleEnabled = true
 
     static async getServerdata(serverId: string): Promise<ServerdataJSON> {
         return {

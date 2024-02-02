@@ -176,4 +176,4 @@ class DataHandler {
 }
 exports.default = DataHandler;
 DataHandler.files = { polls: "polls.json", config: "config.json", gameSubscriptions: "gameSubscriptions.json" };
-DataHandler.isDalleEnabled = false;
+DataHandler.isDalleEnabled = true;
