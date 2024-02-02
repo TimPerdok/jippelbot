@@ -135,10 +135,19 @@ export default class DiscordBot {
             return [serverId, games] as [string, Game[]];
         })) as DataFile<Game[]>;
         await DataHandler.updateGameSubscriptions(newAllGamesServer);
-        console.log("Updating game info done!")
+
+        await this.removeOldGames(newAllGamesServer)
 
         await this.updateMessages()
 
+        console.log("Updating game info done!")
+
+
+    }
+
+    static removeOldGames(newAllGamesServer: DataFile<Game[]>) {
+        const newGames = Object.entries(newAllGamesServer).map(([serverId, games]) => ([serverId, games.filter((game) => game.nextReleaseDate && game.nextReleaseDate > Math.floor(Date.now() / 1000))])) as [string, Game[]][];
+        return DataHandler.updateGameSubscriptions(Object.fromEntries(newGames) as DataFile<Game[]>)
     }
 
     static async updateMessages() {
@@ -146,7 +155,7 @@ export default class DiscordBot {
         Object.entries(allGames).forEach(async ([serverId, games]: [string, Game[]]) => {
             try {
                 const serverdata = await DataHandler.getServerdata(serverId);
-                const embed = await createEmbed(games, serverId)
+                const embed = await createEmbed(games)
                 const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
                 if (!channel) return;
                 const messages = await channel.messages.fetch({ limit: 25 })

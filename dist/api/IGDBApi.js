@@ -74,7 +74,22 @@ class IGDBApi {
                 game.nextReleaseDate = releaseDate.date;
                 game.nextReleaseStatus = releaseDate.status;
             }
+            const steamUrl = yield this.getSteamUrl(game.websites);
+            if (steamUrl)
+                game.url = steamUrl;
             return game;
+        });
+    }
+    static getSteamUrl(id) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!id.length)
+                return Promise.resolve(undefined);
+            const url = `${IGDBApi.baseUrl}/websites`;
+            let response = yield IGDBApi.post(url, `fields url;
+            where id = (${id.join(",")}) & category = 13;
+            limit 1;`);
+            return (_b = (_a = response.data) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.url;
         });
     }
     static getNextReleaseDates(games) {
@@ -143,7 +158,8 @@ IGDBApi.gameFields = [
     'name',
     'url',
     'release_dates',
-    'cover'
+    'cover',
+    'websites'
 ].join(',');
 IGDBApi.baseUrl = 'https://api.igdb.com/v4';
 exports.default = IGDBApi;

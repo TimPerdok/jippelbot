@@ -119,9 +119,14 @@ class DiscordBot {
                 return [serverId, games];
             }));
             yield DataHandler_1.default.updateGameSubscriptions(newAllGamesServer);
-            console.log("Updating game info done!");
+            yield this.removeOldGames(newAllGamesServer);
             yield this.updateMessages();
+            console.log("Updating game info done!");
         });
+    }
+    static removeOldGames(newAllGamesServer) {
+        const newGames = Object.entries(newAllGamesServer).map(([serverId, games]) => ([serverId, games.filter((game) => game.nextReleaseDate && game.nextReleaseDate > Math.floor(Date.now() / 1000))]));
+        return DataHandler_1.default.updateGameSubscriptions(Object.fromEntries(newGames));
     }
     static updateMessages() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -129,7 +134,7 @@ class DiscordBot {
             Object.entries(allGames).forEach(([serverId, games]) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     const serverdata = yield DataHandler_1.default.getServerdata(serverId);
-                    const embed = yield (0, util_1.createEmbed)(games, serverId);
+                    const embed = yield (0, util_1.createEmbed)(games);
                     const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel);
                     if (!channel)
                         return;

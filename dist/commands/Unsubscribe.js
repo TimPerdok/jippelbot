@@ -32,7 +32,7 @@ class Subscribe extends Command_1.default {
             const name = interaction.options.getString("name", true);
             const game = yield DataHandler_1.default.removeGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", name);
             if (!game)
-                return yield interaction.reply("De server was niet geabonneerd op deze game.");
+                return yield interaction.reply(`De server is niet geabonneerd op ${name}.`);
             yield interaction.reply({ content: `De server is niet meer geabonneerd op ${game.name}.`, ephemeral: true });
             yield Bot_1.default.updateMessages();
         });

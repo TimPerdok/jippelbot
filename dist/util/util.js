@@ -14,8 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEmbed = exports.MONTHS = exports.gameToValue = exports.uppercaseFirstLetter = exports.uniqueArray = void 0;
 const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
-const Bot_1 = __importDefault(require("../classes/Bot"));
-const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
 function uniqueArray(array) {
     return array.filter((obj, index, self) => index === self.findIndex((o) => o.key === obj.key));
 }
@@ -24,13 +22,13 @@ function uppercaseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 exports.uppercaseFirstLetter = uppercaseFirstLetter;
-function gameToValue(game) {
+function gameToValue(game, small = false) {
     var _a, _b;
     const date = new Date(((_a = game === null || game === void 0 ? void 0 : game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
     const status = (game === null || game === void 0 ? void 0 : game.currentReleaseStatus) != undefined
         ? `(${IGDBApi_1.default.statusToString((_b = game.currentReleaseStatus) !== null && _b !== void 0 ? _b : 0)})`
         : "";
-    return `- [${game.name}](${game.url}) ${status}
+    return `- ${small ? game.name : `[${game.name}](${game.url})`} ${status}
         ${(game === null || game === void 0 ? void 0 : game.nextReleaseDate) ?
         `<t:${Math.round(date.getTime() / 1000)}:R>`
         : ""}
@@ -39,9 +37,8 @@ function gameToValue(game) {
 }
 exports.gameToValue = gameToValue;
 exports.MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"];
-function createEmbed(games, id) {
+function createEmbed(games, small = false) {
     return __awaiter(this, void 0, void 0, function* () {
-        const channel = Bot_1.default.client.channels.cache.get((yield DataHandler_1.default.getServerdata(id)).releaseChannel);
         const months = [...new Set(uniqueArray(games
                 .filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined)
                 .map(game => new Date((game.nextReleaseDate) * 1000))
@@ -62,7 +59,7 @@ function createEmbed(games, id) {
             gamesOfMonth.forEach((game) => {
                 if (truncated.join("\n").length > 950)
                     return exceededCount++;
-                truncated.push(gameToValue(game));
+                truncated.push(gameToValue(game, small));
             });
             if (exceededCount > 0)
                 truncated.push(`& ${exceededCount} meer`);
@@ -76,9 +73,10 @@ function createEmbed(games, id) {
         const truncated = [];
         games.filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) == undefined)
             .forEach((game) => {
+            console.log(truncated);
             if (truncated.join("\n").length > 950)
                 return exceededCount++;
-            truncated.push(gameToValue(game));
+            truncated.push(gameToValue(game, small));
         });
         if (exceededCount > 0)
             truncated.push(`& ${exceededCount} meer`);

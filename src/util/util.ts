@@ -14,12 +14,12 @@ export function uppercaseFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function gameToValue(game: Game) {
+export function gameToValue(game: Game, small = false) {
     const date = new Date((game?.nextReleaseDate ?? 0) * 1000);
     const status = game?.currentReleaseStatus != undefined
         ? `(${IGDBApi.statusToString(game.currentReleaseStatus ?? 0)})`
         : "";
-    return `- [${game.name}](${game.url}) ${status}
+    return `- ${small ? game.name : `[${game.name}](${game.url})`} ${status}
         ${game?.nextReleaseDate ?
             `<t:${Math.round(date.getTime() / 1000)}:R>`
             : ""}
@@ -29,8 +29,7 @@ export function gameToValue(game: Game) {
 
 export const MONTHS = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December" ];
 
-export async function createEmbed(games: Game[], id: string): Promise<Partial<Embed>> {
-    const channel = DiscordBot.client.channels.cache.get((await DataHandler.getServerdata(id)).releaseChannel) as TextChannel;
+export async function createEmbed(games: Game[], small = false): Promise<Partial<Embed>> {
     const months = [...new Set<{
         key: string,
         value: Date
@@ -56,7 +55,7 @@ export async function createEmbed(games: Game[], id: string): Promise<Partial<Em
         const truncated: string[] = []
         gamesOfMonth.forEach((game) => {
             if (truncated.join("\n").length > 950) return exceededCount++;
-            truncated.push(gameToValue(game));
+            truncated.push(gameToValue(game, small));
         })
         if (exceededCount > 0) truncated.push(`& ${exceededCount} meer`)
         return {
@@ -70,8 +69,9 @@ export async function createEmbed(games: Game[], id: string): Promise<Partial<Em
     const truncated: string[] = []
     games.filter(game => game?.nextReleaseDate == undefined)
         .forEach((game) => {
+            console.log(truncated)
             if (truncated.join("\n").length > 950) return exceededCount++;
-            truncated.push(gameToValue(game));
+            truncated.push(gameToValue(game, small));
         })
     if (exceededCount > 0) truncated.push(`& ${exceededCount} meer`)
     const unknownDateField: EmbedField = {

@@ -21,7 +21,7 @@ class ReleaseMonth extends Command_1.default {
         return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("month").setDescription("Een maand").setRequired(true).setChoices(...util_1.MONTHS.map(month => ({ name: month, value: month }))))
+            .addStringOption(option => option.setName("month").setDescription("Een maand").setRequired(true).setChoices(...util_1.MONTHS.map(month => ({ name: month, value: month })), { name: "Onbekend", value: "Onbekend" }))
             .addNumberOption(option => option.setName("year").setDescription("Een jaar").setRequired(false));
     }
     constructor() {
@@ -33,44 +33,12 @@ class ReleaseMonth extends Command_1.default {
             try {
                 const month = interaction.options.getString("month", true);
                 const year = (_a = interaction.options.getNumber("year", false)) !== null && _a !== void 0 ? _a : new Date().getFullYear();
-                let games = (yield DataHandler_1.default.getGameSubscriptions((_b = interaction.guildId) !== null && _b !== void 0 ? _b : ""))
-                    .filter(game => { var _a, _b; return (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined && new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000).getMonth() == util_1.MONTHS.indexOf(month) && new Date(((_b = game.nextReleaseDate) !== null && _b !== void 0 ? _b : 0) * 1000).getFullYear() == year; });
+                let games = (yield DataHandler_1.default.getGameSubscriptions((_b = interaction.guildId) !== null && _b !== void 0 ? _b : ""));
+                games = month === "Onbekend" ? games.filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) == undefined)
+                    : games.filter(game => { var _a, _b; return (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined && new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000).getMonth() == util_1.MONTHS.indexOf(month) && new Date(((_b = game.nextReleaseDate) !== null && _b !== void 0 ? _b : 0) * 1000).getFullYear() == year; });
                 if (!(games === null || games === void 0 ? void 0 : games.length))
                     return yield interaction.reply({ content: "Deze maand heeft nog geen releases", ephemeral: true });
-                const months = [...new Set((0, util_1.uniqueArray)(games
-                        .filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined)
-                        .map(game => new Date((game.nextReleaseDate) * 1000))
-                        .map(date => ({
-                        key: `${date.getMonth()}-${date.getFullYear()}`,
-                        value: date
-                    }))))]
-                    .map(month => month.value)
-                    .sort((a, b) => a.getTime() - b.getTime());
-                let fields = [...months].map(month => {
-                    const gamesOfMonth = games.filter(game => {
-                        var _a;
-                        const date = new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
-                        return date.getMonth() == month.getMonth() && date.getFullYear() == month.getFullYear();
-                    });
-                    let exceededCount = 0;
-                    const truncated = [];
-                    gamesOfMonth.forEach((game) => {
-                        if (truncated.join("\n").length > 1000)
-                            return exceededCount++;
-                        truncated.push((0, util_1.gameToValue)(game));
-                    });
-                    if (exceededCount > 0)
-                        truncated.push(`& ${exceededCount} meer`);
-                    return {
-                        name: (0, util_1.uppercaseFirstLetter)(month.toLocaleString("nl-NL", { month: "long", year: "numeric" })),
-                        value: truncated.join("\n"),
-                        inline: false
-                    };
-                });
-                const embed = {
-                    title: `Releases`,
-                    fields
-                };
+                const embed = yield (0, util_1.createEmbed)(games, true);
                 yield interaction.reply({ embeds: [embed], ephemeral: true });
             }
             catch (error) {

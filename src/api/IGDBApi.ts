@@ -11,6 +11,7 @@ export type Game = {
     nextReleaseStatus?: number
     cover: number
     userDescription?: string
+    websites: number[]
 }
 
 export type ReleaseDate = {
@@ -31,7 +32,8 @@ class IGDBApi {
         'name',
         'url',
         'release_dates',
-        'cover'
+        'cover',
+        'websites'
     ].join(',');
 
     static baseUrl = 'https://api.igdb.com/v4';
@@ -99,9 +101,25 @@ class IGDBApi {
             game.nextReleaseDate = releaseDate.date;
             game.nextReleaseStatus = releaseDate.status;
         }
+
+        const steamUrl: string = await this.getSteamUrl(game.websites);
+        if (steamUrl) game.url = steamUrl;
+
         return game;
 
     }
+
+    static async getSteamUrl(id: number[]): Promise<string> {
+        if (!id.length) return Promise.resolve(undefined);
+        const url = `${IGDBApi.baseUrl}/websites`;
+        let response = await IGDBApi.post(
+            url,
+            `fields url;
+            where id = (${id.join(",")}) & category = 13;
+            limit 1;`);
+        return response.data?.[0]?.url
+    }
+
 
     static async getNextReleaseDates(games: Game[]): Promise<ReleaseDate[] | undefined> {
         if (!games.length) return Promise.resolve(undefined);
