@@ -102,7 +102,7 @@ class IGDBApi {
             game.nextReleaseStatus = releaseDate.status;
         }
 
-        const steamUrl: string = await this.getSteamUrl(game.websites);
+        const steamUrl: string = await this.getSteamUrl(game?.websites);
         if (steamUrl) game.url = steamUrl;
 
         return game;
@@ -110,7 +110,7 @@ class IGDBApi {
     }
 
     static async getSteamUrl(id: number[]): Promise<string> {
-        if (!id.length) return Promise.resolve(undefined);
+        if (!id?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/websites`;
         let response = await IGDBApi.post(
             url,

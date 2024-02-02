@@ -74,7 +74,7 @@ class IGDBApi {
                 game.nextReleaseDate = releaseDate.date;
                 game.nextReleaseStatus = releaseDate.status;
             }
-            const steamUrl = yield this.getSteamUrl(game.websites);
+            const steamUrl = yield this.getSteamUrl(game === null || game === void 0 ? void 0 : game.websites);
             if (steamUrl)
                 game.url = steamUrl;
             return game;
@@ -83,7 +83,7 @@ class IGDBApi {
     static getSteamUrl(id) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!id.length)
+            if (!(id === null || id === void 0 ? void 0 : id.length))
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/websites`;
             let response = yield IGDBApi.post(url, `fields url;
