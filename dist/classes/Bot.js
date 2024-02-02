@@ -125,7 +125,7 @@ class DiscordBot {
         });
     }
     static removeOldGames(newAllGamesServer) {
-        const newGames = Object.entries(newAllGamesServer).map(([serverId, games]) => ([serverId, games.filter((game) => game.nextReleaseDate && game.nextReleaseDate > Math.floor(Date.now() / 1000))]));
+        const newGames = Object.entries(newAllGamesServer).map(([serverId, games]) => ([serverId, games.filter((game) => !(game === null || game === void 0 ? void 0 : game.nextReleaseDate) || game.nextReleaseDate > Math.floor(Date.now() / 1000))]));
         return DataHandler_1.default.updateGameSubscriptions(Object.fromEntries(newGames));
     }
     static updateMessages() {

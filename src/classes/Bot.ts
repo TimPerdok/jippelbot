@@ -146,7 +146,7 @@ export default class DiscordBot {
     }
 
     static removeOldGames(newAllGamesServer: DataFile<Game[]>) {
-        const newGames = Object.entries(newAllGamesServer).map(([serverId, games]) => ([serverId, games.filter((game) => game.nextReleaseDate && game.nextReleaseDate > Math.floor(Date.now() / 1000))])) as [string, Game[]][];
+        const newGames = Object.entries(newAllGamesServer).map(([serverId, games]) => ([serverId, games.filter((game) => !game?.nextReleaseDate || game.nextReleaseDate > Math.floor(Date.now() / 1000))])) as [string, Game[]][];
         return DataHandler.updateGameSubscriptions(Object.fromEntries(newGames) as DataFile<Game[]>)
     }
 
