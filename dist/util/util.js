@@ -53,7 +53,7 @@ function createEmbed(games, small = false) {
                 var _a;
                 const date = new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
                 return date.getMonth() == month.getMonth() && date.getFullYear() == month.getFullYear();
-            });
+            }).sort((a, b) => { var _a, _b; return ((_a = a === null || a === void 0 ? void 0 : a.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) - ((_b = b === null || b === void 0 ? void 0 : b.nextReleaseDate) !== null && _b !== void 0 ? _b : 0); });
             let exceededCount = 0;
             const truncated = [];
             gamesOfMonth.forEach((game) => {
@@ -73,7 +73,6 @@ function createEmbed(games, small = false) {
         const truncated = [];
         games.filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) == undefined)
             .forEach((game) => {
-            console.log(truncated);
             if (truncated.join("\n").length > 950)
                 return exceededCount++;
             truncated.push(gameToValue(game, small));

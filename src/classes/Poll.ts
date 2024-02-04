@@ -138,7 +138,8 @@ export default class Poll implements MessageCarrier {
                             .setCustomId('no')
                             .setLabel('Nee')
                             .setStyle(ButtonStyle.Danger),
-                    )]
+                    )
+                ]
         }
     }
 

@@ -48,6 +48,51 @@ class IGDBApi {
             return games;
         });
     }
+    static presearchGame(query) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${IGDBApi.baseUrl}/games`;
+            let response = yield IGDBApi.post(url, `search "${query}";
+            fields ${this.gameFields};
+            limit 5;`);
+            if (!((_a = response.data) === null || _a === void 0 ? void 0 : _a.length))
+                return [];
+            const games = response.data;
+            return games;
+        });
+    }
+    static enrichGameData(game) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const currentRelease = yield this.getCurrentRelease(game.release_dates.map(id => id.toString()));
+            if (currentRelease)
+                game.currentReleaseStatus = currentRelease.status;
+            const releaseDate = yield this.getNextReleaseDate(game.release_dates.map(id => id.toString()));
+            if (releaseDate) {
+                game.nextReleaseDate = releaseDate.date;
+                game.nextReleaseStatus = releaseDate.status;
+            }
+            const steamUrl = yield this.getSteamUrl(game === null || game === void 0 ? void 0 : game.websites);
+            if (steamUrl)
+                game.url = steamUrl;
+            return game;
+        });
+    }
+    static getGameById(id) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${IGDBApi.baseUrl}/games`;
+            let response = yield IGDBApi.post(url, `fields ${this.gameFields};
+            where id = ${id};
+            limit 1;`);
+            if (!response.data.length)
+                return undefined;
+            let game = response.data[0];
+            if (!((_a = game === null || game === void 0 ? void 0 : game.release_dates) === null || _a === void 0 ? void 0 : _a.length))
+                return game;
+            game = yield this.enrichGameData(game);
+            return game;
+        });
+    }
     static searchGame(query) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -63,20 +108,10 @@ class IGDBApi {
             }
             if (!response.data.length)
                 return undefined;
-            const game = response.data[0];
+            let game = response.data[0];
             if (!((_a = game === null || game === void 0 ? void 0 : game.release_dates) === null || _a === void 0 ? void 0 : _a.length))
                 return game;
-            const currentRelease = yield this.getCurrentRelease(game.release_dates.map(id => id.toString()));
-            if (currentRelease)
-                game.currentReleaseStatus = currentRelease.status;
-            const releaseDate = yield this.getNextReleaseDate(game.release_dates.map(id => id.toString()));
-            if (releaseDate) {
-                game.nextReleaseDate = releaseDate.date;
-                game.nextReleaseStatus = releaseDate.status;
-            }
-            const steamUrl = yield this.getSteamUrl(game === null || game === void 0 ? void 0 : game.websites);
-            if (steamUrl)
-                game.url = steamUrl;
+            game = yield this.enrichGameData(game);
             return game;
         });
     }

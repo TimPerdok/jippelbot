@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Bot from '../classes/Bot';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed, InteractionEditReplyOptions, Message, MessagePayload } from 'discord.js';
+import CustomIdentifier from '../classes/CustomIdentifier';
 
 export type Game = {
     id: number
@@ -24,7 +26,7 @@ export type ReleaseDate = {
 
 
 class IGDBApi {
-  
+    
     
 
     static gameFields = [
@@ -73,6 +75,47 @@ class IGDBApi {
         return games;
     }
 
+    static async presearchGame(query: string): Promise<Game[]> {
+        const url = `${IGDBApi.baseUrl}/games`;
+        let response = await IGDBApi.post(
+            url,
+            `search "${query}";
+            fields ${this.gameFields};
+            limit 5;`,);
+        if (!response.data?.length) return [];
+        const games: Game[] = response.data;
+        return games;
+    }
+
+    static async enrichGameData(game: Game): Promise<Game> {
+        const currentRelease = await this.getCurrentRelease(game.release_dates.map(id => id.toString()));
+        if (currentRelease) game.currentReleaseStatus = currentRelease.status;
+
+        const releaseDate: ReleaseDate = await this.getNextReleaseDate(game.release_dates.map(id => id.toString()));
+        if (releaseDate) {
+            game.nextReleaseDate = releaseDate.date;
+            game.nextReleaseStatus = releaseDate.status;
+        }
+
+        const steamUrl: string = await this.getSteamUrl(game?.websites);
+        if (steamUrl) game.url = steamUrl;
+
+        return game;
+    }
+
+    static async getGameById(id: number) {
+        const url = `${IGDBApi.baseUrl}/games`;
+        let response = await IGDBApi.post(
+            url,
+            `fields ${this.gameFields};
+            where id = ${id};
+            limit 1;`,);
+        if (!response.data.length) return undefined;
+        let game: Game = response.data[0]
+        if (!game?.release_dates?.length) return game;
+        game = await this.enrichGameData(game);
+        return game;
+    }
 
     static async searchGame(query: string): Promise<Game | undefined> {
         const url = `${IGDBApi.baseUrl}/games`;
@@ -90,21 +133,9 @@ class IGDBApi {
                 limit 1;`);
         }
         if (!response.data.length) return undefined;
-        const game: Game = response.data[0]
+        let game: Game = response.data[0]
         if (!game?.release_dates?.length) return game;
-        
-        const currentRelease = await this.getCurrentRelease(game.release_dates.map(id => id.toString()));
-        if (currentRelease) game.currentReleaseStatus = currentRelease.status;
-
-        const releaseDate: ReleaseDate = await this.getNextReleaseDate(game.release_dates.map(id => id.toString()));
-        if (releaseDate) {
-            game.nextReleaseDate = releaseDate.date;
-            game.nextReleaseStatus = releaseDate.status;
-        }
-
-        const steamUrl: string = await this.getSteamUrl(game?.websites);
-        if (steamUrl) game.url = steamUrl;
-
+        game = await this.enrichGameData(game);
         return game;
 
     }
@@ -179,6 +210,7 @@ class IGDBApi {
             limit 1;`);
         return response.data?.[0]?.url
     }
+
 
 }
 

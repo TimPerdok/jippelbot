@@ -50,7 +50,7 @@ export async function createEmbed(games: Game[], small = false): Promise<Partial
         const gamesOfMonth = games.filter(game => {
             const date = new Date((game.nextReleaseDate ?? 0) * 1000);
             return date.getMonth() == month.getMonth() && date.getFullYear() == month.getFullYear();
-        });
+        }).sort((a, b) => (a?.nextReleaseDate ?? 0) - (b?.nextReleaseDate ?? 0));
         let exceededCount = 0;
         const truncated: string[] = []
         gamesOfMonth.forEach((game) => {
@@ -69,7 +69,6 @@ export async function createEmbed(games: Game[], small = false): Promise<Partial
     const truncated: string[] = []
     games.filter(game => game?.nextReleaseDate == undefined)
         .forEach((game) => {
-            console.log(truncated)
             if (truncated.join("\n").length > 950) return exceededCount++;
             truncated.push(gameToValue(game, small));
         })
