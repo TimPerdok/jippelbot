@@ -11,38 +11,23 @@ export default class Subscribe extends Command {
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("name").setDescription("De naam van de game").setRequired(true))
+            .addStringOption(option => option.setName("id").setDescription("De id van de game").setRequired(true))
             .addStringOption(option => option.setName("description").setDescription("Een beschrijving van de game").setRequired(false)) as SlashCommandBuilder;
     }
 
     constructor() {
-        super("subscribe", "Voeg een game toe om naar uit te kijken.")
+        super("subscribeid", "Voeg een game toe met een id om naar uit te kijken.")
     }
 
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const name = interaction.options.getString("name", true);
+        const id = interaction.options.getString("id", true);
         const userDescription = interaction.options.getString("description", false);
         
         await interaction.deferReply({ ephemeral: true });
-        const options: Game[] = await IGDBApi.presearchGame(name);
-        if (!options?.length) return await interaction.editReply("Geen game gevonden met deze naam.");
-        const actionRow = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(
-                options.map(option => new ButtonBuilder()
-                    .setCustomId(CustomIdentifier.toCustomId({
-                        id: option.id,
-                        ...(userDescription && { userDescription })
-                    }))
-                    .setLabel(option.name)
-                    .setStyle(ButtonStyle.Primary)
-                    .setDisabled(false)
-                )
-            )
+        let game: Game = await IGDBApi.getGameById(parseInt(id));
+        if (!game) return await interaction.editReply("Geen game gevonden met dit ID.");
         
-        if (options.length > 1) return await interaction.editReply({
-                components: [actionRow],
-            });
-        const game = await this.enrichGameAndSave(options[0], interaction.guildId, userDescription)
+        game = await this.enrichGameAndSave(game, interaction.guildId, userDescription)
         const gameInData = await DataHandler.getGameSubscription(interaction.guildId ?? "", game.name);
         gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);

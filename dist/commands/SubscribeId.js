@@ -23,32 +23,22 @@ class Subscribe extends Command_1.default {
         return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("name").setDescription("De naam van de game").setRequired(true))
+            .addStringOption(option => option.setName("id").setDescription("De id van de game").setRequired(true))
             .addStringOption(option => option.setName("description").setDescription("Een beschrijving van de game").setRequired(false));
     }
     constructor() {
-        super("subscribe", "Voeg een game toe om naar uit te kijken.");
+        super("subscribeid", "Voeg een game toe met een id om naar uit te kijken.");
     }
     onCommand(interaction) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const name = interaction.options.getString("name", true);
+            const id = interaction.options.getString("id", true);
             const userDescription = interaction.options.getString("description", false);
             yield interaction.deferReply({ ephemeral: true });
-            const options = yield IGDBApi_1.default.presearchGame(name);
-            if (!(options === null || options === void 0 ? void 0 : options.length))
-                return yield interaction.editReply("Geen game gevonden met deze naam.");
-            const actionRow = new discord_js_1.ActionRowBuilder()
-                .addComponents(options.map(option => new discord_js_1.ButtonBuilder()
-                .setCustomId(CustomIdentifier_1.default.toCustomId(Object.assign({ id: option.id }, (userDescription && { userDescription }))))
-                .setLabel(option.name)
-                .setStyle(discord_js_1.ButtonStyle.Primary)
-                .setDisabled(false)));
-            if (options.length > 1)
-                return yield interaction.editReply({
-                    components: [actionRow],
-                });
-            const game = yield this.enrichGameAndSave(options[0], interaction.guildId, userDescription);
+            let game = yield IGDBApi_1.default.getGameById(parseInt(id));
+            if (!game)
+                return yield interaction.editReply("Geen game gevonden met dit ID.");
+            game = yield this.enrichGameAndSave(game, interaction.guildId, userDescription);
             const gameInData = yield DataHandler_1.default.getGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", game.name);
             gameInData ? yield interaction.editReply(`${game.name} is geupdatet.`)
                 : yield interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
