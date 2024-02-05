@@ -158,7 +158,7 @@ class IGDBApi {
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where id = (${games.map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
         return response.data as ReleaseDate[];
     }
 
@@ -168,7 +168,7 @@ class IGDBApi {
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where id = (${games.map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
         return response.data as ReleaseDate[];
     }
 
@@ -179,7 +179,7 @@ class IGDBApi {
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where id = (${releaseDateIDs.join(',')}) & date > ${Math.floor(Date.now() / 1000)};
+            where platform = 6 & id = (${releaseDateIDs.join(',')}) & date > ${Math.floor(Date.now() / 1000)};
             limit 1;`);
         return response.data?.[0]
     }
@@ -190,7 +190,7 @@ class IGDBApi {
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where id = (${releaseDateIDs.join(',')}) & date < ${Math.floor(Date.now() / 1000)};
+            where platform = 6 & id = (${releaseDateIDs.join(',')}) & date < ${Math.floor(Date.now() / 1000)};
             sort date desc;
             limit 1;`);
         return response.data?.[0]

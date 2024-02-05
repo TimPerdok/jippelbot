@@ -133,7 +133,7 @@ class IGDBApi {
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where id = (${games.map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
             return response.data;
         });
     }
@@ -143,7 +143,7 @@ class IGDBApi {
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where id = (${games.map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
             return response.data;
         });
     }
@@ -154,7 +154,7 @@ class IGDBApi {
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where id = (${releaseDateIDs.join(',')}) & date > ${Math.floor(Date.now() / 1000)};
+            where platform = 6 & id = (${releaseDateIDs.join(',')}) & date > ${Math.floor(Date.now() / 1000)};
             limit 1;`);
             return (_a = response.data) === null || _a === void 0 ? void 0 : _a[0];
         });
@@ -166,7 +166,7 @@ class IGDBApi {
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where id = (${releaseDateIDs.join(',')}) & date < ${Math.floor(Date.now() / 1000)};
+            where platform = 6 & id = (${releaseDateIDs.join(',')}) & date < ${Math.floor(Date.now() / 1000)};
             sort date desc;
             limit 1;`);
             return (_a = response.data) === null || _a === void 0 ? void 0 : _a[0];
