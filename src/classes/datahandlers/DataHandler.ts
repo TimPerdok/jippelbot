@@ -120,6 +120,7 @@ export default class DataHandler {
         data[serverId] = serverData;
         await DataHandler.write(DataHandler.files.gameSubscriptions, data);
         DiscordBot.rescheduleGameReleaseAlerts();
+        DiscordBot.updateMessages()
     }
 
     static async removeGameSubscription(serverId: string, gameName: string): Promise<Game> {
@@ -129,6 +130,7 @@ export default class DataHandler {
         serverdata[serverId] = serverdata[serverId].filter(g => g.name.toLowerCase() !== gameName.toLowerCase())
         DataHandler.write(DataHandler.files.gameSubscriptions, serverdata)
         DiscordBot.rescheduleGameReleaseAlerts()
+        DiscordBot.updateMessages()
         return game;
     }
 

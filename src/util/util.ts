@@ -78,7 +78,7 @@ export async function createEmbed(games: Game[], small = false): Promise<Partial
         value: truncated.join("\n"),
         inline: false
     };
-        
+
     fields.push(unknownDateField);
     const embed: Partial<Embed> = {
         title: "Upcoming game releases",

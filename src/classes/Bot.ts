@@ -141,8 +141,6 @@ export default class DiscordBot {
         await this.updateMessages()
 
         console.log("Updating game info done!")
-
-
     }
 
     static removeOldGames(newAllGamesServer: DataFile<Game[]>) {

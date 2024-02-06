@@ -134,6 +134,7 @@ class DataHandler {
             data[serverId] = serverData;
             yield DataHandler.write(DataHandler.files.gameSubscriptions, data);
             Bot_1.default.rescheduleGameReleaseAlerts();
+            Bot_1.default.updateMessages();
         });
     }
     static removeGameSubscription(serverId, gameName) {
@@ -145,6 +146,7 @@ class DataHandler {
             serverdata[serverId] = serverdata[serverId].filter(g => g.name.toLowerCase() !== gameName.toLowerCase());
             DataHandler.write(DataHandler.files.gameSubscriptions, serverdata);
             Bot_1.default.rescheduleGameReleaseAlerts();
+            Bot_1.default.updateMessages();
             return game;
         });
     }

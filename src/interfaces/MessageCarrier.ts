@@ -12,7 +12,7 @@ export type Payload = {
     components?: ActionRowBuilder[] 
 }
 
-export default interface ExecutableCommand {
+export default interface MessageCarrier {
     format: DataJSON
     payload: string | Payload
 }
