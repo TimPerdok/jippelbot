@@ -65,6 +65,7 @@ class Subscribe extends Command_1.default {
                 interaction.editReply({ content: `${game.name} is toegevoegd.` });
             }
             catch (error) {
+                console.error(error);
                 interaction.editReply({ content: "Er is iets fout gegaan. Probeer later opnieuw." });
             }
         });

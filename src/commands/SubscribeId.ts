@@ -42,6 +42,7 @@ export default class Subscribe extends Command {
             await this.enrichGameAndSave(game, interaction.guildId, game?.userDescription)
             interaction.editReply({ content: `${game.name} is toegevoegd.` });
         } catch (error) {
+            console.error(error)
             interaction.editReply({ content: "Er is iets fout gegaan. Probeer later opnieuw." });
         }
     }
