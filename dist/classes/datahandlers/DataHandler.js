@@ -112,7 +112,7 @@ class DataHandler {
                     "voiceChannelCategory": "617369917158850593",
                     "textChannelCategory": "617369917158850591",
                     "isDalleEnabled": this.isDalleEnabled,
-                    "releaseChannel": "617369917158850592"
+                    "releaseChannel": "1041814103477473360"
                 }
             }) === null || _a === void 0 ? void 0 : _a[serverId]) !== null && _b !== void 0 ? _b : {};
         });

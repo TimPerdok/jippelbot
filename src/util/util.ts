@@ -16,8 +16,8 @@ export function uppercaseFirstLetter(string: string) {
 
 export function gameToValue(game: Game, small = false) {
     const date = new Date((game?.nextReleaseDate ?? 0) * 1000);
-    const status = game?.currentReleaseStatus != undefined
-        ? `(${IGDBApi.statusToString(game.currentReleaseStatus ?? 0)})`
+    const status = game?.nextReleaseStatus != undefined
+        ? `(${IGDBApi.statusToString(game.nextReleaseStatus ?? 0)}) `
         : "";
     return `- ${small ? game.name : `[${game.name}](${game.url})`} ${status}
         ${game?.nextReleaseDate ?

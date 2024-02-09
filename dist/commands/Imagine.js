@@ -45,7 +45,7 @@ class Summon extends Command_1.default {
                 });
                 const imageBuffer = yield (yield (0, node_fetch_1.default)((_b = (_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a[0].url) !== null && _b !== void 0 ? _b : '')).arrayBuffer();
                 yield interaction.editReply({
-                    content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. `,
+                    content: `Daar gaat weer 4 cent van Joop... \nPrompt is ${prompt}. `,
                     files: [{ attachment: Buffer.from(imageBuffer), name: "image.png" }]
                 });
             }

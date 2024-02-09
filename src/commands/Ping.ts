@@ -12,7 +12,7 @@ export default class Ping extends Command {
 
 
     constructor() {
-        super("ping", "Pings someone 2")
+        super("ping", "Ping pong")
     }
 
 

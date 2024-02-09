@@ -42,7 +42,7 @@ class ReleaseMonth extends Command_1.default {
                 yield interaction.reply({ embeds: [embed], ephemeral: true });
             }
             catch (error) {
-                interaction.reply(`Er is iets fout gegaan. ${error}`);
+                interaction.reply({ content: `Er is iets fout gegaan. ${error}`, ephemeral: true });
             }
         });
     }

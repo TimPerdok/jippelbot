@@ -8,7 +8,7 @@ export type Game = {
     name: string
     url: string
     currentReleaseStatus: number
-    release_dates: number[]
+    release_dates?: number[]
     nextReleaseDate?: number
     nextReleaseStatus?: number
     cover: number
@@ -58,12 +58,23 @@ class IGDBApi {
             url,
             `fields ${this.gameFields};
             where id = (${ids.join(',')});`);
-        const games: Game[] = response.data;
+        let games: Game[] = response.data;
+        
+        games = await this.addCurrentReleases(games)
+        games = await this.addNextReleases(games)
+        return games;
+    }
+
+    static async addCurrentReleases(games: Game[]): Promise<Game[]> {
         const currentReleases = await this.getCurrentReleases(games);
         games.forEach(game => {
             const currentRelease = currentReleases.find(release => release.game === game.id);
             if (currentRelease) game.currentReleaseStatus = currentRelease?.status;
         });
+        return games;
+    }
+
+    static async addNextReleases(games: Game[]): Promise<Game[]> {
         const nextReleaseDates = await this.getNextReleaseDates(games);
         games.forEach(game => {
             const releaseDate = nextReleaseDates.find(release => release.game === game.id);
@@ -83,15 +94,16 @@ class IGDBApi {
             fields ${this.gameFields};
             limit 5;`,);
         if (!response.data?.length) return [];
-        const games: Game[] = response.data;
+        let games: Game[] = response.data;
+        games = await this.addNextReleases(games)
         return games;
     }
 
     static async enrichGameData(game: Game): Promise<Game> {
-        const currentRelease = await this.getCurrentRelease(game.release_dates.map(id => id.toString()));
+        const currentRelease = await this.getCurrentRelease(game.release_dates?.map(id => id.toString()));
         if (currentRelease) game.currentReleaseStatus = currentRelease.status;
 
-        const releaseDate: ReleaseDate = await this.getNextReleaseDate(game.release_dates.map(id => id.toString()));
+        const releaseDate: ReleaseDate = await this.getNextReleaseDate(game.release_dates?.map(id => id.toString()));
         if (releaseDate) {
             game.nextReleaseDate = releaseDate.date;
             game.nextReleaseStatus = releaseDate.status;
@@ -153,28 +165,28 @@ class IGDBApi {
 
 
     static async getNextReleaseDates(games: Game[]): Promise<ReleaseDate[] | undefined> {
-        if (!games.length) return Promise.resolve(undefined);
+        if (!games?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.filter(game=>game?.release_dates).map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
         return response.data as ReleaseDate[];
     }
 
     static async getCurrentReleases(games: Game[]): Promise<ReleaseDate[] | undefined> {
-        if (!games.length) return Promise.resolve(undefined);
+        if (!games?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.filter(game=>game?.release_dates).map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
         return response.data as ReleaseDate[];
     }
 
 
     static async getNextReleaseDate(releaseDateIDs: string[]): Promise<ReleaseDate | undefined> {
-        if (!releaseDateIDs.length) return Promise.resolve(undefined);
+        if (!releaseDateIDs?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
@@ -185,7 +197,7 @@ class IGDBApi {
     }
 
     static async getCurrentRelease(releaseDateIDs: string[]): Promise<ReleaseDate | undefined> {
-        if (!releaseDateIDs.length) return Promise.resolve(undefined);
+        if (!releaseDateIDs?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,

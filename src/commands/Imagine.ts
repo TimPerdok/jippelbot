@@ -41,7 +41,7 @@ export default class Summon extends Command {
             });
             const imageBuffer = await (await fetch(response?.data?.[0].url ?? '')).arrayBuffer();
             await interaction.editReply({
-                content: `Daar gaat weer 2 cent van Joop... \nPrompt is ${prompt}. `,
+                content: `Daar gaat weer 4 cent van Joop... \nPrompt is ${prompt}. `,
                 files: [{ attachment:  Buffer.from(imageBuffer), name: "image.png" }]
             });
         } catch (error: any) {

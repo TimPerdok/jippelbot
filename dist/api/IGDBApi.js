@@ -30,13 +30,25 @@ class IGDBApi {
             const url = `${IGDBApi.baseUrl}/games`;
             const response = yield IGDBApi.post(url, `fields ${this.gameFields};
             where id = (${ids.join(',')});`);
-            const games = response.data;
+            let games = response.data;
+            games = yield this.addCurrentReleases(games);
+            games = yield this.addNextReleases(games);
+            return games;
+        });
+    }
+    static addCurrentReleases(games) {
+        return __awaiter(this, void 0, void 0, function* () {
             const currentReleases = yield this.getCurrentReleases(games);
             games.forEach(game => {
                 const currentRelease = currentReleases.find(release => release.game === game.id);
                 if (currentRelease)
                     game.currentReleaseStatus = currentRelease === null || currentRelease === void 0 ? void 0 : currentRelease.status;
             });
+            return games;
+        });
+    }
+    static addNextReleases(games) {
+        return __awaiter(this, void 0, void 0, function* () {
             const nextReleaseDates = yield this.getNextReleaseDates(games);
             games.forEach(game => {
                 const releaseDate = nextReleaseDates.find(release => release.game === game.id);
@@ -57,16 +69,18 @@ class IGDBApi {
             limit 5;`);
             if (!((_a = response.data) === null || _a === void 0 ? void 0 : _a.length))
                 return [];
-            const games = response.data;
+            let games = response.data;
+            games = yield this.addNextReleases(games);
             return games;
         });
     }
     static enrichGameData(game) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            const currentRelease = yield this.getCurrentRelease(game.release_dates.map(id => id.toString()));
+            const currentRelease = yield this.getCurrentRelease((_a = game.release_dates) === null || _a === void 0 ? void 0 : _a.map(id => id.toString()));
             if (currentRelease)
                 game.currentReleaseStatus = currentRelease.status;
-            const releaseDate = yield this.getNextReleaseDate(game.release_dates.map(id => id.toString()));
+            const releaseDate = yield this.getNextReleaseDate((_b = game.release_dates) === null || _b === void 0 ? void 0 : _b.map(id => id.toString()));
             if (releaseDate) {
                 game.nextReleaseDate = releaseDate.date;
                 game.nextReleaseStatus = releaseDate.status;
@@ -129,28 +143,28 @@ class IGDBApi {
     }
     static getNextReleaseDates(games) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!games.length)
+            if (!(games === null || games === void 0 ? void 0 : games.length))
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
             return response.data;
         });
     }
     static getCurrentReleases(games) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!games.length)
+            if (!(games === null || games === void 0 ? void 0 : games.length))
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where platform = 6 & id = (${games.map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
             return response.data;
         });
     }
     static getNextReleaseDate(releaseDateIDs) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!releaseDateIDs.length)
+            if (!(releaseDateIDs === null || releaseDateIDs === void 0 ? void 0 : releaseDateIDs.length))
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
@@ -162,7 +176,7 @@ class IGDBApi {
     static getCurrentRelease(releaseDateIDs) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!releaseDateIDs.length)
+            if (!(releaseDateIDs === null || releaseDateIDs === void 0 ? void 0 : releaseDateIDs.length))
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;

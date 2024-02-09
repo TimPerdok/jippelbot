@@ -62,7 +62,7 @@ export default class Subscribe extends Command {
             } as Embed;
             await interaction.reply({ embeds: [embed], ephemeral: true});    
         } catch (error) {
-            interaction.reply(`Er is iets fout gegaan. ${error}`);
+            interaction.reply({content: `Er is iets fout gegaan. ${error}`, ephemeral: true});
         }
         
     }

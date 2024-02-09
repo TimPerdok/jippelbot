@@ -99,7 +99,7 @@ export default class DataHandler {
                 "voiceChannelCategory": "617369917158850593",
                 "textChannelCategory": "617369917158850591",
                 "isDalleEnabled": this.isDalleEnabled,
-                "releaseChannel": "617369917158850592"
+                "releaseChannel": "1041814103477473360"
             }
         }?.[serverId] ?? {} as ServerdataJSON
     }

@@ -28,14 +28,17 @@ export default class Subscribe extends Command {
         if (!options?.length) return await interaction.editReply("Geen game gevonden met deze naam.");
         const actionRow = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                options.map(option => new ButtonBuilder()
-                    .setCustomId(CustomIdentifier.toCustomId({
-                        id: option.id,
-                        ...(userDescription && { userDescription })
-                    }))
-                    .setLabel(option.name)
-                    .setStyle(ButtonStyle.Primary)
-                    .setDisabled(false)
+                options
+                    .slice(0, 5)
+                    .sort((a, b) => (b.nextReleaseDate ?? 0) - (a.nextReleaseDate ?? 0))
+                    .map(option => new ButtonBuilder()
+                        .setCustomId(CustomIdentifier.toCustomId({
+                            id: option.id,
+                            ...(userDescription && { userDescription })
+                        }))
+                        .setLabel(`${option.name} ${option?.nextReleaseDate ? `(${new Date((option?.nextReleaseDate)*1000).toLocaleDateString()})` : "" }`)
+                        .setStyle(ButtonStyle.Primary)
+                        .setDisabled(false)
                 )
             )
         

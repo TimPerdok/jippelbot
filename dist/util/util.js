@@ -25,8 +25,8 @@ exports.uppercaseFirstLetter = uppercaseFirstLetter;
 function gameToValue(game, small = false) {
     var _a, _b;
     const date = new Date(((_a = game === null || game === void 0 ? void 0 : game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
-    const status = (game === null || game === void 0 ? void 0 : game.currentReleaseStatus) != undefined
-        ? `(${IGDBApi_1.default.statusToString((_b = game.currentReleaseStatus) !== null && _b !== void 0 ? _b : 0)})`
+    const status = (game === null || game === void 0 ? void 0 : game.nextReleaseStatus) != undefined
+        ? `(${IGDBApi_1.default.statusToString((_b = game.nextReleaseStatus) !== null && _b !== void 0 ? _b : 0)}) `
         : "";
     return `- ${small ? game.name : `[${game.name}](${game.url})`} ${status}
         ${(game === null || game === void 0 ? void 0 : game.nextReleaseDate) ?

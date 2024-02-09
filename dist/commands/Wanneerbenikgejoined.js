@@ -19,7 +19,7 @@ class Wanneerbenikgejoined extends Command_1.default {
     }
     onCommand(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield interaction.reply(`Jij bent gejoined op ${interaction.member.joinedAt}.`);
+            return yield interaction.reply({ content: `Jij bent gejoined op ${interaction.member.joinedAt}.`, ephemeral: true });
         });
     }
 }

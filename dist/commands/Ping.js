@@ -21,7 +21,7 @@ class Ping extends Command_1.default {
             .setDescription(this.description);
     }
     constructor() {
-        super("ping", "Pings someone 2");
+        super("ping", "Ping pong");
     }
     onCommand(interaction) {
         return __awaiter(this, void 0, void 0, function* () {

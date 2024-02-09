@@ -35,7 +35,7 @@ export default class ReleaseMonth extends Command {
             const embed = await createEmbed(games, true);
             await interaction.reply({ embeds: [embed], ephemeral: true });    
         } catch (error) {
-            interaction.reply(`Er is iets fout gegaan. ${error}`);
+            interaction.reply({content: `Er is iets fout gegaan. ${error}`, ephemeral: true});
         }
         
     }

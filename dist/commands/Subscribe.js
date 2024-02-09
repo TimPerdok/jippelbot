@@ -39,9 +39,12 @@ class Subscribe extends Command_1.default {
             if (!(options === null || options === void 0 ? void 0 : options.length))
                 return yield interaction.editReply("Geen game gevonden met deze naam.");
             const actionRow = new discord_js_1.ActionRowBuilder()
-                .addComponents(options.map(option => new discord_js_1.ButtonBuilder()
+                .addComponents(options
+                .slice(0, 5)
+                .sort((a, b) => { var _a, _b; return ((_a = b.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) - ((_b = a.nextReleaseDate) !== null && _b !== void 0 ? _b : 0); })
+                .map(option => new discord_js_1.ButtonBuilder()
                 .setCustomId(CustomIdentifier_1.default.toCustomId(Object.assign({ id: option.id }, (userDescription && { userDescription }))))
-                .setLabel(option.name)
+                .setLabel(`${option.name} ${(option === null || option === void 0 ? void 0 : option.nextReleaseDate) ? `(${new Date((option === null || option === void 0 ? void 0 : option.nextReleaseDate) * 1000).toLocaleDateString()})` : ""}`)
                 .setStyle(discord_js_1.ButtonStyle.Primary)
                 .setDisabled(false)));
             if (options.length > 1)
