@@ -165,22 +165,24 @@ class IGDBApi {
 
 
     static async getNextReleaseDates(games: Game[]): Promise<ReleaseDate[] | undefined> {
-        if (!games?.length) return Promise.resolve(undefined);
+        const releaseDates = games.filter(game=>game?.release_dates).map(game => game.release_dates).flat()
+        if (!releaseDates?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where platform = 6 & id = (${games.filter(game=>game?.release_dates).map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
         return response.data as ReleaseDate[];
     }
 
     static async getCurrentReleases(games: Game[]): Promise<ReleaseDate[] | undefined> {
-        if (!games?.length) return Promise.resolve(undefined);
+        const releaseDates = games.filter(game=>game?.release_dates).map(game => game.release_dates).flat()
+        if (!releaseDates?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where platform = 6 & id = (${games.filter(game=>game?.release_dates).map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
         return response.data as ReleaseDate[];
     }
 

@@ -143,21 +143,23 @@ class IGDBApi {
     }
     static getNextReleaseDates(games) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(games === null || games === void 0 ? void 0 : games.length))
+            const releaseDates = games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat();
+            if (!(releaseDates === null || releaseDates === void 0 ? void 0 : releaseDates.length))
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where platform = 6 & id = (${games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat().join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
             return response.data;
         });
     }
     static getCurrentReleases(games) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(games === null || games === void 0 ? void 0 : games.length))
+            const releaseDates = games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat();
+            if (!(releaseDates === null || releaseDates === void 0 ? void 0 : releaseDates.length))
                 return Promise.resolve(undefined);
             const url = `${IGDBApi.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
-            where platform = 6 & id = (${games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat().join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
             return response.data;
         });
     }
