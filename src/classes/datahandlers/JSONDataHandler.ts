@@ -29,7 +29,7 @@ export default class JSONDataHandler<T extends DataJSON>{
         fs.writeFileSync(path.join(this.dataFolder, file), JSON.stringify(data))
     }
 
-    async read(file: string): Promise<ServerScoped<T>> {
+    read(file: string): ServerScoped<T> {
         file = path.join(this.dataFolder, file)
         return JSON.parse(fs.readFileSync(file, 'utf8'))
     }
@@ -41,8 +41,8 @@ export default class JSONDataHandler<T extends DataJSON>{
     }
 
 
-    async get(serverId: string): Promise<T> {
-        const file = await this.read(this.file) as ServerScoped<T>
+    getOfServer(serverId: string): T {
+        const file = this.read(this.file) as ServerScoped<T>
         return file[serverId]
     }
 

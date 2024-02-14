@@ -6,11 +6,12 @@ import JSONDataHandler, { ServerScoped } from "./datahandlers/JSONDataHandler";
 import ServerREST from "./ServerREST";
 import TwitchAccessTokenHandler, { TwitchAuth } from "../api/TwitchAccessToken";
 import StdinListener from "./StdinListener";
-import GameReleaseUpdater from "./gamereleases/GameReleaseUpdater";
-import { ServerdataJSON } from "../types/ServerdataJSON";
+import GameReleasesEmbedUpdater from "./gamereleases/GameReleaseUpdater";
+import { ServerConfig } from "../types/ServerdataJSON";
 import { Game } from "../api/IGDB";
 import { DataJSON } from "../interfaces/MessageCarrier";
 import ListDataHandler from "./datahandlers/ListDataHandler";
+import Server from "./Server";
 
 export default class DiscordBot {
 
@@ -22,14 +23,13 @@ export default class DiscordBot {
 
     commands: Collection<string, Command>
     twitchAccessTokenHandler: TwitchAccessTokenHandler;
-    
+
     static instance: DiscordBot;
 
     stdinListener: StdinListener;
-    gameReleaseUpdater: GameReleaseUpdater;
     dataHandlers: {
         poll: ListDataHandler<PollJSON[]>
-        serverdata: JSONDataHandler<ServerdataJSON>
+        serverdata: JSONDataHandler<ServerConfig>
         gameSubscriptions: ListDataHandler<Game[]>
     };
 
@@ -42,9 +42,7 @@ export default class DiscordBot {
         return DiscordBot.instance
     }
 
-    get servers() {
-        return DiscordBot.client.guilds.cache
-    }
+    servers: Server[]
 
     constructor(token: string, clientId: string, twitchToken: TwitchAuth) {
         this.setInstance(this)
@@ -61,23 +59,24 @@ export default class DiscordBot {
         this.stdinListener.start()
         this.dataHandlers = {
             poll: new ListDataHandler<PollJSON[]>('poll.json'),
-            serverdata: new JSONDataHandler<ServerdataJSON>('serverdata.json'),
+            serverdata: new JSONDataHandler<ServerConfig>('serverdata.json'),
             gameSubscriptions: new ListDataHandler<Game[]>('gameSubscriptions.json')
 
         }
 
-       
-
         DiscordBot.client.on('ready', async () => {
             console.log(`Logged in as ${DiscordBot.client?.user?.tag}`);
-            const commands: Command[] = await Classfinder.getCommands()
-            commands.forEach((command: Command) => this.commands.set(command.name, command) );
-            this.serverRESTS = this.servers.map((server: Guild) => {
-                return new ServerREST(this.rest, server, clientId)
-            })
-            this.serverRESTS.forEach((rest) => {
+            this.commands = (await Classfinder.getCommands())
+                .reduce((collection, command) => {
+                    collection.set(command.name, command)
+                    return collection
+                }, new Collection<string, Command>())
+            this.servers = DiscordBot.client.guilds.cache.map((guild: Guild) => {
+                const serverData = this.dataHandlers.serverdata.getOfServer(guild.id)
+                const rest = new ServerREST(this.rest, guild, clientId)
                 rest.updateCommands(this.commands)
-            })
+                return new Server(guild, serverData, rest)
+            });
         });
 
         DiscordBot.client.on(Events.InteractionCreate, this.onInteractionCreate.bind(this));
@@ -88,34 +87,36 @@ export default class DiscordBot {
         } catch (error) {
             console.error(error)
         }
-        this.gameReleaseUpdater = new GameReleaseUpdater()
+
+
     }
-   
+
+    getServerById(id: string) {
+        return this.servers.find(server => server.guild.id === id)
+    }
 
     async onInteractionCreate(interaction: Interaction) {
-            try {
-                let command: Command;
-                
-                switch (interaction.constructor.name) {
-                    case 'ChatInputCommandInteraction':
-                        interaction = interaction as ChatInputCommandInteraction;
-                        command = this.commands.get(interaction?.commandName) as Command; // Add type assertion here
-                        command.onCommand(interaction);
-                        break;
-                    case "ButtonInteraction":
-                        interaction = interaction as ButtonInteraction;
-                        const message = interaction.message as Message
-                        let commandName = message.interaction?.commandName?.split(' ')[0];
-                        const serverPolls = (await this.dataHandlers.poll.get(interaction.guildId ?? "")) as PollJSON[]
-                        const poll = serverPolls.find(poll => poll.messageId === message.id)
-                        if (!commandName) commandName = poll?.command.split(' ')[0] as string
-                        command = this.commands.get(commandName) as Command; // Add type assertion here
-                        command.onButtonPress(interaction);
-                        break;
-                }
-            } catch (error) {
-                console.error(error)
+        try {
+            let command: Command;
+
+            switch (interaction.constructor.name) {
+                case 'ChatInputCommandInteraction':
+                    interaction = interaction as ChatInputCommandInteraction;
+                    command = this.commands.get(interaction?.commandName) as Command;
+                    command.onCommand(interaction);
+                    break;
+                case "ButtonInteraction":
+                    interaction = interaction as ButtonInteraction;
+                    const message = interaction.message as Message
+                    const commandName = message.interaction?.commandName
+                    if (!commandName) return;
+                    command = this.commands.get(commandName) as Command;
+                    command.onButtonPress(interaction);
+                    break;
             }
+        } catch (error) {
+            console.error(error)
+        }
     }
 
 

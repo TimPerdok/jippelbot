@@ -32,7 +32,7 @@ export default class Subscribe extends Command {
         const gameInData = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getItem(interaction.guildId ?? "", game.id);
         gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
-        await DiscordBot.getInstance().gameReleaseUpdater.updateGameSubscriptions();
+        DiscordBot.getInstance().getServerById(interaction.guildId ?? "")?.rescheduleGameReleases();
     }
 
     async onButtonPress(interaction: ButtonInteraction<CacheType>): Promise<void> {

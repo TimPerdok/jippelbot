@@ -19,10 +19,13 @@ export default class Subscribe extends Command {
 
     async onCommand(interaction: ChatInputCommandInteraction) {
         const name = interaction.options.getString("name", true);
-        const game = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getItem(interaction.guildId ?? "", name) as Game
-        if (!game) return await interaction.reply(`De server is niet geabonneerd op ${name}.`)
-        await interaction.reply({content: `De server is niet meer geabonneerd op ${game.name}.`, ephemeral: true});
-        await DiscordBot.getInstance().gameReleaseUpdater.updateGameSubscriptions();
+        const games = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(interaction.guildId ?? "")
+        const newGames = games.filter((game: Game) => game.name.toLowerCase() !== name.toLowerCase());
+        const deletedGame = games.find((game: Game) => game.name.toLowerCase() === name.toLowerCase())
+        DiscordBot.getInstance().dataHandlers.gameSubscriptions.overwrite(interaction.guildId ?? "", newGames);
+        if (!deletedGame) return await interaction.reply({content: `De server is niet geabonneerd op ${name}.`, ephemeral: true})
+        await interaction.reply({content: `De server is niet meer geabonneerd op ${deletedGame.name}.`, ephemeral: true});
+        DiscordBot.getInstance().getServerById(interaction.guildId ?? "")?.updateLiveMessages();
     }
 
 }

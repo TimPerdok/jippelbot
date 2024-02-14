@@ -1,4 +1,4 @@
-export type ServerdataJSON = {
+export type ServerConfig = {
     name: string
     voteChannel: string
     voiceChannelCategory: string
@@ -8,7 +8,7 @@ export type ServerdataJSON = {
 }
 
 export type Serverdatas = {
-    [serverId: string]: ServerdataJSON
+    [serverId: string]: ServerConfig
 }
 
-export type ServerdataJSONKey = keyof ServerdataJSON
+export type ServerdataJSONKey = keyof ServerConfig

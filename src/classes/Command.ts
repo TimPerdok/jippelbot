@@ -18,8 +18,6 @@ export default abstract class Command implements ExecutableCommand {
             .setDescription(this.description)
     }
 
-
-
     constructor(name: string, description: string) {
         this.name = name.toLowerCase()
         this.description = description
@@ -31,11 +29,8 @@ export default abstract class Command implements ExecutableCommand {
         })
     }
 
-
     onCommand(interaction: ChatInputCommandInteraction): void { }
     onButtonPress(interaction: ButtonInteraction): void { }
-
-
 
     toJSON() {
         return JSON.stringify(

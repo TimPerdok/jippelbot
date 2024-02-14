@@ -8,7 +8,7 @@ import { PollJSON } from "../types/PollJSON";
 import { openai } from '../index'
 import fetch from 'node-fetch';
 import DiscordBot from "../classes/Bot";
-import { ServerdataJSON } from "../types/ServerdataJSON";
+import { ServerConfig } from "../types/ServerdataJSON";
 
 export default class Summon extends Command {
 
@@ -28,7 +28,7 @@ export default class Summon extends Command {
 
 
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const serverdata = await DiscordBot.getInstance().dataHandlers.serverdata.get(interaction.guildId ?? "") as ServerdataJSON;
+        const serverdata = await DiscordBot.getInstance().dataHandlers.serverdata.getOfServer(interaction.guildId ?? "") as ServerConfig;
         if (!serverdata.isDalleEnabled) return interaction.reply({ content: "Dall-e is niet enabled op deze server", ephemeral: true });
 
         const prompt = interaction.options.getString("prompt", true);

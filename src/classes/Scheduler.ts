@@ -1,5 +1,5 @@
 import {scheduleJob, gracefulShutdown} from "node-schedule"
-import { Schedule } from "./messageupdaters/ScheduledMessageUpdater";
+import { Schedule } from "./messageupdaters/ScheduledMessageUpdaterAbstr";
 
 export enum Interval {
     HOURLY = "0 * * * *",
@@ -10,6 +10,7 @@ export enum Interval {
 } 
 
 export default class Scheduler {
+    
 
     constructor() {
     }
@@ -21,7 +22,7 @@ export default class Scheduler {
         })
     }
 
-    refresh() {
+    stop() {
         gracefulShutdown();
     }
 

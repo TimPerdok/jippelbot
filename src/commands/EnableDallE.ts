@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discor
 import Command from "../classes/Command";
 import JSONDataHandler, { ServerScoped } from "../classes/datahandlers/JSONDataHandler";
 import DiscordBot from "../classes/Bot";
-import { ServerdataJSON } from "../types/ServerdataJSON";
+import { ServerConfig } from "../types/ServerdataJSON";
 import { DataJSON } from "../interfaces/MessageCarrier";
 
 
@@ -25,10 +25,9 @@ export default class Ping extends Command {
         const enabled = interaction.options.getBoolean("enabled", true);
         const password = interaction.options.getString("password", true);
         if (password !== process.env.disablepass) return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true })
-        const serverdata = await DiscordBot.getInstance().dataHandlers.serverdata.getAll() as ServerScoped<ServerdataJSON>
-        if (!interaction.guildId) return interaction.reply({ content: "Server Id not found", ephemeral: true })
-        const newServerdata = { ...serverdata, [interaction.guildId]: { ...serverdata[interaction.guildId], enabledalle: enabled } }
-        DiscordBot.getInstance().dataHandlers.serverdata.overwriteAll(newServerdata)
+        const serverdata = await DiscordBot.getInstance().dataHandlers.serverdata.getOfServer(interaction.guildId ?? "")
+        serverdata.isDalleEnabled = enabled
+        DiscordBot.getInstance().dataHandlers.serverdata.overwrite(interaction.guildId ?? "", serverdata)
         interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true })
     }
 

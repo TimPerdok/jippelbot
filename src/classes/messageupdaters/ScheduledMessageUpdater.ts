@@ -2,34 +2,25 @@ import lzString from "lz-string";
 import MessageUpdater from "./MessageUpdater";
 import ReactiveList from "../ReactiveList";
 import Scheduler, { Interval } from "../Scheduler";
+import { Message, MessageEditOptions, MessagePayload } from "discord.js";
+import ScheduledActionWrapper from "./ScheduledMessageUpdaterAbstr";
 
 
-export  type Schedule = {
+export type Schedule = {
     callback: () => any;
     at: Date | Interval;
 }
 
-export default class ScheduledMessageUpdater extends MessageUpdater {
-    protected schedules: ReactiveList<Schedule>;
-    protected scheduler: Scheduler;
-
-    constructor() {
-        super()
-        this.scheduler = new Scheduler();
-        this.schedules = new ReactiveList<Schedule>(this.reschedule.bind(this));
-    }
+export default class ScheduledAction extends ScheduledActionWrapper {
     
-    addSchedule(schedule: Schedule) {
-        this.schedules.push(schedule);
+    constructor(schedule: Schedule) {
+        super(schedule.at);
     }
 
-    addSchedules(schedules: Schedule[]) {
-        this.schedules.push(...schedules);
+    run() {
+        return this.schedule.callback();
     }
 
-    reschedule() {
-        this.scheduler.refresh();
-        this.scheduler.schedule(this.schedules);
-    }
+
 
 }

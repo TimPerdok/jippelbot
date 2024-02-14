@@ -22,7 +22,7 @@ export default class Subscribe extends Command {
         try {
             const name = interaction.options.getString("name", true);
             let subscribed = true;
-            const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.get(interaction.guildId ?? "") as Game[];
+            const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(interaction.guildId ?? "") as Game[];
             let game = games.find(game => game.name.toLowerCase() == name.toLowerCase());
             if (!game) {
                 game = await IGDBApi.searchGame(name);

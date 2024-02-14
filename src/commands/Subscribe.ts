@@ -47,11 +47,11 @@ export default class Subscribe extends Command {
                 components: [actionRow],
             });
         const game = await this.enrichGameAndSave(options[0], interaction.guildId ?? "", userDescription)
-        const gameInData = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.get(interaction.guildId ?? "") as Game[];
+        const gameInData = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(interaction.guildId ?? "") as Game[];
         gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
             
-        await DiscordBot.getInstance().gameReleaseUpdater.updateGameSubscriptions();
+        DiscordBot.getInstance().getServerById(interaction.guildId ?? "")?.updateLiveMessages();
     }
 
     async onButtonPress(interaction: ButtonInteraction<CacheType>): Promise<void> {
@@ -70,7 +70,7 @@ export default class Subscribe extends Command {
     async enrichGameAndSave(game: Game, guildId: string, userDescription?: string | null): Promise<Game> {
         game = await IGDBApi.enrichGameData(game)
         if (userDescription) game.userDescription = userDescription;
-        const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.get(guildId) as Game[];
+        const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(guildId) as Game[];
         const index = games.findIndex(g => g.id === game.id);
         if (index !== -1) games[index] = {
             ...games[index],
@@ -78,6 +78,7 @@ export default class Subscribe extends Command {
         };
         else games.push(game);
         await DiscordBot.getInstance().dataHandlers.gameSubscriptions.overwrite(guildId, games)
+        DiscordBot.getInstance().getServerById(guildId)?.updateLiveMessages();
         return game;
     }
 

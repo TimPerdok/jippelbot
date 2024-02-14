@@ -5,7 +5,7 @@ import Poll from "../../classes/Poll";
 import Subcommand from "../../classes/Subcommand";
 import PollCarrier from "../../interfaces/PollCarrier";
 import PollSubcommand from "../../interfaces/PollCarrier";
-import { ServerdataJSON } from "../../types/ServerdataJSON";
+import { ServerConfig } from "../../types/ServerdataJSON";
 
 
 
@@ -45,7 +45,7 @@ export default class Renamechannel extends PollSubcommand  {
             command: this,
             params: { newName, channelId: toBeRenamedChannel.id }
         });
-        const serverData = await JSONDataHandler.getServerdata(interaction.guildId as string) as ServerdataJSON
+        const serverData = await JSONDataHandler.getServerdata(interaction.guildId as string) as ServerConfig
         const voteChannel = channels.get(serverData.voteChannel) as TextChannel
         await interaction.reply({ content: "Je vote is aangemaakt!", ephemeral: true }) as MessageEditOptions
         const message = await voteChannel.send({ ...poll.payload, fetchReply: true } as MessageCreateOptions);
