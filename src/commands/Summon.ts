@@ -3,7 +3,7 @@ import Command from "../classes/Command";
 import Poll from "../classes/Poll";
 import Classfinder from "../classes/Classfinder";
 import Subcommand from "../classes/Subcommand";
-import DataHandler from "../classes/datahandlers/DataHandler";
+import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
 import { PollJSON } from "../types/PollJSON";
 
 

@@ -1,4 +1,4 @@
-export type PollJSON = {
+export class PollJSON {
     question: string
     initiatorId: string
     votes: {
@@ -11,4 +11,9 @@ export type PollJSON = {
     params: {
         [key: string]: string
     }
+
+    get id() {
+        return this.messageId
+    }
+
 };

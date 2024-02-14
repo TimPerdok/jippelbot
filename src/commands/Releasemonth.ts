@@ -1,8 +1,10 @@
 import { ChatInputCommandInteraction, Client, Embed, EmbedField, SlashCommandBuilder } from "discord.js";
 import Command from "../classes/Command";
-import DataHandler from "../classes/datahandlers/DataHandler";
-import IGDBApi, { Game } from "../api/IGDBApi";
+import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
+import IGDBApi from "../api/IGDBApi";
 import { MONTHS, createEmbed, gameToValue as gameToValue, uniqueArray, uppercaseFirstLetter } from "../util/util";
+import DiscordBot from "../classes/Bot";
+import { Game } from "../api/IGDB";
 
 export default class ReleaseMonth extends Command {
 
@@ -26,7 +28,7 @@ export default class ReleaseMonth extends Command {
             const month = interaction.options.getString("month", true);
             const year = interaction.options.getNumber("year", false) ?? new Date().getFullYear();
             
-            let games: Game[] = (await DataHandler.getGameSubscriptions(interaction.guildId ?? ""))
+            let games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.get(interaction.guildId ?? "") as Game[];
 
             games = month === "Onbekend" ? games.filter(game => game?.nextReleaseDate == undefined)
                     : games.filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == MONTHS.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);

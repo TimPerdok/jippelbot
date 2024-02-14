@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
 import Command from "../classes/Command";
-import DataHandler from "../classes/datahandlers/DataHandler";
 import IGDBApi from "../api/IGDBApi";
 import DiscordBot from "../classes/Bot";
+import { Game } from "../api/IGDB";
 
 export default class Subscribe extends Command {
 
@@ -19,7 +19,7 @@ export default class Subscribe extends Command {
 
     async onCommand(interaction: ChatInputCommandInteraction) {
         const name = interaction.options.getString("name", true);
-        const game = await DataHandler.removeGameSubscription(interaction.guildId ?? "", name);
+        const game = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getItem(interaction.guildId ?? "", name) as Game
         if (!game) return await interaction.reply(`De server is niet geabonneerd op ${name}.`)
         await interaction.reply({content: `De server is niet meer geabonneerd op ${game.name}.`, ephemeral: true});
         await DiscordBot.getInstance().gameReleaseUpdater.updateGameSubscriptions();

@@ -1,4 +1,4 @@
 
 
-export const ROOTDIR = __dirname
+export const SRC_DIR = __dirname
 

@@ -1,6 +1,6 @@
 import { APIApplicationCommandOptionChoice, ButtonInteraction, ChannelType, ChatInputCommandInteraction, Client, Guild, GuildMember, Interaction, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, VoiceChannel } from "discord.js";
 import DiscordBot from "../../classes/Bot";
-import DataHandler from "../../classes/datahandlers/DataHandler";
+import JSONDataHandler from "../../classes/datahandlers/JSONDataHandler";
 import Poll from "../../classes/Poll";
 import Subcommand from "../../classes/Subcommand";
 import PollCarrier from "../../interfaces/PollCarrier";
@@ -19,7 +19,7 @@ export default class Addchannel extends PollSubcommand  {
     
     onPass(poll: Poll): void {
         const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild?.id ?? "") as Guild
-        (DataHandler.getServerdata(guild.id)).then((serverData: ServerdataJSON)=>{
+        (JSONDataHandler.getServerdata(guild.id)).then((serverData: ServerdataJSON)=>{
             const parent = poll.params.type === "GUILD_TEXT" ? serverData.textChannelCategory : serverData.voiceChannelCategory
             poll.message.edit({
                 embeds: [],
@@ -55,7 +55,7 @@ export default class Addchannel extends PollSubcommand  {
             command: this,
             params: { newName, type}
         });
-        const serverData = await DataHandler.getServerdata(interaction.guildId as string) as ServerdataJSON
+        const serverData = await JSONDataHandler.getServerdata(interaction.guildId as string) as ServerdataJSON
         const voteChannel = channels.get(serverData.voteChannel) as TextChannel
         await interaction.reply({ content: "Je vote is aangemaakt!", ephemeral: true }) as MessageEditOptions
         const message = await voteChannel.send({ ...poll.payload, fetchReply: true } as MessageCreateOptions);

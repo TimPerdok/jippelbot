@@ -1,7 +1,9 @@
 import { ChatInputCommandInteraction, Client, Embed, SlashCommandBuilder } from "discord.js";
 import Command from "../classes/Command";
-import DataHandler from "../classes/datahandlers/DataHandler";
-import IGDBApi, { Game } from "../api/IGDBApi";
+import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
+import IGDBApi from "../api/IGDBApi";
+import IGDB, { Game } from "../api/IGDB";
+import DiscordBot from "../classes/Bot";
 
 export default class Subscribe extends Command {
 
@@ -20,8 +22,8 @@ export default class Subscribe extends Command {
         try {
             const name = interaction.options.getString("name", true);
             let subscribed = true;
-            let game = (await DataHandler.getGameSubscriptions(interaction.guildId ?? ""))
-                .find(game => game.name.toLowerCase() == name.toLowerCase());
+            const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.get(interaction.guildId ?? "") as Game[];
+            let game = games.find(game => game.name.toLowerCase() == name.toLowerCase());
             if (!game) {
                 game = await IGDBApi.searchGame(name);
                 subscribed = false;
@@ -33,7 +35,7 @@ export default class Subscribe extends Command {
                 fields: [
                     {
                         name: "Status",
-                        value: IGDBApi.statusToString(game?.currentReleaseStatus ?? 0)
+                        value: IGDB.statusToString(game?.currentReleaseStatus ?? 0)
                     },
                     {
                         name: "Volgende release datum",
@@ -44,12 +46,12 @@ export default class Subscribe extends Command {
                     {
                         name: "Volgende release status",
                         value: game.nextReleaseStatus ?
-                            IGDBApi.statusToString(game.nextReleaseStatus)
+                            IGDB.statusToString(game.nextReleaseStatus)
                             : "Geen status bekend"
                     },
                     {
                         name: "Omschrijving",
-                        value: game?.userDescription
+                        value: game?.userDescription ?? ""
                     },
                     {
                         name: "Subscribed",
@@ -61,8 +63,10 @@ export default class Subscribe extends Command {
                     url: `https:${coverUrl}`
                 }
             } as Embed;
+            console.log(embed)
             await interaction.reply({ embeds: [embed], ephemeral: true});    
         } catch (error) {
+            console.log(error)
             interaction.reply({content: `Er is iets fout gegaan. ${error}`, ephemeral: true});
         }
         

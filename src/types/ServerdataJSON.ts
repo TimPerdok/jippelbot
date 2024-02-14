@@ -1,4 +1,5 @@
 export type ServerdataJSON = {
+    name: string
     voteChannel: string
     voiceChannelCategory: string
     textChannelCategory: string

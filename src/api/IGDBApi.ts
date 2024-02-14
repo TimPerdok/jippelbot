@@ -1,44 +1,7 @@
 import axios from 'axios';
 import Bot from '../classes/Bot';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed, InteractionEditReplyOptions, Message, MessagePayload } from 'discord.js';
-import CustomIdentifier from '../classes/CustomIdentifier';
-
-export type Game = {
-    id: number
-    name: string
-    url: string
-    currentReleaseStatus: number
-    release_dates?: number[]
-    nextReleaseDate?: number
-    nextReleaseStatus?: number
-    cover: number
-    userDescription?: string
-    websites: number[]
-}
-
-export type ReleaseDate = {
-    id: number
-    game: number
-    status: number
-    date: number
-}
-
-
-
+import IGDB, { Game, ReleaseDate } from './IGDB';
 class IGDBApi {
-    
-    
-
-    static gameFields = [
-        'id',
-        'name',
-        'url',
-        'release_dates',
-        'cover',
-        'websites'
-    ].join(',');
-
-    static baseUrl = 'https://api.igdb.com/v4';
 
     static async post(url: string, data: string) {
         return await axios.post(
@@ -54,10 +17,10 @@ class IGDBApi {
 
 
     static async searchGames(ids: number[]): Promise<Game[]> {
-        const url = `${IGDBApi.baseUrl}/games`;
+        const url = `${IGDB.baseUrl}/games`;
         const response = await IGDBApi.post(
             url,
-            `fields ${this.gameFields};
+            `fields ${IGDB.gameFields};
             where id = (${ids.join(',')});`);
         let games: Game[] = response.data;
         
@@ -88,11 +51,11 @@ class IGDBApi {
     }
 
     static async presearchGame(query: string): Promise<Game[]> {
-        const url = `${IGDBApi.baseUrl}/games`;
+        const url = `${IGDB.baseUrl}/games`;
         let response = await IGDBApi.post(
             url,
             `search "${query}";
-            fields ${this.gameFields};
+            fields ${IGDB.gameFields};
             limit 5;`,);
         if (!response.data?.length) return [];
         let games: Game[] = response.data;
@@ -117,10 +80,10 @@ class IGDBApi {
     }
 
     static async getGameById(id: number) {
-        const url = `${IGDBApi.baseUrl}/games`;
+        const url = `${IGDB.baseUrl}/games`;
         let response = await IGDBApi.post(
             url,
-            `fields ${this.gameFields};
+            `fields ${IGDB.gameFields};
             where id = ${id};
             limit 1;`,);
         if (!response.data.length) return undefined;
@@ -131,18 +94,18 @@ class IGDBApi {
     }
 
     static async searchGame(query: string): Promise<Game | undefined> {
-        const url = `${IGDBApi.baseUrl}/games`;
+        const url = `${IGDB.baseUrl}/games`;
         let response = await IGDBApi.post(
             url,
             `search "${query}";
-            fields ${this.gameFields};
+            fields ${IGDB.gameFields};
             where first_release_date > ${Math.floor(Date.now() / 1000)};
             limit 1;`,);
         if (!response.data.length) {
             response = await IGDBApi.post(
                 url,
                 `search "${query}";
-                fields ${this.gameFields};
+                fields ${IGDB.gameFields};
                 limit 1;`);
         }
         if (!response.data.length) return undefined;
@@ -155,7 +118,7 @@ class IGDBApi {
 
     static async getSteamUrl(id: number[]): Promise<string | undefined> {
         if (!id?.length) return Promise.resolve(undefined);
-        const url = `${IGDBApi.baseUrl}/websites`;
+        const url = `${IGDB.baseUrl}/websites`;
         let response = await IGDBApi.post(
             url,
             `fields url;
@@ -164,11 +127,10 @@ class IGDBApi {
         return response.data?.[0]?.url
     }
 
-
     static async getNextReleaseDates(games: Game[]): Promise<ReleaseDate[] | undefined> {
         const releaseDates = games.filter(game=>game?.release_dates).map(game => game.release_dates).flat()
         if (!releaseDates?.length) return Promise.resolve(undefined);
-        const url = `${IGDBApi.baseUrl}/release_dates`;
+        const url = `${IGDB.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
@@ -179,7 +141,7 @@ class IGDBApi {
     static async getCurrentReleases(games: Game[]): Promise<ReleaseDate[] | undefined> {
         const releaseDates = games.filter(game=>game?.release_dates).map(game => game.release_dates).flat()
         if (!releaseDates?.length) return Promise.resolve(undefined);
-        const url = `${IGDBApi.baseUrl}/release_dates`;
+        const url = `${IGDB.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
@@ -190,7 +152,7 @@ class IGDBApi {
 
     static async getNextReleaseDate(releaseDateIDs: string[]): Promise<ReleaseDate | undefined> {
         if (!releaseDateIDs?.length) return Promise.resolve(undefined);
-        const url = `${IGDBApi.baseUrl}/release_dates`;
+        const url = `${IGDB.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
@@ -201,7 +163,7 @@ class IGDBApi {
 
     static async getCurrentRelease(releaseDateIDs: string[]): Promise<ReleaseDate | undefined> {
         if (!releaseDateIDs?.length) return Promise.resolve(undefined);
-        const url = `${IGDBApi.baseUrl}/release_dates`;
+        const url = `${IGDB.baseUrl}/release_dates`;
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
@@ -211,13 +173,9 @@ class IGDBApi {
         return response.data?.[0]
     }
 
-    static statusToString(status: number): string {
-        return ["Onbekend", "Alpha", "Beta", "Early Access", "Offline", "Cancelled", "Full Release"][status]
-    }
-
     static async searchGameCover(cover: number): Promise<string | undefined> {
         if (!cover) return Promise.resolve(undefined);
-        const url = `${IGDBApi.baseUrl}/covers`;
+        const url = `${IGDB.baseUrl}/covers`;
         let response = await IGDBApi.post(
             url,
             `fields url;

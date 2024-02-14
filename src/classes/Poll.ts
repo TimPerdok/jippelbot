@@ -2,7 +2,7 @@ import { ActionRow, ActionRowBuilder, BaseMessageOptions, ButtonBuilder, ButtonI
 import MessageCarrier, { DataJSON, Payload } from "../interfaces/MessageCarrier";
 import { PollSubcommand } from "../types/PollSubcommand";
 import Classfinder from "./Classfinder";
-import DataHandler from "./datahandlers/DataHandler";
+import JSONDataHandler from "./datahandlers/JSONDataHandler";
 import Subcommand from "./Subcommand";
 
 export type PollConfig = {
@@ -56,13 +56,13 @@ export default class Poll implements MessageCarrier {
             if (this.percentage > this.minimumPercentage || this.debug) {
                 try {
                     this.command.onPass(this)
-                    DataHandler.removePoll(this.message.id)
+                    JSONDataHandler.removePoll(this.message.id)
                 } catch (e) {
                     console.error(e)
                 }
             } else {
                 this.command.onFail(this)
-                DataHandler.removePoll(this.message.id)
+                JSONDataHandler.removePoll(this.message.id)
             }
         }, this.timeLeft > 0 ? this.timeLeft : 0)
     }
@@ -91,7 +91,7 @@ export default class Poll implements MessageCarrier {
     }
 
     updateData(): void {
-        DataHandler.setPoll(this.format)
+        JSONDataHandler.setPoll(this.format)
     }
 
     setMessage(message: Message): void {
@@ -105,7 +105,7 @@ export default class Poll implements MessageCarrier {
         if (this.yesCount > 5 || this.debug) {
             this.done = true
             this.command.onPass(this)
-            DataHandler.removePoll(this.message.id)
+            JSONDataHandler.removePoll(this.message.id)
             return true
         }
         return false

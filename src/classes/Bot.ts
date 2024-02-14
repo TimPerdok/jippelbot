@@ -2,15 +2,15 @@ import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Coll
 import { PollJSON } from "../types/PollJSON";
 import Classfinder from "./Classfinder";
 import Command from "./Command";
-import DataHandler, { DataFile } from "./datahandlers/DataHandler";
+import JSONDataHandler, { ServerScoped } from "./datahandlers/JSONDataHandler";
 import ServerREST from "./ServerREST";
-import TwitchAccessTokenHandler, { TwitchAccessTokenJSON, TwitchAuth } from "../api/TwitchAccessToken";
-import IGDBApi, { Game } from "../api/IGDBApi";
-import { all } from "axios";
-import { DataJSON } from "../interfaces/MessageCarrier";
-import { uniqueArray, gameToValue, uppercaseFirstLetter, MONTHS, createEmbed } from "../util/util";
+import TwitchAccessTokenHandler, { TwitchAuth } from "../api/TwitchAccessToken";
 import StdinListener from "./StdinListener";
 import GameReleaseUpdater from "./gamereleases/GameReleaseUpdater";
+import { ServerdataJSON } from "../types/ServerdataJSON";
+import { Game } from "../api/IGDB";
+import { DataJSON } from "../interfaces/MessageCarrier";
+import ListDataHandler from "./datahandlers/ListDataHandler";
 
 export default class DiscordBot {
 
@@ -27,6 +27,11 @@ export default class DiscordBot {
 
     stdinListener: StdinListener;
     gameReleaseUpdater: GameReleaseUpdater;
+    dataHandlers: {
+        poll: ListDataHandler<PollJSON[]>
+        serverdata: JSONDataHandler<ServerdataJSON>
+        gameSubscriptions: ListDataHandler<Game[]>
+    };
 
 
     setInstance(instance: DiscordBot) {
@@ -42,6 +47,7 @@ export default class DiscordBot {
     }
 
     constructor(token: string, clientId: string, twitchToken: TwitchAuth) {
+        this.setInstance(this)
         this.rest = new REST({ version: '10' }).setToken(token);
         DiscordBot.client = new Client({
             intents: [GatewayIntentBits.Guilds,
@@ -53,8 +59,14 @@ export default class DiscordBot {
         this.commands = new Collection<string, Command>();
         this.stdinListener = new StdinListener()
         this.stdinListener.start()
+        this.dataHandlers = {
+            poll: new ListDataHandler<PollJSON[]>('poll.json'),
+            serverdata: new JSONDataHandler<ServerdataJSON>('serverdata.json'),
+            gameSubscriptions: new ListDataHandler<Game[]>('gameSubscriptions.json')
 
-        this.gameReleaseUpdater = new GameReleaseUpdater()
+        }
+
+       
 
         DiscordBot.client.on('ready', async () => {
             console.log(`Logged in as ${DiscordBot.client?.user?.tag}`);
@@ -73,10 +85,10 @@ export default class DiscordBot {
 
         try {
             this.twitchAccessTokenHandler = new TwitchAccessTokenHandler(twitchToken)
-            this.setInstance(this)
         } catch (error) {
             console.error(error)
         }
+        this.gameReleaseUpdater = new GameReleaseUpdater()
     }
    
 
@@ -92,8 +104,11 @@ export default class DiscordBot {
                         break;
                     case "ButtonInteraction":
                         interaction = interaction as ButtonInteraction;
-                        let commandName = interaction.message.interaction?.commandName?.split(' ')[0];
-                        if (!commandName) commandName = (await DataHandler.getPoll(interaction.message.id) as PollJSON).command.split('/')[0];
+                        const message = interaction.message as Message
+                        let commandName = message.interaction?.commandName?.split(' ')[0];
+                        const serverPolls = (await this.dataHandlers.poll.get(interaction.guildId ?? "")) as PollJSON[]
+                        const poll = serverPolls.find(poll => poll.messageId === message.id)
+                        if (!commandName) commandName = poll?.command.split(' ')[0] as string
                         command = this.commands.get(commandName) as Command; // Add type assertion here
                         command.onButtonPress(interaction);
                         break;

@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 import { DataJSON } from "../../interfaces/MessageCarrier";
-import { ROOTDIR } from "../../Constants";
+import { SRC_DIR } from "../../Constants";
 import { TwitchAccessTokenJSON } from "../../api/TwitchAccessToken";
 
 
-const dataFolder = require('path').resolve(ROOTDIR, '..')
+const dataFolder = require('path').resolve(SRC_DIR, '..')
 
 export default class TokenHandler {
 

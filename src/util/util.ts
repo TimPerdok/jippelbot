@@ -1,7 +1,8 @@
 import { TextChannel, EmbedField, Embed } from "discord.js";
-import IGDBApi, { Game } from "../api/IGDBApi";
+import IGDBApi from "../api/IGDBApi";
 import DiscordBot from "../classes/Bot";
-import DataHandler from "../classes/datahandlers/DataHandler";
+import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
+import IGDB, { Game } from "../api/IGDB";
 
 export function uniqueArray(array) {
     return array.filter((obj, index, self) =>
@@ -17,7 +18,7 @@ export function uppercaseFirstLetter(string: string) {
 export function gameToValue(game: Game, small = false) {
     const date = new Date((game?.nextReleaseDate ?? 0) * 1000);
     const status = game?.nextReleaseStatus != undefined
-        ? `(${IGDBApi.statusToString(game.nextReleaseStatus ?? 0)}) `
+        ? `(${IGDB.statusToString(game.nextReleaseStatus ?? 0)}) `
         : "";
     return `- ${small ? game.name : `[${game.name}](${game.url})`} ${status}
         ${game?.nextReleaseDate ?

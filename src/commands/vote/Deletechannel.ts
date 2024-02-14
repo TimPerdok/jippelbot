@@ -1,6 +1,6 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, GuildMember, Interaction, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, VoiceChannel } from "discord.js";
 import DiscordBot from "../../classes/Bot";
-import DataHandler from "../../classes/datahandlers/DataHandler";
+import JSONDataHandler from "../../classes/datahandlers/JSONDataHandler";
 import Poll from "../../classes/Poll";
 import PollSubcommand from "../../interfaces/PollCarrier";
 import { ServerdataJSON } from "../../types/ServerdataJSON";
@@ -40,7 +40,7 @@ export default class Deletechannel extends PollSubcommand  {
             command: this,
             params: { channelId: toBeDeletedChannel.id }
         });
-        const serverData = await DataHandler.getServerdata(interaction.guildId as string) as ServerdataJSON
+        const serverData = await JSONDataHandler.getServerdata(interaction.guildId as string) as ServerdataJSON
         const voteChannel = channels.get(serverData.voteChannel) as TextChannel
         await interaction.reply({ content: "Je vote is aangemaakt!", ephemeral: true }) as MessageEditOptions
         const message = await voteChannel.send({ ...poll.payload, fetchReply: true } as MessageCreateOptions);

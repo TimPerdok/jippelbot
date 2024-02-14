@@ -1,5 +1,5 @@
 import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, ChatInputCommandInteraction, EmbedBuilder, Guild, GuildMember, SlashCommandSubcommandBuilder } from "discord.js";
-import DataHandler from "../classes/datahandlers/DataHandler";
+import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
 import Poll from "../classes/Poll";
 import Subcommand from "../classes/Subcommand";
 
@@ -10,7 +10,7 @@ export default abstract class PollSubcommand extends Subcommand {
     constructor(name: string, description: string, parentCommand: string) {
         super(name, description, parentCommand)
         this.polls = new Map<string, Poll>();
-        DataHandler.getPolls(this).then((polls: Map<string, Poll>) => {
+        JSONDataHandler.getPolls(this).then((polls: Map<string, Poll>) => {
             this.polls = polls
         })
     }

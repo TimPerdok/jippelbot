@@ -3,10 +3,12 @@ import Command from "../classes/Command";
 import Poll from "../classes/Poll";
 import Classfinder from "../classes/Classfinder";
 import Subcommand from "../classes/Subcommand";
-import DataHandler from "../classes/datahandlers/DataHandler";
+import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
 import { PollJSON } from "../types/PollJSON";
 import { openai } from '../index'
 import fetch from 'node-fetch';
+import DiscordBot from "../classes/Bot";
+import { ServerdataJSON } from "../types/ServerdataJSON";
 
 export default class Summon extends Command {
 
@@ -26,7 +28,8 @@ export default class Summon extends Command {
 
 
     async onCommand(interaction: ChatInputCommandInteraction) {
-        if (!(await DataHandler.getServerdata(interaction.guildId as string)).isDalleEnabled) return await interaction.reply("Joop zijn euro's zijn op. Momenteel kunnen er geen afbeeldingen gegenereerd worden.");
+        const serverdata = await DiscordBot.getInstance().dataHandlers.serverdata.get(interaction.guildId ?? "") as ServerdataJSON;
+        if (!serverdata.isDalleEnabled) return interaction.reply({ content: "Dall-e is niet enabled op deze server", ephemeral: true });
 
         const prompt = interaction.options.getString("prompt", true);
         interaction.deferReply();

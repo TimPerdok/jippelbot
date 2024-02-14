@@ -1,9 +1,9 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, ChatInputCommandInteraction, Client, Interaction, MessageInteraction, SlashCommandBuilder } from "discord.js";
 import Command from "../classes/Command";
-import DataHandler from "../classes/datahandlers/DataHandler";
-import IGDBApi, { Game } from "../api/IGDBApi";
+import IGDBApi from "../api/IGDBApi";
 import DiscordBot from "../classes/Bot";
 import CustomIdentifier from "../classes/CustomIdentifier";
+import { Game } from "../api/IGDB";
 
 export default class Subscribe extends Command {
 
@@ -28,7 +28,8 @@ export default class Subscribe extends Command {
         if (!game) return await interaction.editReply("Geen game gevonden met dit ID.");
         
         game = await this.enrichGameAndSave(game, interaction.guildId ?? "", userDescription)
-        const gameInData = await DataHandler.getGameSubscription(interaction.guildId ?? "", game.name);
+        if (!game) return await interaction.editReply("Er is iets fout gegaan. Probeer later opnieuw.");
+        const gameInData = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getItem(interaction.guildId ?? "", game.id);
         gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
         await DiscordBot.getInstance().gameReleaseUpdater.updateGameSubscriptions();
@@ -50,7 +51,7 @@ export default class Subscribe extends Command {
     async enrichGameAndSave(game: Game, guildId: string, userDescription?: string | null): Promise<Game> {
         game = await IGDBApi.enrichGameData(game);
         if (userDescription) game.userDescription = userDescription;
-        await DataHandler.addGameSubscription(guildId, game);
+        // await JSONDataHandler.addGameSubscription(guildId, game);
         return game;
     }
 

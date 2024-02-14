@@ -3,8 +3,9 @@ import Command from "../classes/Command";
 import Poll from "../classes/Poll";
 import Classfinder from "../classes/Classfinder";
 import Subcommand from "../classes/Subcommand";
-import DataHandler from "../classes/datahandlers/DataHandler";
+import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
 import { PollJSON } from "../types/PollJSON";
+import DiscordBot from "../classes/Bot";
 
 
 export default class Vote extends Command {
@@ -26,7 +27,10 @@ export default class Vote extends Command {
     }
 
     async onButtonPress(interaction: ButtonInteraction) {
-        const subcommand = this.subcommands.get((await DataHandler.getPoll(interaction.message.id) as PollJSON).command.split("/")[1])
+        const guildId = interaction.guildId
+        const poll = await DiscordBot.getInstance().dataHandlers.poll.getItem(guildId ?? "", interaction.message.id) as PollJSON
+        if (!poll) return interaction.reply({content: "Poll not found", ephemeral: true})
+        const subcommand = this.subcommands.get(poll.command)
         if (subcommand) return subcommand.onButtonPress(interaction)
     }
 
