@@ -40,7 +40,7 @@ class IGDBApi {
         return __awaiter(this, void 0, void 0, function* () {
             const currentReleases = yield this.getCurrentReleases(games);
             games.forEach(game => {
-                const currentRelease = currentReleases.find(release => release.game === game.id);
+                const currentRelease = currentReleases === null || currentReleases === void 0 ? void 0 : currentReleases.find(release => release.game === game.id);
                 if (currentRelease)
                     game.currentReleaseStatus = currentRelease === null || currentRelease === void 0 ? void 0 : currentRelease.status;
             });
@@ -51,7 +51,7 @@ class IGDBApi {
         return __awaiter(this, void 0, void 0, function* () {
             const nextReleaseDates = yield this.getNextReleaseDates(games);
             games.forEach(game => {
-                const releaseDate = nextReleaseDates.find(release => release.game === game.id);
+                const releaseDate = nextReleaseDates === null || nextReleaseDates === void 0 ? void 0 : nextReleaseDates.find(release => release.game === game.id);
                 if (releaseDate) {
                     game.nextReleaseDate = releaseDate.date;
                     game.nextReleaseStatus = releaseDate.status;
@@ -75,12 +75,12 @@ class IGDBApi {
         });
     }
     static enrichGameData(game) {
-        var _a, _b;
+        var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {
-            const currentRelease = yield this.getCurrentRelease((_a = game.release_dates) === null || _a === void 0 ? void 0 : _a.map(id => id.toString()));
+            const currentRelease = yield this.getCurrentRelease((_b = (_a = game === null || game === void 0 ? void 0 : game.release_dates) === null || _a === void 0 ? void 0 : _a.map(id => id.toString())) !== null && _b !== void 0 ? _b : []);
             if (currentRelease)
                 game.currentReleaseStatus = currentRelease.status;
-            const releaseDate = yield this.getNextReleaseDate((_b = game.release_dates) === null || _b === void 0 ? void 0 : _b.map(id => id.toString()));
+            const releaseDate = yield this.getNextReleaseDate((_d = (_c = game === null || game === void 0 ? void 0 : game.release_dates) === null || _c === void 0 ? void 0 : _c.map(id => id.toString())) !== null && _d !== void 0 ? _d : []);
             if (releaseDate) {
                 game.nextReleaseDate = releaseDate.date;
                 game.nextReleaseStatus = releaseDate.status;

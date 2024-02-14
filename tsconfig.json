@@ -5,6 +5,7 @@
     "target":"ES6",
     "module": "CommonJS",
     "outDir": "./dist",
+    "strictNullChecks": true
   },
   "include": [
     "./src/**/*"

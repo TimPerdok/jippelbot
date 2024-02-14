@@ -68,7 +68,7 @@ class IGDBApi {
     static async addCurrentReleases(games: Game[]): Promise<Game[]> {
         const currentReleases = await this.getCurrentReleases(games);
         games.forEach(game => {
-            const currentRelease = currentReleases.find(release => release.game === game.id);
+            const currentRelease = currentReleases?.find(release => release.game === game.id);
             if (currentRelease) game.currentReleaseStatus = currentRelease?.status;
         });
         return games;
@@ -77,7 +77,7 @@ class IGDBApi {
     static async addNextReleases(games: Game[]): Promise<Game[]> {
         const nextReleaseDates = await this.getNextReleaseDates(games);
         games.forEach(game => {
-            const releaseDate = nextReleaseDates.find(release => release.game === game.id);
+            const releaseDate = nextReleaseDates?.find(release => release.game === game.id);
             if (releaseDate) {
                 game.nextReleaseDate = releaseDate.date;
                 game.nextReleaseStatus = releaseDate.status;
@@ -100,16 +100,16 @@ class IGDBApi {
     }
 
     static async enrichGameData(game: Game): Promise<Game> {
-        const currentRelease = await this.getCurrentRelease(game.release_dates?.map(id => id.toString()));
+        const currentRelease = await this.getCurrentRelease(game?.release_dates?.map(id => id.toString()) ?? []);
         if (currentRelease) game.currentReleaseStatus = currentRelease.status;
 
-        const releaseDate: ReleaseDate = await this.getNextReleaseDate(game.release_dates?.map(id => id.toString()));
+        const releaseDate = await this.getNextReleaseDate(game?.release_dates?.map(id => id.toString()) ?? []);
         if (releaseDate) {
             game.nextReleaseDate = releaseDate.date;
             game.nextReleaseStatus = releaseDate.status;
         }
 
-        const steamUrl: string = await this.getSteamUrl(game?.websites);
+        const steamUrl = await this.getSteamUrl(game?.websites);
         if (steamUrl) game.url = steamUrl;
 
         return game;
@@ -152,7 +152,7 @@ class IGDBApi {
 
     }
 
-    static async getSteamUrl(id: number[]): Promise<string> {
+    static async getSteamUrl(id: number[]): Promise<string | undefined> {
         if (!id?.length) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/websites`;
         let response = await IGDBApi.post(
@@ -214,7 +214,7 @@ class IGDBApi {
         return ["Onbekend", "Alpha", "Beta", "Early Access", "Offline", "Cancelled", "Full Release"][status]
     }
 
-    static async searchGameCover(cover: number): Promise<string> {
+    static async searchGameCover(cover: number): Promise<string | undefined> {
         if (!cover) return Promise.resolve(undefined);
         const url = `${IGDBApi.baseUrl}/covers`;
         let response = await IGDBApi.post(

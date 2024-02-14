@@ -139,7 +139,7 @@ class DiscordBot {
                     if (!channel)
                         return;
                     const messages = yield channel.messages.fetch({ limit: 25 });
-                    const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length > 0);
+                    const message = messages.find((message) => { var _a; return message.author.id === ((_a = DiscordBot.client.user) === null || _a === void 0 ? void 0 : _a.id) && message.embeds.length > 0; });
                     message
                         ? message.edit({ embeds: [embed] })
                         : channel.send({ embeds: [embed] });
@@ -173,8 +173,8 @@ class DiscordBot {
                         if (!channel)
                             return;
                         const messages = yield channel.messages.fetch({ limit: 25 });
-                        const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length == 0);
-                        message.delete();
+                        const message = messages.find((message) => { var _a; return message.author.id === ((_a = DiscordBot.client.user) === null || _a === void 0 ? void 0 : _a.id) && message.embeds.length == 0; });
+                        message === null || message === void 0 ? void 0 : message.delete();
                         channel.send({ content: `**${game.name} is gereleased!**` });
                     }));
                 });

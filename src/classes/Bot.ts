@@ -153,11 +153,11 @@ export default class DiscordBot {
         Object.entries(allGames).forEach(async ([serverId, games]: [string, Game[]]) => {
             try {
                 const serverdata = await DataHandler.getServerdata(serverId);
-                const embed = await createEmbed(games)
+                const embed = await createEmbed(games) as Embed;
                 const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
                 if (!channel) return;
                 const messages = await channel.messages.fetch({ limit: 25 })
-                const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length > 0)
+                const message = messages.find((message) => message.author.id === DiscordBot.client.user?.id && message.embeds.length > 0)
                 message
                     ? message.edit({ embeds: [embed] })
                     : channel.send({ embeds: [embed] })
@@ -187,8 +187,8 @@ export default class DiscordBot {
                     const channel = DiscordBot.client.channels.cache.get(releaseChannel) as TextChannel;
                     if (!channel) return;
                     const messages = await channel.messages.fetch({ limit: 25 })
-                    const message = messages.find((message) => message.author.id === DiscordBot.client.user.id && message.embeds.length == 0)
-                    message.delete()
+                    const message = messages.find((message) => message.author.id === DiscordBot.client.user?.id && message.embeds.length == 0)
+                    message?.delete()
                     channel.send({ content: `**${game.name} is gereleased!**` })
                 })
             })
