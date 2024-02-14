@@ -24,22 +24,22 @@ export default class Subscribe extends Command {
         const userDescription = interaction.options.getString("description", false);
         
         await interaction.deferReply({ ephemeral: true });
-        let game: Game = await IGDBApi.getGameById(parseInt(id));
+        let game = await IGDBApi.getGameById(parseInt(id));
         if (!game) return await interaction.editReply("Geen game gevonden met dit ID.");
         
-        game = await this.enrichGameAndSave(game, interaction.guildId, userDescription)
+        game = await this.enrichGameAndSave(game, interaction.guildId ?? "", userDescription)
         const gameInData = await DataHandler.getGameSubscription(interaction.guildId ?? "", game.name);
         gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
-        await DiscordBot.updateMessages()
+        await DiscordBot.getInstance().gameReleaseUpdater.updateGameSubscriptions();
     }
 
     async onButtonPress(interaction: ButtonInteraction<CacheType>): Promise<void> {
         interaction.update({ content: `Aan het toevoegen...`, components: []});
         try {
             let game = CustomIdentifier.fromCustomId<Game>(interaction.customId)
-            game = await IGDBApi.getGameById(game.id);
-            await this.enrichGameAndSave(game, interaction.guildId, game?.userDescription)
+            game = await IGDBApi.getGameById(game.id) as Game
+            await this.enrichGameAndSave(game, interaction.guildId ?? "", game?.userDescription)
             interaction.editReply({ content: `${game.name} is toegevoegd.` });
         } catch (error) {
             console.error(error)
@@ -47,9 +47,9 @@ export default class Subscribe extends Command {
         }
     }
 
-    async enrichGameAndSave(game: Game, guildId: string, userDescription?: string): Promise<Game> {
+    async enrichGameAndSave(game: Game, guildId: string, userDescription?: string | null): Promise<Game> {
         game = await IGDBApi.enrichGameData(game);
-        game.userDescription = userDescription;
+        if (userDescription) game.userDescription = userDescription;
         await DataHandler.addGameSubscription(guildId, game);
         return game;
     }

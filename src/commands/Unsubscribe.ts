@@ -22,7 +22,7 @@ export default class Subscribe extends Command {
         const game = await DataHandler.removeGameSubscription(interaction.guildId ?? "", name);
         if (!game) return await interaction.reply(`De server is niet geabonneerd op ${name}.`)
         await interaction.reply({content: `De server is niet meer geabonneerd op ${game.name}.`, ephemeral: true});
-        await DiscordBot.updateMessages()
+        await DiscordBot.getInstance().gameReleaseUpdater.updateGameSubscriptions();
     }
 
 }

@@ -36,7 +36,7 @@ export async function createEmbed(games: Game[], small = false): Promise<Partial
     }>(
         uniqueArray(games
             .filter(game => game?.nextReleaseDate != undefined)
-            .map(game => new Date((game.nextReleaseDate) * 1000))
+            .map(game => new Date((game.nextReleaseDate ?? 0) * 1000))
             .map(date => ({
                 key: `${date.getMonth()}-${date.getFullYear()}`,
                 value: date

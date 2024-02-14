@@ -24,8 +24,8 @@ export default class Summon extends Command {
 
     
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const user = interaction.options.getUser("user");
-        await user.send(`Je wordt gesummoned door ${interaction.user.username} in ${interaction.guild.name}. Klik <#${interaction.channelId}> om te reageren.`);
+        const user = interaction.options.getUser("user", true);
+        await user.send(`Je wordt gesummoned door ${interaction.user.username} in ${interaction.guild?.name}. Klik <#${interaction.channelId}> om te reageren.`);
         await interaction.reply({content: `Je hebt ${user.username} gesummoned.`, ephemeral: true});
     }
 

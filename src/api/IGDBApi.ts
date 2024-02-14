@@ -52,6 +52,7 @@ class IGDBApi {
             });
     }
 
+
     static async searchGames(ids: number[]): Promise<Game[]> {
         const url = `${IGDBApi.baseUrl}/games`;
         const response = await IGDBApi.post(

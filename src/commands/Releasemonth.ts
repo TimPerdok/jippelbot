@@ -32,7 +32,7 @@ export default class ReleaseMonth extends Command {
                     : games.filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == MONTHS.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);
             if (!games?.length) return await interaction.reply({ content: "Deze maand heeft nog geen releases", ephemeral: true });
 
-            const embed = await createEmbed(games, true);
+            const embed = await createEmbed(games, true) as Embed;
             await interaction.reply({ embeds: [embed], ephemeral: true });    
         } catch (error) {
             interaction.reply({content: `Er is iets fout gegaan. ${error}`, ephemeral: true});

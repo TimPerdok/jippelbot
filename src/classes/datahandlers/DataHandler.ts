@@ -4,7 +4,7 @@ import fs from 'fs';
 import Poll from '../Poll';
 import DiscordBot from "../Bot";
 import { DataJSON } from "../../interfaces/MessageCarrier";
-import { ServerdataJSON, ServerdataJSONKey } from "../../types/ServerdataJSON";
+import { ServerdataJSON, ServerdataJSONKey, Serverdatas } from "../../types/ServerdataJSON";
 import { PollJSON } from "../../types/PollJSON";
 import { PollSubcommand } from "../../types/PollSubcommand";
 import { ROOTDIR } from "../../Constants";
@@ -84,6 +84,10 @@ export default class DataHandler {
     static isDalleEnabled = true
 
     static async getServerdata(serverId: string): Promise<ServerdataJSON> {
+        return (await this.getServerdatas())?.[serverId] ?? {} as ServerdataJSON
+    }
+
+    static async getServerdatas(): Promise<Serverdatas> {
         return {
             // jippel:
             "230013544827977728": {
@@ -101,7 +105,7 @@ export default class DataHandler {
                 "isDalleEnabled": this.isDalleEnabled,
                 "releaseChannel": "1041814103477473360"
             }
-        }?.[serverId] ?? {} as ServerdataJSON
+        }
     }
 
 
@@ -119,18 +123,14 @@ export default class DataHandler {
         else serverData.push(game);
         data[serverId] = serverData;
         await DataHandler.write(DataHandler.files.gameSubscriptions, data);
-        DiscordBot.rescheduleGameReleaseAlerts();
-        DiscordBot.updateMessages()
     }
 
-    static async removeGameSubscription(serverId: string, gameName: string): Promise<Game> {
+    static async removeGameSubscription(serverId: string, gameName: string): Promise<Game | undefined> {
         const serverdata = await DataHandler.read(DataHandler.files.gameSubscriptions) as DataFile<Game[]>
         if (!serverdata[serverId]) return;
         const game = serverdata[serverId].find(g => g.name.toLowerCase() === gameName.toLowerCase())
         serverdata[serverId] = serverdata[serverId].filter(g => g.name.toLowerCase() !== gameName.toLowerCase())
         DataHandler.write(DataHandler.files.gameSubscriptions, serverdata)
-        DiscordBot.rescheduleGameReleaseAlerts()
-        DiscordBot.updateMessages()
         return game;
     }
 
@@ -146,7 +146,6 @@ export default class DataHandler {
 
     static async updateGameSubscriptions(serverdata: DataFile<Game[]>) {
         DataHandler.write(DataHandler.files.gameSubscriptions, serverdata)
-        DiscordBot.rescheduleGameReleaseAlerts()
     }
 
     static async getGameSubscription(serverId: string, name: string): Promise<Game> {

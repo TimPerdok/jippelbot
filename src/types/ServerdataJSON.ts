@@ -6,4 +6,8 @@ export type ServerdataJSON = {
     releaseChannel: string
 }
 
+export type Serverdatas = {
+    [serverId: string]: ServerdataJSON
+}
+
 export type ServerdataJSONKey = keyof ServerdataJSON

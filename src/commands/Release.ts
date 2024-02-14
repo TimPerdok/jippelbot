@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, Client, Embed, SlashCommandBuilder } from "discord.js";
 import Command from "../classes/Command";
 import DataHandler from "../classes/datahandlers/DataHandler";
-import IGDBApi from "../api/IGDBApi";
+import IGDBApi, { Game } from "../api/IGDBApi";
 
 export default class Subscribe extends Command {
 
@@ -26,6 +26,7 @@ export default class Subscribe extends Command {
                 game = await IGDBApi.searchGame(name);
                 subscribed = false;
             }
+            game = game as Game;
             const coverUrl = (await IGDBApi.searchGameCover(game.cover))
             const embed = {
                 title: game.name,
