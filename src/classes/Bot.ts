@@ -1,6 +1,5 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Routes, SelectMenuInteraction, SlashCommandBuilder, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction, Message, TextChannel, Embed, EmbedField } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Message, } from "discord.js";
 import { PollJSON } from "../types/PollJSON";
-import Classfinder from "./Classfinder";
 import Command from "./Command";
 import JSONDataHandler, { ServerScoped } from "./datahandlers/JSONDataHandler";
 import ServerREST from "./ServerREST";
@@ -12,6 +11,9 @@ import { Game } from "../api/IGDB";
 import { DataJSON } from "../interfaces/MessageCarrier";
 import ListDataHandler from "./datahandlers/ListDataHandler";
 import Server from "./Server";
+import { COMMANDS } from "../Constants";
+import CustomIdentifier from "./CustomIdentifier";
+
 
 export default class DiscordBot {
 
@@ -66,8 +68,7 @@ export default class DiscordBot {
 
         DiscordBot.client.on('ready', async () => {
             console.log(`Logged in as ${DiscordBot.client?.user?.tag}`);
-            this.commands = (await Classfinder.getCommands())
-                .reduce((collection, command) => {
+            this.commands = COMMANDS.reduce((collection, command) => {
                     collection.set(command.name, command)
                     return collection
                 }, new Collection<string, Command>())
@@ -98,7 +99,6 @@ export default class DiscordBot {
     async onInteractionCreate(interaction: Interaction) {
         try {
             let command: Command;
-
             switch (interaction.constructor.name) {
                 case 'ChatInputCommandInteraction':
                     interaction = interaction as ChatInputCommandInteraction;
@@ -107,10 +107,11 @@ export default class DiscordBot {
                     break;
                 case "ButtonInteraction":
                     interaction = interaction as ButtonInteraction;
-                    const message = interaction.message as Message
-                    const commandName = message.interaction?.commandName
-                    if (!commandName) return;
-                    command = this.commands.get(commandName) as Command;
+                    const customId = CustomIdentifier.fromCustomId(interaction.customId)
+                    command = this.commands.get(customId.command) as Command;
+                    if (customId?.subcommand) return command.subcommands
+                                                        .find(subcommand => subcommand.name === customId.subcommand)
+                                                        ?.onButtonPress(interaction);
                     command.onButtonPress(interaction);
                     break;
             }

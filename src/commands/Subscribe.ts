@@ -6,6 +6,11 @@ import DiscordBot from "../classes/Bot";
 import CustomIdentifier from "../classes/CustomIdentifier";
 import { Game } from "../api/IGDB";
 
+export type SubscribeOptionPayload = {  
+    id: number,
+    userDescription?: string
+}
+
 export default class Subscribe extends Command {
 
     get data(): SlashCommandBuilder {
@@ -33,9 +38,12 @@ export default class Subscribe extends Command {
                     .slice(0, 5)
                     .sort((a, b) => (b.nextReleaseDate ?? 0) - (a.nextReleaseDate ?? 0))
                     .map(option => new ButtonBuilder()
-                        .setCustomId(CustomIdentifier.toCustomId({
-                            id: option.id,
-                            ...(userDescription && { userDescription })
+                        .setCustomId(CustomIdentifier.toCustomId<SubscribeOptionPayload>({
+                            command: this.name,
+                            payload: {
+                                id: option.id,
+                                ...(userDescription && { userDescription })
+                            }
                         }))
                         .setLabel(`${option.name} ${option?.nextReleaseDate ? `(${new Date((option?.nextReleaseDate)*1000).toLocaleDateString()})` : "" }`)
                         .setStyle(ButtonStyle.Primary)
@@ -57,7 +65,7 @@ export default class Subscribe extends Command {
     async onButtonPress(interaction: ButtonInteraction<CacheType>): Promise<void> {
         interaction.update({ content: `Aan het toevoegen...`, components: []});
         try {
-            let game = CustomIdentifier.fromCustomId<Game>(interaction.customId)
+            let game = CustomIdentifier.fromCustomId<SubscribeOptionPayload>(interaction.customId)?.payload as Game;
             game = await IGDBApi.getGameById(game.id) as Game
             await this.enrichGameAndSave(game, interaction.guildId ?? "", game?.userDescription)
             interaction.editReply({ content: `${game.name} is toegevoegd.` });

@@ -4,27 +4,12 @@ import ExecutableCommand from "../interfaces/ExecutableCommand";
 
 export default abstract class Subcommand implements ExecutableCommand {
 
+    abstract configure(subcommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder
 
-    name: string
-    description: string
-    parentCommand: string
-
-
-    abstract data(subcommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder
-
-    constructor(name: string, description: string, parentCommand: string) {
-        this.name = name
-        this.description = description
-        this.parentCommand = parentCommand
+    constructor(public name: string, public description: string) {
     }
 
     abstract onCommand(interaction: ChatInputCommandInteraction): void
     abstract onButtonPress(interaction: ButtonInteraction): void
-
-
-    
-
-
-
 
 }

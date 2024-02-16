@@ -4,6 +4,7 @@ import IGDBApi from "../api/IGDBApi";
 import DiscordBot from "../classes/Bot";
 import CustomIdentifier from "../classes/CustomIdentifier";
 import { Game } from "../api/IGDB";
+import { SubscribeOptionPayload } from "./Subscribe";
 
 export default class Subscribe extends Command {
 
@@ -38,7 +39,7 @@ export default class Subscribe extends Command {
     async onButtonPress(interaction: ButtonInteraction<CacheType>): Promise<void> {
         interaction.update({ content: `Aan het toevoegen...`, components: []});
         try {
-            let game = CustomIdentifier.fromCustomId<Game>(interaction.customId)
+            let game = CustomIdentifier.fromCustomId<SubscribeOptionPayload>(interaction.customId).payload as Game
             game = await IGDBApi.getGameById(game.id) as Game
             await this.enrichGameAndSave(game, interaction.guildId ?? "", game?.userDescription)
             interaction.editReply({ content: `${game.name} is toegevoegd.` });

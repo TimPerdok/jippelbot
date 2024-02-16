@@ -1,77 +1,33 @@
 import { APIApplicationCommandOptionChoice, ButtonInteraction, ChannelType, ChatInputCommandInteraction, Client, Guild, GuildMember, Interaction, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, VoiceChannel } from "discord.js";
-import DiscordBot from "../../classes/Bot";
-import JSONDataHandler from "../../classes/datahandlers/JSONDataHandler";
 import Poll from "../../classes/Poll";
-import Subcommand from "../../classes/Subcommand";
-import PollCarrier from "../../interfaces/PollCarrier";
-import PollSubcommand from "../../interfaces/PollCarrier";
-import { ServerConfig } from "../../types/ServerdataJSON";
+import PollSubcommand from "../../interfaces/PollSubcommand";
 
 
 
 export default class Addchannel extends PollSubcommand  {
 
-
     constructor() {
-        super("addchannel", "Add a channel", "vote");
+        super("addchannel", "Add a channel");
     }
 
     
     onPass(poll: Poll): void {
-        const guild: Guild = DiscordBot.client.guilds.cache.get(poll.message.guild?.id ?? "") as Guild
-        (JSONDataHandler.getServerdata(guild.id)).then((serverData: ServerConfig)=>{
-            const parent = poll.params.type === "GUILD_TEXT" ? serverData.textChannelCategory : serverData.voiceChannelCategory
-            poll.message.edit({
-                embeds: [],
-                components: [],
-                content: `Het kanaal ${poll.params.newName} is aangemaakt! ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})}`
-            })
-            guild.channels.create({
-                name: poll.params.newName,
-                type: poll.params.type === "GUILD_TEXT" ? ChannelType.GuildText : ChannelType.GuildVoice,
-                parent
-            })
-
-        })
         
     }
+
     onFail(poll: Poll): void {
-        poll.message.edit({
-            embeds: [],
-            components: [],
-            content: `Deze vote is niet doorgevoerd. ${poll.yesCount} voor en ${poll.noCount} tegen. (${poll.percentageLabel})`
-        })
+      
     }
 
-
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const channels = (interaction.member as GuildMember).guild.channels.cache
-        const newName = interaction.options.getString('name')
-        const type = interaction.options.getString('channeltype')
-        const typeLabel = type === "GUILD_TEXT" ? "textchannel" : "voicechannel"
-        const poll = new Poll({
-            question: `Moet de ${typeLabel}, '${newName}' worden aangemaakt?`,
-            initiator: interaction.member as GuildMember,
-            command: this,
-            params: { newName, type}
-        });
-        const serverData = await JSONDataHandler.getServerdata(interaction.guildId as string) as ServerConfig
-        const voteChannel = channels.get(serverData.voteChannel) as TextChannel
-        await interaction.reply({ content: "Je vote is aangemaakt!", ephemeral: true }) as MessageEditOptions
-        const message = await voteChannel.send({ ...poll.payload, fetchReply: true } as MessageCreateOptions);
-        poll.setMessage(message)
-        this.polls.set(message.id, poll)
+        
     }
 
     async onButtonPress(interaction: ButtonInteraction) {
-        const poll = this.polls.get(interaction.message.id)
-        if (!poll) return
-        const done = poll.addCount(interaction.member as GuildMember, interaction.customId === 'yes')
-        if (!done) poll.updateMessage(interaction)
+       
     }
 
-
-    data(subcommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder {
+    configure(subcommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder {
         return subcommand
             .setName(this.name)
             .setDescription(this.description)

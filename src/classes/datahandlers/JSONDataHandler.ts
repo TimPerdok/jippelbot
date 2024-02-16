@@ -1,12 +1,22 @@
 import { Channel, Collection, Guild, GuildMember, Invite, Message, TextChannel } from "discord.js";
 import path from 'path';
 import fs from 'fs';
-import { DataJSON } from "../../interfaces/MessageCarrier";
 import { SRC_DIR } from "../../Constants";
+import { Game } from "../../api/IGDB";
+import { TwitchAccessTokenJSON } from "../../api/TwitchAccessToken";
+import { PollJSON } from "../../types/PollJSON";
+import { ServerConfig } from "../../types/ServerdataJSON";
 
 export type ServerScoped<JSONData> = {
     [guildId: string]: JSONData
 }
+
+export type DataJSON =  Item | IdentifiableItem[]
+
+export type Item = ServerConfig | TwitchAccessTokenJSON
+
+export type IdentifiableItem = PollJSON | Game
+
 
 export default class JSONDataHandler<T extends DataJSON>{
    
@@ -43,7 +53,7 @@ export default class JSONDataHandler<T extends DataJSON>{
 
     getOfServer(serverId: string): T {
         const file = this.read(this.file) as ServerScoped<T>
-        return file[serverId]
+        return file[serverId] ?? {} as T
     }
 
     async getAll(): Promise<ServerScoped<T>> {

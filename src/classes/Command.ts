@@ -1,6 +1,5 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, Interaction, SlashCommandBuilder } from "discord.js";
 import ExecutableCommand from "../interfaces/ExecutableCommand";
-import Classfinder from "./Classfinder";
 import Subcommand from "./Subcommand";
 
 
@@ -9,7 +8,7 @@ export default abstract class Command implements ExecutableCommand {
     public name: string
     public description: string
 
-    subcommands: Map<string, Subcommand>
+    subcommands: Subcommand[]
 
 
     get data(): SlashCommandBuilder {
@@ -18,15 +17,10 @@ export default abstract class Command implements ExecutableCommand {
             .setDescription(this.description)
     }
 
-    constructor(name: string, description: string) {
+    constructor(name: string, description: string, subcommands: Subcommand[] = []) {
         this.name = name.toLowerCase()
         this.description = description
-        this.subcommands = new Map<string, any>();
-        Classfinder.getSubcommands(this.name).then((subcommands: Subcommand[]) => {
-            subcommands.forEach((subcommand: Subcommand) => {
-                this.subcommands.set(subcommand.name, subcommand)
-            });
-        })
+        this.subcommands = subcommands
     }
 
     onCommand(interaction: ChatInputCommandInteraction): void { }
