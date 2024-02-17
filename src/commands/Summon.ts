@@ -1,10 +1,5 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Client, Collection, DiscordAPIError, GuildChannelManager, Interaction, InteractionResponse, parseWebhookURL, SlashCommandBuilder, TextChannel } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import Command from "../classes/Command";
-import Poll from "../classes/Poll";
-import Classfinder from "../classes/Classfinder";
-import Subcommand from "../classes/Subcommand";
-import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
-import { PollJSON } from "../types/PollJSON";
 
 
 export default class Summon extends Command {
