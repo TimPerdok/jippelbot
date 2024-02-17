@@ -22,8 +22,8 @@ export default class Scheduler {
         })
     }
 
-    stop() {
-        gracefulShutdown();
+    async stop() {
+        await gracefulShutdown();
     }
 
 }

@@ -6,7 +6,7 @@ export type PollChannelType = "GUILD_TEXT" | "GUILD_VOICE"
 export default abstract class PollSubcommand extends Subcommand {
 
     static get DEFAULT_END_DATE() {
-        return Math.round(((new Date().getTime()) + 24 /*1000 * 60 * 60 * 24*/) / 1000)
+        return Math.round(((new Date().getTime()) + 1000 * 60 * 60 * 24) / 1000)
     } 
 
     constructor(name: string, description: string) {

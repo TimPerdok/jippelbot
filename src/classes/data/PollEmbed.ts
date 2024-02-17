@@ -5,7 +5,6 @@ import { VoteAction, VoteActions } from "./VoteActions"
 import Poll from "./Poll"
 
 export default class PollEmbed {
-   
 
     static fromEmbed(embed: Embed, poll: Poll<VoteAction>) {
         const newEmbed = new EmbedBuilder()

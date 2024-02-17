@@ -21,8 +21,8 @@ export default class ScheduledAction {
     }
 
     
-    stop() {
-        this.scheduler.stop()
+    async stop() {
+        await this.scheduler.stop()
     }
 
     refresh() {

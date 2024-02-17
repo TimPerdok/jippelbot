@@ -31,7 +31,6 @@ export default class JSONDataHandler<T extends DataJSON>{
     init() {
         if (!fs.existsSync(this.dataFolder)) fs.mkdirSync(this.dataFolder)
         const fullPath = path.join(this.dataFolder, this.file)
-        console.log(fullPath)
         if (fs.existsSync(fullPath)) return;
         fs.writeFileSync(fullPath, JSON.stringify({}))
     }

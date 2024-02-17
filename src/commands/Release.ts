@@ -63,7 +63,6 @@ export default class Subscribe extends Command {
                     url: `https:${coverUrl}`
                 }
             } as Embed;
-            console.log(embed)
             await interaction.reply({ embeds: [embed], ephemeral: true});    
         } catch (error) {
             console.log(error)
