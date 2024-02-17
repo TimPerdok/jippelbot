@@ -1,5 +1,5 @@
 import {scheduleJob, gracefulShutdown} from "node-schedule"
-import { Schedule } from "./messageupdaters/ScheduledMessageUpdaterAbstr";
+import { Schedule } from "./schedulers/messageupdaters/ScheduledActionWrapper";
 
 export enum Interval {
     HOURLY = "0 * * * *",

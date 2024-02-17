@@ -1,19 +1,17 @@
 import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, ChatInputCommandInteraction, EmbedBuilder, Guild, GuildMember, MessageCreateOptions, MessagePayload, SlashCommandSubcommandBuilder } from "discord.js";
 import Subcommand from "../classes/Subcommand";
-import DiscordBot from "../classes/Bot";
+import Poll from "../classes/data/Poll";
 
+export type PollChannelType = "GUILD_TEXT" | "GUILD_VOICE"
 export default abstract class PollSubcommand extends Subcommand {
+
+    static get DEFAULT_END_DATE() {
+        return Math.round(((new Date().getTime()) + 24 /*1000 * 60 * 60 * 24*/) / 1000)
+    } 
 
     constructor(name: string, description: string) {
         super(name, description)
     }
 
-    abstract configure(subcommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder
-
-    abstract onCommand(interaction: ChatInputCommandInteraction<CacheType>): void 
-    abstract onButtonPress(interaction: ButtonInteraction<CacheType>): void
-
-    abstract onPass(poll: Poll): void
-    abstract onFail(poll: Poll): void
 
 }

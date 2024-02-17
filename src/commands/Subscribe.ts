@@ -55,7 +55,7 @@ export default class Subscribe extends Command {
                 components: [actionRow],
             });
         const game = await this.enrichGameAndSave(options[0], interaction.guildId ?? "", userDescription)
-        const gameInData = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(interaction.guildId ?? "") as Game[];
+        const gameInData = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(interaction.guildId ?? "") as Game[];
         gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
             
@@ -78,7 +78,7 @@ export default class Subscribe extends Command {
     async enrichGameAndSave(game: Game, guildId: string, userDescription?: string | null): Promise<Game> {
         game = await IGDBApi.enrichGameData(game)
         if (userDescription) game.userDescription = userDescription;
-        const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(guildId) as Game[];
+        const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(guildId) as Game[];
         const index = games.findIndex(g => g.id === game.id);
         if (index !== -1) games[index] = {
             ...games[index],

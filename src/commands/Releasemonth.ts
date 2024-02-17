@@ -28,7 +28,7 @@ export default class ReleaseMonth extends Command {
             const month = interaction.options.getString("month", true);
             const year = interaction.options.getNumber("year", false) ?? new Date().getFullYear();
             
-            let games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(interaction.guildId ?? "") as Game[];
+            let games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(interaction.guildId ?? "") as Game[];
 
             games = month === "Onbekend" ? games.filter(game => game?.nextReleaseDate == undefined)
                     : games.filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == MONTHS.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);

@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
-import { DataJSON } from "../../interfaces/MessageCarrier";
 import { SRC_DIR } from "../../Constants";
 import { TwitchAccessTokenJSON } from "../../api/TwitchAccessToken";
+import { DataJSON } from './JSONDataHandler';
 
 
 const dataFolder = require('path').resolve(SRC_DIR, '..')

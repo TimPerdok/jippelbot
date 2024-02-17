@@ -1,17 +1,13 @@
-export class PollJSON {
-    question: string
-    initiatorId: string
-    votes: {
-        [key: string]: boolean
-    }
-    startTimestampUnix: number
-    messageId: string
-    channelId: string
-    params: {
-        [key: string]: string
-    }
-    get id() {
-        return this.messageId
-    }
+import { VoteAction } from "../classes/data/VoteActions";
 
+export type PollJSON<T extends VoteAction> = {
+    id: string,
+    yesCount: number,
+    noCount: number,
+    endDate: number,
+    initiator: string,
+    channelId: string,
+    action: T,
+    question: string,
+    votedUsers: string[]
 };

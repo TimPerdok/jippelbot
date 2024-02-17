@@ -22,11 +22,6 @@ export default class Vote extends Command {
         ]);
     }
 
-    async onButtonPress(interaction: ButtonInteraction) {
-        const customId = CustomIdentifier.fromCustomId(interaction.customId)
-        const subcommand = this.subcommands.find(subcommand => subcommand.name === customId.subcommand)
-        if (subcommand) return subcommand.onButtonPress(interaction)
-    }
     
     async onCommand(interaction: ChatInputCommandInteraction) {
         const subcommand = this.subcommands.find(subcommand => subcommand.name === interaction.options.getSubcommand())

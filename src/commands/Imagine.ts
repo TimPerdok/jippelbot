@@ -22,7 +22,7 @@ export default class Summon extends Command {
     }
 
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const serverdata = await DiscordBot.getInstance().dataHandlers.serverdata.getOfServer(interaction.guildId ?? "") as ServerConfig;
+        const serverdata = await DiscordBot.getInstance().dataHandlers.serverdata.getAllOfServer(interaction.guildId ?? "") as ServerConfig;
         if (!serverdata.isDalleEnabled) return interaction.reply({ content: "Dall-e is niet enabled op deze server", ephemeral: true });
 
         const prompt = interaction.options.getString("prompt", true);

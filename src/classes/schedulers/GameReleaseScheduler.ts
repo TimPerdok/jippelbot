@@ -4,10 +4,9 @@ import { Embed, Guild, Message, MessageEditOptions, MessagePayload, TextChannel 
 import IGDBApi from "../../api/IGDBApi";
 import { createEmbed } from "../../util/util";
 import JSONDataHandler, { ServerScoped } from "../datahandlers/JSONDataHandler";
-import ScheduledActionWrapper, { Schedule } from "../messageupdaters/ScheduledMessageUpdaterAbstr";
+import ScheduledAction, { Schedule } from "./messageupdaters/ScheduledActionWrapper";
 import { Game } from "../../api/IGDB";
 import { ServerConfig } from "../../types/ServerdataJSON";
-import ScheduledAction from "../messageupdaters/ScheduledMessageUpdater";
 
 
 export default class GameReleaseScheduler  {
@@ -19,7 +18,7 @@ export default class GameReleaseScheduler  {
     }
 
     createScheduledActions() {
-        const toBeReleasedGames = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(this.guild.id)
+        const toBeReleasedGames = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(this.guild.id)
             .filter((game) => !!game?.nextReleaseDate)
         return toBeReleasedGames.map((game) => new ScheduledAction({
             callback: () => this.sendGameReleaseAlert(game),
@@ -37,7 +36,7 @@ export default class GameReleaseScheduler  {
     }
 
     async sendGameReleaseAlert(game: Game) {
-        const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getOfServer(this.guild.id)
+        const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getAllOfServer(this.guild.id)
         const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
         if (!channel) return;
         const messages = await channel.messages.fetch({ limit: 25 })

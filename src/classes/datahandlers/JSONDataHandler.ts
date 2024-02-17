@@ -6,17 +6,19 @@ import { Game } from "../../api/IGDB";
 import { TwitchAccessTokenJSON } from "../../api/TwitchAccessToken";
 import { PollJSON } from "../../types/PollJSON";
 import { ServerConfig } from "../../types/ServerdataJSON";
+import { VoteAction } from "../data/VoteActions";
 
 export type ServerScoped<JSONData> = {
     [guildId: string]: JSONData
 }
 
-export type DataJSON =  Item | IdentifiableItem[]
+export type DataJSON =  UnidentifiableItem | IdentifiableItem[]
 
-export type Item = ServerConfig | TwitchAccessTokenJSON
+export type UnidentifiableItem = ServerConfig | TwitchAccessTokenJSON
 
-export type IdentifiableItem = PollJSON | Game
+export type IdentifiableItem = PollJSON<VoteAction> | Game
 
+export type Item = UnidentifiableItem | IdentifiableItem
 
 export default class JSONDataHandler<T extends DataJSON>{
    
@@ -51,7 +53,7 @@ export default class JSONDataHandler<T extends DataJSON>{
     }
 
 
-    getOfServer(serverId: string): T {
+    getAllOfServer(serverId: string): T {
         const file = this.read(this.file) as ServerScoped<T>
         return file[serverId] ?? {} as T
     }

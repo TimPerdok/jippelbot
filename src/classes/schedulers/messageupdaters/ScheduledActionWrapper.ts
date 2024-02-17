@@ -1,7 +1,7 @@
 import lzString from "lz-string";
 import MessageUpdater from "./MessageUpdater";
-import ReactiveList from "../ReactiveList";
-import Scheduler, { Interval } from "../Scheduler";
+import ReactiveList from "../../monads/ReactiveList";
+import Scheduler, { Interval } from "../../Scheduler";
 import { Message, MessageEditOptions, MessagePayload } from "discord.js";
 
 
@@ -10,16 +10,13 @@ export  type Schedule = {
     at: Date | Interval;
 }
 
-export default abstract class ScheduledActionWrapper {
+export default class ScheduledAction {
     protected scheduler: Scheduler;
     protected schedule: Schedule;
 
-    constructor(interval: Date | Interval) {
+    constructor(schedule: Schedule) {
         this.scheduler = new Scheduler();
-        this.schedule = {
-            callback: this.run.bind(this),
-            at: interval
-        }
+        this.schedule = schedule
         this.scheduler.schedule(this.schedule);
     }
 
@@ -30,10 +27,8 @@ export default abstract class ScheduledActionWrapper {
 
     refresh() {
         this.scheduler.stop()
-        this.run()
+        this.schedule.callback()
         this.scheduler.schedule(this.schedule);
     }
-
-    abstract run(): any | Promise<any>;
 
 }

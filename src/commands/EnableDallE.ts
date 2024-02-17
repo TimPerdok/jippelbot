@@ -22,7 +22,7 @@ export default class Ping extends Command {
         const enabled = interaction.options.getBoolean("enabled", true);
         const password = interaction.options.getString("password", true);
         if (password !== process.env.disablepass) return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true })
-        const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getOfServer(interaction.guildId ?? "")
+        const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getAllOfServer(interaction.guildId ?? "")
         serverdata.isDalleEnabled = enabled
         DiscordBot.getInstance().dataHandlers.serverdata.overwrite(interaction.guildId ?? "", serverdata)
         interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true })

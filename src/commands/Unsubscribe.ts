@@ -19,7 +19,7 @@ export default class Subscribe extends Command {
 
     async onCommand(interaction: ChatInputCommandInteraction) {
         const name = interaction.options.getString("name", true);
-        const games = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getOfServer(interaction.guildId ?? "")
+        const games = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(interaction.guildId ?? "")
         const newGames = games.filter((game: Game) => game.name.toLowerCase() !== name.toLowerCase());
         const deletedGame = games.find((game: Game) => game.name.toLowerCase() === name.toLowerCase())
         DiscordBot.getInstance().dataHandlers.gameSubscriptions.overwrite(interaction.guildId ?? "", newGames);

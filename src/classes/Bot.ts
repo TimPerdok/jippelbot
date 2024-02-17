@@ -5,14 +5,14 @@ import JSONDataHandler, { ServerScoped } from "./datahandlers/JSONDataHandler";
 import ServerREST from "./ServerREST";
 import TwitchAccessTokenHandler, { TwitchAuth } from "../api/TwitchAccessToken";
 import StdinListener from "./StdinListener";
-import GameReleasesEmbedUpdater from "./gamereleases/GameReleaseUpdater";
+import GameReleasesEmbedUpdater from "./gamereleases/GameReleasesEmbedUpdater";
 import { ServerConfig } from "../types/ServerdataJSON";
 import { Game } from "../api/IGDB";
-import { DataJSON } from "../interfaces/MessageCarrier";
 import ListDataHandler from "./datahandlers/ListDataHandler";
 import Server from "./Server";
 import { COMMANDS } from "../Constants";
 import CustomIdentifier from "./CustomIdentifier";
+import { VoteAction } from "./data/VoteActions";
 
 
 export default class DiscordBot {
@@ -30,7 +30,7 @@ export default class DiscordBot {
 
     stdinListener: StdinListener;
     dataHandlers: {
-        poll: ListDataHandler<PollJSON[]>
+        poll: ListDataHandler<PollJSON<VoteAction>[]>
         serverdata: JSONDataHandler<ServerConfig>
         gameSubscriptions: ListDataHandler<Game[]>
     };
@@ -60,10 +60,9 @@ export default class DiscordBot {
         this.stdinListener = new StdinListener()
         this.stdinListener.start()
         this.dataHandlers = {
-            poll: new ListDataHandler<PollJSON[]>('poll.json'),
+            poll: new ListDataHandler<PollJSON<VoteAction>[]>('poll.json'),
             serverdata: new JSONDataHandler<ServerConfig>('serverdata.json'),
             gameSubscriptions: new ListDataHandler<Game[]>('gameSubscriptions.json')
-
         }
 
         DiscordBot.client.on('ready', async () => {
@@ -73,7 +72,7 @@ export default class DiscordBot {
                     return collection
                 }, new Collection<string, Command>())
             this.servers = DiscordBot.client.guilds.cache.map((guild: Guild) => {
-                const serverData = this.dataHandlers.serverdata.getOfServer(guild.id)
+                const serverData = this.dataHandlers.serverdata.getAllOfServer(guild.id)
                 const rest = new ServerREST(this.rest, guild, clientId)
                 rest.updateCommands(this.commands)
                 return new Server(guild, serverData, rest)
