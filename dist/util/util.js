@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEmbed = exports.MONTHS = exports.gameToValue = exports.uppercaseFirstLetter = exports.uniqueArray = void 0;
-const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
+const IGDB_1 = __importDefault(require("../api/IGDB"));
 function uniqueArray(array) {
     return array.filter((obj, index, self) => index === self.findIndex((o) => o.key === obj.key));
 }
@@ -26,7 +26,7 @@ function gameToValue(game, small = false) {
     var _a, _b;
     const date = new Date(((_a = game === null || game === void 0 ? void 0 : game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
     const status = (game === null || game === void 0 ? void 0 : game.nextReleaseStatus) != undefined
-        ? `(${IGDBApi_1.default.statusToString((_b = game.nextReleaseStatus) !== null && _b !== void 0 ? _b : 0)}) `
+        ? `(${IGDB_1.default.statusToString((_b = game.nextReleaseStatus) !== null && _b !== void 0 ? _b : 0)}) `
         : "";
     return `- ${small ? game.name : `[${game.name}](${game.url})`} ${status}
         ${(game === null || game === void 0 ? void 0 : game.nextReleaseDate) ?
@@ -41,7 +41,7 @@ function createEmbed(games, small = false) {
     return __awaiter(this, void 0, void 0, function* () {
         const months = [...new Set(uniqueArray(games
                 .filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined)
-                .map(game => new Date((game.nextReleaseDate) * 1000))
+                .map(game => { var _a; return new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000); })
                 .map(date => ({
                 key: `${date.getMonth()}-${date.getFullYear()}`,
                 value: date

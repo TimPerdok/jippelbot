@@ -3,6 +3,7 @@ import Command from "../classes/Command";
 import Subcommand from "../classes/Subcommand";
 import CustomIdentifier from "../classes/CustomIdentifier";
 import Addchannel from "./vote/Addchannel";
+import Removechannel from "./vote/Removechannel";
 
 export default class Vote extends Command {
 
@@ -19,6 +20,7 @@ export default class Vote extends Command {
     constructor() {
         super("vote", "Start a vote", [
             new Addchannel(),
+            new Removechannel()
         ]);
     }
 

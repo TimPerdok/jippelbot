@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
-const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
 const index_1 = require("../index");
 const node_fetch_1 = __importDefault(require("node-fetch"));
+const Bot_1 = __importDefault(require("../classes/Bot"));
 class Summon extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
@@ -29,10 +29,11 @@ class Summon extends Command_1.default {
         super("imagine", "Imagine een afbeelding");
     }
     onCommand(interaction) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(yield DataHandler_1.default.getServerdata(interaction.guildId)).isDalleEnabled)
-                return yield interaction.reply("Joop zijn euro's zijn op. Momenteel kunnen er geen afbeeldingen gegenereerd worden.");
+            const serverdata = yield Bot_1.default.getInstance().dataHandlers.serverdata.getAllOfServer((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "");
+            if (!serverdata.isDalleEnabled)
+                return interaction.reply({ content: "Dall-e is niet enabled op deze server", ephemeral: true });
             const prompt = interaction.options.getString("prompt", true);
             interaction.deferReply();
             try {
@@ -43,7 +44,7 @@ class Summon extends Command_1.default {
                     size: "1024x1024",
                     response_format: "url"
                 });
-                const imageBuffer = yield (yield (0, node_fetch_1.default)((_b = (_a = response === null || response === void 0 ? void 0 : response.data) === null || _a === void 0 ? void 0 : _a[0].url) !== null && _b !== void 0 ? _b : '')).arrayBuffer();
+                const imageBuffer = yield (yield (0, node_fetch_1.default)((_c = (_b = response === null || response === void 0 ? void 0 : response.data) === null || _b === void 0 ? void 0 : _b[0].url) !== null && _c !== void 0 ? _c : '')).arrayBuffer();
                 yield interaction.editReply({
                     content: `Daar gaat weer 4 cent van Joop... \nPrompt is ${prompt}. `,
                     files: [{ attachment: Buffer.from(imageBuffer), name: "image.png" }]
@@ -51,7 +52,7 @@ class Summon extends Command_1.default {
             }
             catch (error) {
                 console.error(error);
-                yield interaction.editReply({ content: `Oh nee een error. \nPrompt was ${prompt}. \n${(_c = error === null || error === void 0 ? void 0 : error.error) === null || _c === void 0 ? void 0 : _c.message}` });
+                yield interaction.editReply({ content: `Oh nee een error. \nPrompt was ${prompt}. \n${(_d = error === null || error === void 0 ? void 0 : error.error) === null || _d === void 0 ? void 0 : _d.message}` });
             }
         });
     }

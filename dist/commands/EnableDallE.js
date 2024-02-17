@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
-const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
+const Bot_1 = __importDefault(require("../classes/Bot"));
 class Ping extends Command_1.default {
     get data() {
         return new discord_js_1.SlashCommandBuilder()
@@ -27,13 +27,16 @@ class Ping extends Command_1.default {
         super("enabledalle", "Enable or disable dall-e");
     }
     onCommand(interaction) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const enabled = interaction.options.getBoolean("enabled", true);
             const password = interaction.options.getString("password", true);
             if (password !== process.env.disablepass)
                 return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true });
-            yield DataHandler_1.default.setDalleEnabled(enabled);
-            yield interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true });
+            const serverdata = Bot_1.default.getInstance().dataHandlers.serverdata.getAllOfServer((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "");
+            serverdata.isDalleEnabled = enabled;
+            Bot_1.default.getInstance().dataHandlers.serverdata.overwrite((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", serverdata);
+            interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true });
         });
     }
 }

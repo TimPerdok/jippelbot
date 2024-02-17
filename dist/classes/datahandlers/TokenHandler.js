@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const Constants_1 = require("../../Constants");
-const dataFolder = require('path').resolve(Constants_1.ROOTDIR, '..');
+const dataFolder = require('path').resolve(Constants_1.SRC_DIR, '..');
 class TokenHandler {
     static init() {
         const folder = path_1.default.join(dataFolder, `/shareddata`);

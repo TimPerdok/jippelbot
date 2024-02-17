@@ -1,77 +1,25 @@
-import { APIApplicationCommandOptionChoice, ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Client, Guild, GuildMember, Interaction, InteractionResponse, Message, MessageCreateOptions, MessageEditOptions, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder, TextChannel, VoiceChannel } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "discord.js";
 import PollSubcommand, { PollChannelType } from "../../interfaces/PollSubcommand";
-import Poll from "../../classes/data/Poll";
-import PollEmbed from "../../classes/data/PollEmbed";
-import { AddChannelAction, VoteEvent } from "../../classes/data/VoteActions";
-import CustomIdentifier from "../../classes/CustomIdentifier";
-import { SubscribeOptionPayload } from "../Subscribe";
-import DiscordBot from "../../classes/Bot";
-import { PollJSON } from "../../types/PollJSON";
+import { AddChannelAction, AddChannelActionParams } from "../../classes/data/VoteActions";
 
 
 
-export default class Addchannel extends PollSubcommand {
+export default class Addchannel extends PollSubcommand<AddChannelAction> {
+
 
     constructor() {
         super("addchannel", "Add a channel");
     }
 
-    async onCommand(interaction: ChatInputCommandInteraction) {
-        const channeltype = interaction.options.getString('channeltype', true) as PollChannelType
-        const name = interaction.options.getString('name', true)
-        const poll = Poll.new(new AddChannelAction({ channelType: channeltype, name }), PollSubcommand.DEFAULT_END_DATE, interaction.user.id, interaction.channelId)
-        const guildId = interaction.guildId
-        if (!guildId) return console.error("No guildId")
-        const embed = PollEmbed.create(poll, interaction.user)
-        const channel = interaction.channel
-        if (!channel) return console.error("No channel")
-        const message = await interaction.channel.send({
-            embeds: [embed], components: [
-                new ActionRowBuilder<ButtonBuilder>()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setCustomId(CustomIdentifier.toCustomId<VoteEvent>({
-                                command: "vote",
-                                subcommand: this.name,
-                                payload: {
-                                    isYes: true
-                                }
-                            }))
-                            .setLabel('Ja')
-                            .setStyle(ButtonStyle.Success),
-                        new ButtonBuilder()
-                        .setCustomId(CustomIdentifier.toCustomId<VoteEvent>({
-                                command: "vote",
-                                subcommand: this.name,
-                                payload: {
-                                    isYes: false
-                                }
-                            }))
-                            .setLabel('Nee')
-                            .setStyle(ButtonStyle.Danger),
-                    )
-            ]
-        })
-        poll.save(message.id)
-        interaction.reply({ content: "Vote aangemaakt!", ephemeral: true })
+    createAction(params: AddChannelActionParams): AddChannelAction {
+       return new AddChannelAction(params)
     }
 
-    async onButtonPress(interaction: ButtonInteraction) {
-        const isYes = CustomIdentifier.fromCustomId<VoteEvent>(interaction.customId).payload.isYes
-        const guildId = interaction.guildId
-        if (!guildId) return console.error("No guildId")
-        const messageId = interaction.message.id
-        if (!messageId) return console.error("No messageId")
-        interaction.deferUpdate()
-        
-        const poll = Poll.fromItem(await DiscordBot.getInstance().dataHandlers.poll.getItem(guildId, messageId) as PollJSON<AddChannelAction>)
-        if (!poll) return console.error("No poll")
-        poll.addVote(interaction.user.id, isYes)
-        const pollEmbed = PollEmbed.fromEmbed(interaction.message.embeds[0], poll)
-        
-        if (!interaction.channel) return console.error("No channel")
-        const voteMessage = interaction.message.channel.messages.cache.get(poll.id)
-        voteMessage?.edit({ embeds: [pollEmbed] })
+    parseInteractionToParams(interaction: ChatInputCommandInteraction): AddChannelActionParams {
+        return {
+            channelType: interaction.options.getString('channeltype', true) as PollChannelType,
+            name: interaction.options.getString('name', true)
+        }
     }
 
     configure(subcommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder {

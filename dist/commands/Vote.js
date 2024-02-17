@@ -14,30 +14,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
-const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
+const Addchannel_1 = __importDefault(require("./vote/Addchannel"));
+const Removechannel_1 = __importDefault(require("./vote/Removechannel"));
 class Vote extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description);
         this.subcommands.forEach((subcommand) => {
-            builder.addSubcommand(subcommand.data.bind(subcommand));
+            builder.addSubcommand(subcommand.configure.bind(subcommand));
         });
         return builder;
     }
     constructor() {
-        super("vote", "Start a vote");
-    }
-    onButtonPress(interaction) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const subcommand = this.subcommands.get((yield DataHandler_1.default.getPoll(interaction.message.id)).command.split("/")[1]);
-            if (subcommand)
-                return subcommand.onButtonPress(interaction);
-        });
+        super("vote", "Start a vote", [
+            new Addchannel_1.default(),
+            new Removechannel_1.default()
+        ]);
     }
     onCommand(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            const subcommand = this.subcommands.get(interaction.options.getSubcommand());
+            const subcommand = this.subcommands.find(subcommand => subcommand.name === interaction.options.getSubcommand());
             if (subcommand)
                 return subcommand.onCommand(interaction);
         });

@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
-const DataHandler_1 = __importDefault(require("../classes/datahandlers/DataHandler"));
 const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
 const Bot_1 = __importDefault(require("../classes/Bot"));
 const CustomIdentifier_1 = __importDefault(require("../classes/CustomIdentifier"));
@@ -30,7 +29,7 @@ class Subscribe extends Command_1.default {
         super("subscribeid", "Voeg een game toe met een id om naar uit te kijken.");
     }
     onCommand(interaction) {
-        var _a;
+        var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {
             const id = interaction.options.getString("id", true);
             const userDescription = interaction.options.getString("description", false);
@@ -38,20 +37,23 @@ class Subscribe extends Command_1.default {
             let game = yield IGDBApi_1.default.getGameById(parseInt(id));
             if (!game)
                 return yield interaction.editReply("Geen game gevonden met dit ID.");
-            game = yield this.enrichGameAndSave(game, interaction.guildId, userDescription);
-            const gameInData = yield DataHandler_1.default.getGameSubscription((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", game.name);
+            game = yield this.enrichGameAndSave(game, (_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", userDescription);
+            if (!game)
+                return yield interaction.editReply("Er is iets fout gegaan. Probeer later opnieuw.");
+            const gameInData = yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.getItem((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", game.id);
             gameInData ? yield interaction.editReply(`${game.name} is geupdatet.`)
                 : yield interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
-            yield Bot_1.default.updateMessages();
+            (_d = Bot_1.default.getInstance().getServerById((_c = interaction.guildId) !== null && _c !== void 0 ? _c : "")) === null || _d === void 0 ? void 0 : _d.rescheduleGameReleases();
         });
     }
     onButtonPress(interaction) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             interaction.update({ content: `Aan het toevoegen...`, components: [] });
             try {
-                let game = CustomIdentifier_1.default.fromCustomId(interaction.customId);
-                game = yield IGDBApi_1.default.getGameById(game.id);
-                yield this.enrichGameAndSave(game, interaction.guildId, game === null || game === void 0 ? void 0 : game.userDescription);
+                let game = CustomIdentifier_1.default.fromCustomId(interaction.customId).payload;
+                game = (yield IGDBApi_1.default.getGameById(game.id));
+                yield this.enrichGameAndSave(game, (_a = interaction.guildId) !== null && _a !== void 0 ? _a : "", game === null || game === void 0 ? void 0 : game.userDescription);
                 interaction.editReply({ content: `${game.name} is toegevoegd.` });
             }
             catch (error) {
@@ -63,8 +65,9 @@ class Subscribe extends Command_1.default {
     enrichGameAndSave(game, guildId, userDescription) {
         return __awaiter(this, void 0, void 0, function* () {
             game = yield IGDBApi_1.default.enrichGameData(game);
-            game.userDescription = userDescription;
-            yield DataHandler_1.default.addGameSubscription(guildId, game);
+            if (userDescription)
+                game.userDescription = userDescription;
+            // await JSONDataHandler.addGameSubscription(guildId, game);
             return game;
         });
     }

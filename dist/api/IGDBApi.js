@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const Bot_1 = __importDefault(require("../classes/Bot"));
+const IGDB_1 = __importDefault(require("./IGDB"));
 class IGDBApi {
     static post(url, data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -27,8 +28,8 @@ class IGDBApi {
     }
     static searchGames(ids) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${IGDBApi.baseUrl}/games`;
-            const response = yield IGDBApi.post(url, `fields ${this.gameFields};
+            const url = `${IGDB_1.default.baseUrl}/games`;
+            const response = yield IGDBApi.post(url, `fields ${IGDB_1.default.gameFields};
             where id = (${ids.join(',')});`);
             let games = response.data;
             games = yield this.addCurrentReleases(games);
@@ -63,9 +64,9 @@ class IGDBApi {
     static presearchGame(query) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${IGDBApi.baseUrl}/games`;
+            const url = `${IGDB_1.default.baseUrl}/games`;
             let response = yield IGDBApi.post(url, `search "${query}";
-            fields ${this.gameFields};
+            fields ${IGDB_1.default.gameFields};
             limit 5;`);
             if (!((_a = response.data) === null || _a === void 0 ? void 0 : _a.length))
                 return [];
@@ -94,8 +95,8 @@ class IGDBApi {
     static getGameById(id) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${IGDBApi.baseUrl}/games`;
-            let response = yield IGDBApi.post(url, `fields ${this.gameFields};
+            const url = `${IGDB_1.default.baseUrl}/games`;
+            let response = yield IGDBApi.post(url, `fields ${IGDB_1.default.gameFields};
             where id = ${id};
             limit 1;`);
             if (!response.data.length)
@@ -110,14 +111,14 @@ class IGDBApi {
     static searchGame(query) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${IGDBApi.baseUrl}/games`;
+            const url = `${IGDB_1.default.baseUrl}/games`;
             let response = yield IGDBApi.post(url, `search "${query}";
-            fields ${this.gameFields};
+            fields ${IGDB_1.default.gameFields};
             where first_release_date > ${Math.floor(Date.now() / 1000)};
             limit 1;`);
             if (!response.data.length) {
                 response = yield IGDBApi.post(url, `search "${query}";
-                fields ${this.gameFields};
+                fields ${IGDB_1.default.gameFields};
                 limit 1;`);
             }
             if (!response.data.length)
@@ -134,7 +135,7 @@ class IGDBApi {
         return __awaiter(this, void 0, void 0, function* () {
             if (!(id === null || id === void 0 ? void 0 : id.length))
                 return Promise.resolve(undefined);
-            const url = `${IGDBApi.baseUrl}/websites`;
+            const url = `${IGDB_1.default.baseUrl}/websites`;
             let response = yield IGDBApi.post(url, `fields url;
             where id = (${id.join(",")}) & category = 13;
             limit 1;`);
@@ -146,7 +147,7 @@ class IGDBApi {
             const releaseDates = games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat();
             if (!(releaseDates === null || releaseDates === void 0 ? void 0 : releaseDates.length))
                 return Promise.resolve(undefined);
-            const url = `${IGDBApi.baseUrl}/release_dates`;
+            const url = `${IGDB_1.default.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
             where platform = 6 & id = (${releaseDates.join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
             return response.data;
@@ -157,7 +158,7 @@ class IGDBApi {
             const releaseDates = games.filter(game => game === null || game === void 0 ? void 0 : game.release_dates).map(game => game.release_dates).flat();
             if (!(releaseDates === null || releaseDates === void 0 ? void 0 : releaseDates.length))
                 return Promise.resolve(undefined);
-            const url = `${IGDBApi.baseUrl}/release_dates`;
+            const url = `${IGDB_1.default.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
             where platform = 6 & id = (${releaseDates.join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
             return response.data;
@@ -168,7 +169,7 @@ class IGDBApi {
         return __awaiter(this, void 0, void 0, function* () {
             if (!(releaseDateIDs === null || releaseDateIDs === void 0 ? void 0 : releaseDateIDs.length))
                 return Promise.resolve(undefined);
-            const url = `${IGDBApi.baseUrl}/release_dates`;
+            const url = `${IGDB_1.default.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
             where platform = 6 & id = (${releaseDateIDs.join(',')}) & date > ${Math.floor(Date.now() / 1000)};
             limit 1;`);
@@ -180,7 +181,7 @@ class IGDBApi {
         return __awaiter(this, void 0, void 0, function* () {
             if (!(releaseDateIDs === null || releaseDateIDs === void 0 ? void 0 : releaseDateIDs.length))
                 return Promise.resolve(undefined);
-            const url = `${IGDBApi.baseUrl}/release_dates`;
+            const url = `${IGDB_1.default.baseUrl}/release_dates`;
             let response = yield IGDBApi.post(url, `fields id,game,status,date;
             where platform = 6 & id = (${releaseDateIDs.join(',')}) & date < ${Math.floor(Date.now() / 1000)};
             sort date desc;
@@ -188,15 +189,12 @@ class IGDBApi {
             return (_a = response.data) === null || _a === void 0 ? void 0 : _a[0];
         });
     }
-    static statusToString(status) {
-        return ["Onbekend", "Alpha", "Beta", "Early Access", "Offline", "Cancelled", "Full Release"][status];
-    }
     static searchGameCover(cover) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             if (!cover)
                 return Promise.resolve(undefined);
-            const url = `${IGDBApi.baseUrl}/covers`;
+            const url = `${IGDB_1.default.baseUrl}/covers`;
             let response = yield IGDBApi.post(url, `fields url;
             where id = ${cover};
             limit 1;`);
@@ -204,13 +202,4 @@ class IGDBApi {
         });
     }
 }
-IGDBApi.gameFields = [
-    'id',
-    'name',
-    'url',
-    'release_dates',
-    'cover',
-    'websites'
-].join(',');
-IGDBApi.baseUrl = 'https://api.igdb.com/v4';
 exports.default = IGDBApi;
