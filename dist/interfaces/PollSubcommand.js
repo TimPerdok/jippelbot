@@ -14,20 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Subcommand_1 = __importDefault(require("../classes/Subcommand"));
-const Poll_1 = __importDefault(require("../classes/data/Poll"));
+const Poll_1 = __importDefault(require("../classes/data/polls/Poll"));
 const Bot_1 = __importDefault(require("../classes/Bot"));
 const CustomIdentifier_1 = __importDefault(require("../classes/CustomIdentifier"));
-const PollEmbed_1 = __importDefault(require("../classes/data/PollEmbed"));
+const PollEmbed_1 = __importDefault(require("../classes/data/polls/PollEmbed"));
 class PollSubcommand extends Subcommand_1.default {
     static get DEFAULT_END_DATE() {
-        return Math.round(((new Date().getTime()) + 5000) / 1000);
+        return Math.round(((new Date().getTime()) + 1000 * 60 * 60 * 24) / 1000);
     }
     constructor(name, description) {
         super(name, description);
     }
     onCommand(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            const params = this.parseInteractionToParams(interaction);
+            const params = yield this.parseInteractionToParams(interaction);
             const poll = Poll_1.default.new(this.createAction(params), PollSubcommand.DEFAULT_END_DATE, interaction.user.id, interaction.channelId);
             const guildId = interaction.guildId;
             if (!guildId)

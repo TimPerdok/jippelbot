@@ -24,13 +24,4 @@ export default class Summon extends Command {
         await interaction.reply({content: `Je hebt ${user.username} gesummoned.`, ephemeral: true});
     }
 
-
-
-  
-
-    
-    
-    
-
-
 }

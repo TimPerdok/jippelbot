@@ -4,7 +4,7 @@ import { Embed, Message, MessageEditOptions, MessagePayload, TextChannel } from 
 import IGDBApi from "../../api/IGDBApi";
 import { createEmbed } from "../../util/util";
 import JSONDataHandler, { ServerScoped } from "../datahandlers/JSONDataHandler";
-import ScheduledAction, { Schedule } from "../schedulers/messageupdaters/ScheduledActionWrapper";
+import ScheduledAction, { Schedule } from "../schedulers/ScheduledActionWrapper";
 import { Game } from "../../api/IGDB";
 import { ServerConfig } from "../../types/ServerdataJSON";
 
@@ -54,29 +54,5 @@ export default class GameReleasesEmbedUpdater extends ScheduledAction {
         if (message) return message.edit(content)
         this.createMessage() 
     }
-
-    
-
-    // async createGameReleaseSchedules(): Promise<Schedule[]> {
-    //     const allGamesPerServer = await this.gameDataHandler.getAll();
-    //     return Object.entries(allGamesPerServer).flatMap(([serverId, games]: [string, Game[]]) => {
-    //         return games
-    //             .filter((game) => !!game?.nextReleaseDate)
-    //             .map((game) => ({
-    //                 callback: () => this.sendGameReleaseAlert(serverId, game),
-    //                 at: new Date((game.nextReleaseDate ?? 0) * 1000)
-    //             } as Schedule))
-    //     })
-    // }
-
-    // async sendGameReleaseAlert(serverId: string, game: Game) {
-    //     const serverdata = await this.serverdataHandler.get(serverId);
-    //     const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
-    //     if (!channel) return;
-    //     const messages = await channel.messages.fetch({ limit: 25 })
-    //     const message = messages.find((message) => message.author.id === DiscordBot.client.user?.id && message.embeds.length == 0)
-    //     message?.delete()
-    //     channel.send({ content: `**${game.name} is gereleased!**` })
-    // }
 
 }

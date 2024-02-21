@@ -4,7 +4,7 @@ import { Embed, Guild, Message, MessageEditOptions, MessagePayload, TextChannel 
 import IGDBApi from "../../api/IGDBApi";
 import { createEmbed } from "../../util/util";
 import JSONDataHandler, { ServerScoped } from "../datahandlers/JSONDataHandler";
-import ScheduledAction, { Schedule } from "./messageupdaters/ScheduledActionWrapper";
+import ScheduledAction, { Schedule } from "./ScheduledActionWrapper";
 import { Game } from "../../api/IGDB";
 import { ServerConfig } from "../../types/ServerdataJSON";
 
@@ -18,12 +18,18 @@ export default class GameReleaseScheduler  {
     }
 
     createScheduledActions() {
+        
         const toBeReleasedGames = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(this.guild.id)
             .filter((game) => !!game?.nextReleaseDate)
-        return toBeReleasedGames.map((game) => new ScheduledAction({
-            callback: () => this.sendGameReleaseAlert(game),
-            at: new Date((game.nextReleaseDate ?? 0) * 1000)
-        }))
+        
+        return toBeReleasedGames.map((game) => {
+            console.log(`Scheduling ${game.name} to be released at ${new Date((game.nextReleaseDate ?? 0) * 1000)}`)
+            const releaseDate = new Date((game.nextReleaseDate ?? 0) * 1000)
+            return new ScheduledAction({
+                callback: () => this.releaseGame(game),
+                at: releaseDate < new Date() ? new Date(new Date().getTime() + 3000) : releaseDate
+            })
+        })
     }
 
     unschedule() {
@@ -35,7 +41,8 @@ export default class GameReleaseScheduler  {
         this.scheduledActions = this.createScheduledActions()
     }
 
-    async sendGameReleaseAlert(game: Game) {
+    async releaseGame(game: Game) {
+        console.log(`Sending release alert for ${game.name}`)
         const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getAllOfServer(this.guild.id)
         const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
         if (!channel) return;
@@ -43,6 +50,7 @@ export default class GameReleaseScheduler  {
         const message = messages.find((message) => message.author.id === DiscordBot.client.user?.id && message.embeds.length == 0)
         message?.delete()
         channel.send({ content: `**${game.name} is gereleased!**` })
+        DiscordBot.getInstance().dataHandlers.gameSubscriptions.remove(this.guild.id, game.id)
     }
 
 }

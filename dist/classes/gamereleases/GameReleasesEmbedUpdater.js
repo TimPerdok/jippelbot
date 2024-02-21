@@ -16,7 +16,7 @@ const Scheduler_1 = require("../Scheduler");
 const Bot_1 = __importDefault(require("../Bot"));
 const IGDBApi_1 = __importDefault(require("../../api/IGDBApi"));
 const util_1 = require("../../util/util");
-const ScheduledActionWrapper_1 = __importDefault(require("../schedulers/messageupdaters/ScheduledActionWrapper"));
+const ScheduledActionWrapper_1 = __importDefault(require("../schedulers/ScheduledActionWrapper"));
 class GameReleasesEmbedUpdater extends ScheduledActionWrapper_1.default {
     constructor(serverId) {
         super({ callback: () => this.run, at: Scheduler_1.Interval.DAILY });

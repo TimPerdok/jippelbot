@@ -1,10 +1,10 @@
 import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, ChatInputCommandInteraction, EmbedBuilder, Guild, GuildMember, MessageCreateOptions, MessagePayload, SlashCommandSubcommandBuilder } from "discord.js";
 import Subcommand from "../classes/Subcommand";
-import Poll from "../classes/data/Poll";
+import Poll from "../classes/data/polls/Poll";
 import { ActionParams, VoteAction, VoteEvent } from "../classes/data/VoteActions";
 import DiscordBot from "../classes/Bot";
 import CustomIdentifier from "../classes/CustomIdentifier";
-import PollEmbed from "../classes/data/PollEmbed";
+import PollEmbed from "../classes/data/polls/PollEmbed";
 import { PollJSON } from "../types/PollJSON";
 
 export type PollChannelType = "GUILD_TEXT" | "GUILD_VOICE"
@@ -12,10 +12,10 @@ export default abstract class PollSubcommand<T extends VoteAction<ActionParams>>
 
     abstract createAction(params: ActionParams): T
 
-    abstract parseInteractionToParams(interaction: ChatInputCommandInteraction): ActionParams
+    abstract parseInteractionToParams(interaction: ChatInputCommandInteraction): ActionParams | Promise<ActionParams>
 
     static get DEFAULT_END_DATE() {
-        return Math.round(((new Date().getTime()) + 5000) / 1000)
+        return Math.round(((new Date().getTime()) + 1000 * 60 * 60 * 24) / 1000)
     } 
 
     constructor(name: string, description: string) {
@@ -23,7 +23,7 @@ export default abstract class PollSubcommand<T extends VoteAction<ActionParams>>
     }
 
     async onCommand(interaction: ChatInputCommandInteraction) {
-        const params = this.parseInteractionToParams(interaction)
+        const params = await this.parseInteractionToParams(interaction)
         const poll = Poll.new(this.createAction(params), PollSubcommand.DEFAULT_END_DATE, interaction.user.id, interaction.channelId)
         const guildId = interaction.guildId
         if (!guildId) return console.error("No guildId")
