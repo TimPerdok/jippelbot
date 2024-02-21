@@ -17,7 +17,7 @@ const Command_1 = __importDefault(require("../classes/Command"));
 const IGDBApi_1 = __importDefault(require("../api/IGDBApi"));
 const IGDB_1 = __importDefault(require("../api/IGDB"));
 const Bot_1 = __importDefault(require("../classes/Bot"));
-class Subscribe extends Command_1.default {
+class Release extends Command_1.default {
     get data() {
         return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
@@ -83,4 +83,4 @@ class Subscribe extends Command_1.default {
         });
     }
 }
-exports.default = Subscribe;
+exports.default = Release;

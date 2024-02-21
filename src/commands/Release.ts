@@ -5,7 +5,7 @@ import IGDBApi from "../api/IGDBApi";
 import IGDB, { Game } from "../api/IGDB";
 import DiscordBot from "../classes/Bot";
 
-export default class Subscribe extends Command {
+export default class Release extends Command {
 
     get data(): SlashCommandBuilder {
         return new SlashCommandBuilder()

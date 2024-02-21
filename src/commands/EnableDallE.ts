@@ -3,7 +3,7 @@ import Command from "../classes/Command";
 import DiscordBot from "../classes/Bot";
 
 
-export default class Ping extends Command {
+export default class EnableDallE extends Command {
 
     get data(): SlashCommandBuilder {
         return new SlashCommandBuilder()

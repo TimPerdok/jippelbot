@@ -17,7 +17,7 @@ const Command_1 = __importDefault(require("../classes/Command"));
 const index_1 = require("../index");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const Bot_1 = __importDefault(require("../classes/Bot"));
-class Summon extends Command_1.default {
+class Imagine extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
@@ -57,4 +57,4 @@ class Summon extends Command_1.default {
         });
     }
 }
-exports.default = Summon;
+exports.default = Imagine;

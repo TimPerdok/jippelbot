@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import DiscordBot from "../classes/Bot";
 import { ServerConfig } from "../types/ServerdataJSON";
 
-export default class Summon extends Command {
+export default class Imagine extends Command {
 
 
     get data(): SlashCommandBuilder {

@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.COMMANDS = exports.SRC_DIR = void 0;
 const EnableDallE_1 = __importDefault(require("./commands/EnableDallE"));
-const EnableDallE_2 = __importDefault(require("./commands/EnableDallE"));
+const Ping_1 = __importDefault(require("./commands/Ping"));
+const Summon_1 = __importDefault(require("./commands/Summon"));
 const Imagine_1 = __importDefault(require("./commands/Imagine"));
-const Imagine_2 = __importDefault(require("./commands/Imagine"));
 const Release_1 = __importDefault(require("./commands/Release"));
-const Release_2 = __importDefault(require("./commands/Release"));
+const Subscribe_1 = __importDefault(require("./commands/Subscribe"));
 const Releasemonth_1 = __importDefault(require("./commands/Releasemonth"));
 const SubscribeId_1 = __importDefault(require("./commands/SubscribeId"));
 const Unsubscribe_1 = __importDefault(require("./commands/Unsubscribe"));
@@ -18,13 +18,13 @@ const Wanneerbenikgejoined_1 = __importDefault(require("./commands/Wanneerbenikg
 exports.SRC_DIR = __dirname;
 exports.COMMANDS = [
     new EnableDallE_1.default(),
-    new Imagine_2.default(),
-    new EnableDallE_2.default(),
+    new Imagine_1.default(),
+    new Ping_1.default(),
     new Release_1.default(),
     new Releasemonth_1.default(),
-    new Release_2.default(),
+    new Subscribe_1.default(),
     new SubscribeId_1.default(),
-    new Imagine_1.default(),
+    new Summon_1.default(),
     new Unsubscribe_1.default(),
     new Vote_1.default(),
     new Wanneerbenikgejoined_1.default(),

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const Command_1 = __importDefault(require("../classes/Command"));
 const Bot_1 = __importDefault(require("../classes/Bot"));
-class Ping extends Command_1.default {
+class EnableDallE extends Command_1.default {
     get data() {
         return new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
@@ -40,4 +40,4 @@ class Ping extends Command_1.default {
         });
     }
 }
-exports.default = Ping;
+exports.default = EnableDallE;
