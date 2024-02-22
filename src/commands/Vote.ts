@@ -5,7 +5,7 @@ import CustomIdentifier from "../classes/CustomIdentifier";
 import Addchannel from "./vote/Addchannel";
 import Removechannel from "./vote/Removechannel";
 import Renamechannel from "./vote/Renamechannel";
-import Kickplayer from "./vote/Kickplayer";
+import Kickuser from "./vote/Kickuser";
 
 export default class Vote extends Command {
 
@@ -24,7 +24,7 @@ export default class Vote extends Command {
             new Addchannel(),
             new Removechannel(),
             new Renamechannel(),
-            new Kickplayer(),
+            new Kickuser(),
         ]);
     }
 

@@ -1,7 +1,7 @@
 import Scheduler, { Interval } from "../Scheduler";
 
 
-export  type Schedule = {
+export type Schedule = {
     callback: () => any;
     at: Date | Interval;
 }

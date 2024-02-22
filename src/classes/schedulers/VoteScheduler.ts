@@ -1,6 +1,6 @@
 import DiscordBot from "../Bot";
 import { Guild } from "discord.js";
-import ScheduledAction from "./ScheduledActionWrapper";
+import ScheduledAction from "./ScheduledAction";
 import Poll from "../data/polls/Poll";
 import { VoteAction } from "../data/VoteActions";
 import { PollJSON } from "../../types/PollJSON";

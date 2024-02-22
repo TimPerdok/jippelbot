@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const PollSubcommand_1 = __importDefault(require("../../interfaces/PollSubcommand"));
 const VoteActions_1 = require("../../classes/data/VoteActions");
-class Kickplayer extends PollSubcommand_1.default {
+class Kickuser extends PollSubcommand_1.default {
     constructor() {
-        super("kickplayer", "Kick a player");
+        super("kickuser", "Kick a user");
     }
     createAction(params) {
         return new VoteActions_1.KickUserAction(params);
@@ -46,4 +46,4 @@ class Kickplayer extends PollSubcommand_1.default {
             .setRequired(true));
     }
 }
-exports.default = Kickplayer;
+exports.default = Kickuser;

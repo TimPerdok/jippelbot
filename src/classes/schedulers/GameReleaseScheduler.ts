@@ -4,9 +4,10 @@ import { Embed, Guild, Message, MessageEditOptions, MessagePayload, TextChannel 
 import IGDBApi from "../../api/IGDBApi";
 import { createEmbed } from "../../util/util";
 import JSONDataHandler, { ServerScoped } from "../datahandlers/JSONDataHandler";
-import ScheduledAction, { Schedule } from "./ScheduledActionWrapper";
+import ScheduledAction, { Schedule } from "./ScheduledAction";
 import { Game } from "../../api/IGDB";
 import { ServerConfig } from "../../types/ServerdataJSON";
+import { doWithLock } from "../Lock";
 
 
 export default class GameReleaseScheduler  {
@@ -42,15 +43,22 @@ export default class GameReleaseScheduler  {
     }
 
     async releaseGame(game: Game) {
-        console.log(`Sending release alert for ${game.name}`)
         const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getAllOfServer(this.guild.id)
         const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
         if (!channel) return;
-        const messages = await channel.messages.fetch({ limit: 25 })
-        const message = messages.find((message) => message.author.id === DiscordBot.client.user?.id && message.embeds.length == 0)
-        message?.delete()
-        channel.send({ content: `**${game.name} is gereleased!**` })
+        await doWithLock('deleteOldGameReleaseMessageLock', ()=> {
+            return this.removeOldMessages(channel)
+        })
+        await channel.send({ content: `**${game.name} is gereleased!**` })
         DiscordBot.getInstance().dataHandlers.gameSubscriptions.remove(this.guild.id, game.id)
+    }
+
+    async removeOldMessages(channel: TextChannel) {
+        let messages = await channel.messages.fetch({ limit: 25 })
+        messages = messages.filter((message: Message) => message.author.id === DiscordBot.client.user?.id && message.embeds.length == 0)
+        for (const message of messages.values()) {
+            await message.delete()
+        }
     }
 
 }

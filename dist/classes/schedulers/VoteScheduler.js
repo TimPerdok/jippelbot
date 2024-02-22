@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Bot_1 = __importDefault(require("../Bot"));
-const ScheduledActionWrapper_1 = __importDefault(require("./ScheduledActionWrapper"));
+const ScheduledAction_1 = __importDefault(require("./ScheduledAction"));
 const Poll_1 = __importDefault(require("../data/polls/Poll"));
 class VoteScheduler {
     constructor(guild) {
@@ -22,7 +22,7 @@ class VoteScheduler {
     }
     createScheduledActions() {
         const polls = Bot_1.default.getInstance().dataHandlers.poll.getAllOfServer(this.guild.id).map((poll) => Poll_1.default.fromItem(poll));
-        return polls.map((poll) => new ScheduledActionWrapper_1.default({
+        return polls.map((poll) => new ScheduledAction_1.default({
             callback: () => __awaiter(this, void 0, void 0, function* () {
                 const newPoll = yield Bot_1.default.getInstance().dataHandlers.poll.getItem(this.guild.id, poll.id);
                 if (!newPoll)
@@ -33,7 +33,7 @@ class VoteScheduler {
         }));
     }
     addPoll(poll) {
-        this.scheduledActions.push(new ScheduledActionWrapper_1.default({
+        this.scheduledActions.push(new ScheduledAction_1.default({
             callback: () => __awaiter(this, void 0, void 0, function* () {
                 const newPoll = yield Bot_1.default.getInstance().dataHandlers.poll.getItem(this.guild.id, poll.id);
                 if (!newPoll)

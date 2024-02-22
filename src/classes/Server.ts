@@ -2,9 +2,6 @@ import { Guild } from "discord.js";
 import { ServerConfig } from "../types/ServerdataJSON";
 import GameReleasesEmbedUpdater from "./gamereleases/GameReleasesEmbedUpdater";
 import ServerREST from "./ServerREST";
-import Command from "./Command";
-import Scheduler from "./Scheduler";
-import DiscordBot from "./Bot";
 import GameReleaseScheduler from "./schedulers/GameReleaseScheduler";
 import VoteScheduler from "./schedulers/VoteScheduler";
 

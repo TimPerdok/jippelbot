@@ -28,6 +28,8 @@ class IGDBApi {
     }
     static searchGames(ids) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!(ids === null || ids === void 0 ? void 0 : ids.length))
+                return Promise.resolve([]);
             const url = `${IGDB_1.default.baseUrl}/games`;
             const response = yield IGDBApi.post(url, `fields ${IGDB_1.default.gameFields};
             where id = (${ids.join(',')});`);

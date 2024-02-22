@@ -13,7 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Bot_1 = __importDefault(require("../Bot"));
-const ScheduledActionWrapper_1 = __importDefault(require("./ScheduledActionWrapper"));
+const ScheduledAction_1 = __importDefault(require("./ScheduledAction"));
+const Lock_1 = require("../Lock");
 class GameReleaseScheduler {
     constructor(guild) {
         this.guild = guild;
@@ -26,7 +27,7 @@ class GameReleaseScheduler {
             var _a, _b;
             console.log(`Scheduling ${game.name} to be released at ${new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000)}`);
             const releaseDate = new Date(((_b = game.nextReleaseDate) !== null && _b !== void 0 ? _b : 0) * 1000);
-            return new ScheduledActionWrapper_1.default({
+            return new ScheduledAction_1.default({
                 callback: () => this.releaseGame(game),
                 at: releaseDate < new Date() ? new Date(new Date().getTime() + 3000) : releaseDate
             });
@@ -41,16 +42,24 @@ class GameReleaseScheduler {
     }
     releaseGame(game) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(`Sending release alert for ${game.name}`);
             const serverdata = Bot_1.default.getInstance().dataHandlers.serverdata.getAllOfServer(this.guild.id);
             const channel = Bot_1.default.client.channels.cache.get(serverdata.releaseChannel);
             if (!channel)
                 return;
-            const messages = yield channel.messages.fetch({ limit: 25 });
-            const message = messages.find((message) => { var _a; return message.author.id === ((_a = Bot_1.default.client.user) === null || _a === void 0 ? void 0 : _a.id) && message.embeds.length == 0; });
-            message === null || message === void 0 ? void 0 : message.delete();
-            channel.send({ content: `**${game.name} is gereleased!**` });
+            yield (0, Lock_1.doWithLock)('deleteOldGameReleaseMessageLock', () => {
+                return this.removeOldMessages(channel);
+            });
+            yield channel.send({ content: `**${game.name} is gereleased!**` });
             Bot_1.default.getInstance().dataHandlers.gameSubscriptions.remove(this.guild.id, game.id);
+        });
+    }
+    removeOldMessages(channel) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let messages = yield channel.messages.fetch({ limit: 25 });
+            messages = messages.filter((message) => { var _a; return message.author.id === ((_a = Bot_1.default.client.user) === null || _a === void 0 ? void 0 : _a.id) && message.embeds.length == 0; });
+            for (const message of messages.values()) {
+                yield message.delete();
+            }
         });
     }
 }

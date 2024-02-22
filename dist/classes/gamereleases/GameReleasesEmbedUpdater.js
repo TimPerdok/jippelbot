@@ -16,13 +16,14 @@ const Scheduler_1 = require("../Scheduler");
 const Bot_1 = __importDefault(require("../Bot"));
 const IGDBApi_1 = __importDefault(require("../../api/IGDBApi"));
 const util_1 = require("../../util/util");
-const ScheduledActionWrapper_1 = __importDefault(require("../schedulers/ScheduledActionWrapper"));
-class GameReleasesEmbedUpdater extends ScheduledActionWrapper_1.default {
+const ScheduledAction_1 = __importDefault(require("../schedulers/ScheduledAction"));
+class GameReleasesEmbedUpdater extends ScheduledAction_1.default {
     constructor(serverId) {
-        super({ callback: () => this.run, at: Scheduler_1.Interval.DAILY });
+        super({ callback: () => this.run(), at: Scheduler_1.Interval.DAILY });
         this.serverId = serverId;
         this.gameDataHandler = Bot_1.default.getInstance().dataHandlers.gameSubscriptions;
         this.serverdataHandler = Bot_1.default.getInstance().dataHandlers.serverdata;
+        this.run();
     }
     createMessage() {
         return __awaiter(this, void 0, void 0, function* () {

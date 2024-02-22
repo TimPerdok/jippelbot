@@ -17,6 +17,7 @@ class IGDBApi {
 
 
     static async searchGames(ids: number[]): Promise<Game[]> {
+        if (!ids?.length) return Promise.resolve([]);
         const url = `${IGDB.baseUrl}/games`;
         const response = await IGDBApi.post(
             url,

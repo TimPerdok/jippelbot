@@ -4,7 +4,7 @@ import { Embed, Message, MessageEditOptions, MessagePayload, TextChannel } from 
 import IGDBApi from "../../api/IGDBApi";
 import { createEmbed } from "../../util/util";
 import JSONDataHandler, { ServerScoped } from "../datahandlers/JSONDataHandler";
-import ScheduledAction, { Schedule } from "../schedulers/ScheduledActionWrapper";
+import ScheduledAction, { Schedule } from "../schedulers/ScheduledAction";
 import { Game } from "../../api/IGDB";
 import { ServerConfig } from "../../types/ServerdataJSON";
 
@@ -15,9 +15,10 @@ export default class GameReleasesEmbedUpdater extends ScheduledAction {
     serverdataHandler: JSONDataHandler<ServerConfig>;
 
     constructor(private serverId: string) {
-        super({ callback: () => this.run, at: Interval.DAILY})
+        super({ callback: () => this.run(), at: Interval.DAILY})
         this.gameDataHandler = DiscordBot.getInstance().dataHandlers.gameSubscriptions as JSONDataHandler<Game[]>;
         this.serverdataHandler = DiscordBot.getInstance().dataHandlers.serverdata as JSONDataHandler<ServerConfig>;
+        this.run()
     }
 
     async createMessage() {

@@ -17,7 +17,7 @@ const Command_1 = __importDefault(require("../classes/Command"));
 const Addchannel_1 = __importDefault(require("./vote/Addchannel"));
 const Removechannel_1 = __importDefault(require("./vote/Removechannel"));
 const Renamechannel_1 = __importDefault(require("./vote/Renamechannel"));
-const Kickplayer_1 = __importDefault(require("./vote/Kickplayer"));
+const Kickuser_1 = __importDefault(require("./vote/Kickuser"));
 class Vote extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
@@ -33,7 +33,7 @@ class Vote extends Command_1.default {
             new Addchannel_1.default(),
             new Removechannel_1.default(),
             new Renamechannel_1.default(),
-            new Kickplayer_1.default(),
+            new Kickuser_1.default(),
         ]);
     }
     onCommand(interaction) {

@@ -4,11 +4,11 @@ import { KickUserAction, KickUserActionParams } from "../../classes/data/VoteAct
 
 
 
-export default class Kickplayer extends PollSubcommand<KickUserAction> {
+export default class Kickuser extends PollSubcommand<KickUserAction> {
 
 
     constructor() {
-        super("kickplayer", "Kick a player");
+        super("kickuser", "Kick a user");
     }
 
     createAction(params: KickUserActionParams): KickUserAction {
