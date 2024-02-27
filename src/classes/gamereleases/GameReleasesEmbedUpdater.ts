@@ -37,19 +37,25 @@ export default class GameReleasesEmbedUpdater extends ScheduledAction {
 
     async getContent(): Promise<string | MessageEditOptions | MessagePayload> {
         const games = await this.gameDataHandler.getAllOfServer(this.serverId);
+        
         const embed = await createEmbed(games) as Embed;
         return { embeds: [embed] }
     }
 
 
     async run() {
-        let subscribedGames = await this.gameDataHandler.getAllOfServer(this.serverId);
-        subscribedGames = subscribedGames.filter((game) =>
-                !game?.nextReleaseDate
-                || game.nextReleaseDate > Math.floor(Date.now() / 1000
-            ))
-        subscribedGames = await IGDBApi.searchGames(subscribedGames.map((game) => game.id));
-        await this.gameDataHandler.overwrite(this.serverId, subscribedGames);
+        // Update all games
+        const games = await this.gameDataHandler.getAllOfServer(this.serverId);
+        const newGames = await IGDBApi.searchGames(games.map((game) => game.id));
+        const mergedGames = games.map((game) => {
+            const subscribedGame = newGames.find((newGame) => newGame.id === game.id);
+            return {
+                ...game,
+                ...subscribedGame
+            } as Game
+        })
+        await this.gameDataHandler.overwrite(this.serverId, mergedGames);
+        // Update release embed
         const message = await this.getMessage();
         const content = await this.getContent();
         if (message) return message.edit(content)

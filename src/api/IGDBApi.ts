@@ -24,7 +24,6 @@ class IGDBApi {
             `fields ${IGDB.gameFields};
             where id = (${ids.join(',')});`);
         let games: Game[] = response.data;
-        
         games = await this.addCurrentReleases(games)
         games = await this.addNextReleases(games)
         return games;

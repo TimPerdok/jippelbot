@@ -50,11 +50,15 @@ class GameReleasesEmbedUpdater extends ScheduledAction_1.default {
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
-            let subscribedGames = yield this.gameDataHandler.getAllOfServer(this.serverId);
-            subscribedGames = subscribedGames.filter((game) => !(game === null || game === void 0 ? void 0 : game.nextReleaseDate)
-                || game.nextReleaseDate > Math.floor(Date.now() / 1000));
-            subscribedGames = yield IGDBApi_1.default.searchGames(subscribedGames.map((game) => game.id));
-            yield this.gameDataHandler.overwrite(this.serverId, subscribedGames);
+            // Update all games
+            const games = yield this.gameDataHandler.getAllOfServer(this.serverId);
+            const newGames = yield IGDBApi_1.default.searchGames(games.map((game) => game.id));
+            const mergedGames = games.map((game) => {
+                const subscribedGame = newGames.find((newGame) => newGame.id === game.id);
+                return Object.assign(Object.assign({}, game), subscribedGame);
+            });
+            yield this.gameDataHandler.overwrite(this.serverId, mergedGames);
+            // Update release embed
             const message = yield this.getMessage();
             const content = yield this.getContent();
             if (message)
