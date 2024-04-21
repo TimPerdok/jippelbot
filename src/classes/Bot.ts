@@ -79,6 +79,15 @@ export default class DiscordBot {
             });
         });
 
+        DiscordBot.client.on(Events.MessageCreate, (message) => {
+            if (!message.guild) return console.log('Received DM')
+            if (message.author.bot) return console.log('Received bot message')
+            const voteChannel = this.dataHandlers.serverdata.getAllOfServer(message.guild?.id).voteChannel
+            if (message.channel.id !== voteChannel) return;
+            message.delete();
+            message.author.send('Je mag geen berichten sturen in het vote kanaal. Gebruik hiervoor het discussie kanaal')
+        });
+
         DiscordBot.client.on(Events.InteractionCreate, this.onInteractionCreate.bind(this));
         DiscordBot.client.login(token);
 
