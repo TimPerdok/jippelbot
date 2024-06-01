@@ -67,10 +67,11 @@ export async function createEmbed(games: Game[], small = false): Promise<Partial
     })
 
     let exceededCount = 0;
+    
     const truncated: string[] = []
     games.filter(game => game?.nextReleaseDate == undefined)
         .forEach((game) => {
-            if (truncated.join("\n").length > 950) return exceededCount++;
+            if (truncated.join("\n").length > 900) return exceededCount++;
             truncated.push(gameToValue(game, small));
         })
     if (exceededCount > 0) truncated.push(`& ${exceededCount} meer`)

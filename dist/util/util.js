@@ -73,7 +73,7 @@ function createEmbed(games, small = false) {
         const truncated = [];
         games.filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) == undefined)
             .forEach((game) => {
-            if (truncated.join("\n").length > 950)
+            if (truncated.join("\n").length > 900)
                 return exceededCount++;
             truncated.push(gameToValue(game, small));
         });
