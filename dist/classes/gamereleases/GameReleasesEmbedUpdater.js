@@ -45,7 +45,6 @@ class GameReleasesEmbedUpdater extends ScheduledAction_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const games = yield this.gameDataHandler.getAllOfServer(this.serverId);
             const embed = yield (0, util_1.createEmbed)(games);
-            console.log("embed", embed);
             return { embeds: [embed] };
         });
     }
@@ -62,6 +61,7 @@ class GameReleasesEmbedUpdater extends ScheduledAction_1.default {
             // Update release embed
             const message = yield this.getMessage();
             const content = yield this.getContent();
+            console.log("ASDF", content);
             if (message)
                 return message.edit(content);
             this.createMessage();

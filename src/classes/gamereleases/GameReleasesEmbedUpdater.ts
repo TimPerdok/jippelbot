@@ -39,7 +39,6 @@ export default class GameReleasesEmbedUpdater extends ScheduledAction {
         const games = await this.gameDataHandler.getAllOfServer(this.serverId);
         
         const embed = await createEmbed(games) as Embed;
-        console.log("embed", embed)
         return { embeds: [embed] }
     }
 
@@ -59,6 +58,7 @@ export default class GameReleasesEmbedUpdater extends ScheduledAction {
         // Update release embed
         const message = await this.getMessage();
         const content = await this.getContent();
+        console.log("ASDF", content)
         if (message) return message.edit(content)
         this.createMessage() 
     }
