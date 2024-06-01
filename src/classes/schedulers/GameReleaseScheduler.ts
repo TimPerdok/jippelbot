@@ -1,13 +1,8 @@
-import { Interval } from "../Scheduler";
-import DiscordBot from "../Bot";
-import { Embed, Guild, Message, MessageEditOptions, MessagePayload, TextChannel } from "discord.js";
-import IGDBApi from "../../api/IGDBApi";
-import { createEmbed } from "../../util/util";
-import JSONDataHandler, { ServerScoped } from "../datahandlers/JSONDataHandler";
-import ScheduledAction, { Schedule } from "./ScheduledAction";
+import { Guild, Message, TextChannel } from "discord.js";
 import { Game } from "../../api/IGDB";
-import { ServerConfig } from "../../types/ServerdataJSON";
+import DiscordBot from "../Bot";
 import { doWithLock } from "../Lock";
+import ScheduledAction from "./ScheduledAction";
 
 
 export default class GameReleaseScheduler  {

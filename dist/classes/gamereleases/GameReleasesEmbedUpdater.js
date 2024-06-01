@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Scheduler_1 = require("../Scheduler");
-const Bot_1 = __importDefault(require("../Bot"));
 const IGDBApi_1 = __importDefault(require("../../api/IGDBApi"));
 const util_1 = require("../../util/util");
+const Bot_1 = __importDefault(require("../Bot"));
+const Scheduler_1 = require("../Scheduler");
 const ScheduledAction_1 = __importDefault(require("../schedulers/ScheduledAction"));
 class GameReleasesEmbedUpdater extends ScheduledAction_1.default {
     constructor(serverId) {
@@ -45,6 +45,7 @@ class GameReleasesEmbedUpdater extends ScheduledAction_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const games = yield this.gameDataHandler.getAllOfServer(this.serverId);
             const embed = yield (0, util_1.createEmbed)(games);
+            console.log("embed", embed);
             return { embeds: [embed] };
         });
     }

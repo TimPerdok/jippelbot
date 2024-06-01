@@ -1,12 +1,12 @@
-import { Interval } from "../Scheduler";
-import DiscordBot from "../Bot";
 import { Embed, Message, MessageEditOptions, MessagePayload, TextChannel } from "discord.js";
-import IGDBApi from "../../api/IGDBApi";
-import { createEmbed } from "../../util/util";
-import JSONDataHandler, { ServerScoped } from "../datahandlers/JSONDataHandler";
-import ScheduledAction, { Schedule } from "../schedulers/ScheduledAction";
 import { Game } from "../../api/IGDB";
+import IGDBApi from "../../api/IGDBApi";
 import { ServerConfig } from "../../types/ServerdataJSON";
+import { createEmbed } from "../../util/util";
+import DiscordBot from "../Bot";
+import { Interval } from "../Scheduler";
+import JSONDataHandler from "../datahandlers/JSONDataHandler";
+import ScheduledAction from "../schedulers/ScheduledAction";
 
 
 export default class GameReleasesEmbedUpdater extends ScheduledAction {
@@ -39,6 +39,7 @@ export default class GameReleasesEmbedUpdater extends ScheduledAction {
         const games = await this.gameDataHandler.getAllOfServer(this.serverId);
         
         const embed = await createEmbed(games) as Embed;
+        console.log("embed", embed)
         return { embeds: [embed] }
     }
 

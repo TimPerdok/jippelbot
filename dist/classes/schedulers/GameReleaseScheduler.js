@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Bot_1 = __importDefault(require("../Bot"));
-const ScheduledAction_1 = __importDefault(require("./ScheduledAction"));
 const Lock_1 = require("../Lock");
+const ScheduledAction_1 = __importDefault(require("./ScheduledAction"));
 class GameReleaseScheduler {
     constructor(guild) {
         this.guild = guild;
