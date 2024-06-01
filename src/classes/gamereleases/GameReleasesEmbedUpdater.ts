@@ -58,7 +58,7 @@ export default class GameReleasesEmbedUpdater extends ScheduledAction {
         // Update release embed
         const message = await this.getMessage();
         const content = await this.getContent();
-        console.log("ASDF", content)
+        console.log("ASDF", JSON.stringify(content))
         if (message) return message.edit(content)
         this.createMessage() 
     }

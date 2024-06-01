@@ -84,8 +84,6 @@ function createEmbed(games, small = false) {
             value: truncated.join("\n"),
             inline: false
         };
-        console.log("lenght, ", fields === null || fields === void 0 ? void 0 : fields.length);
-        fields.forEach(field => console.log(field.value.length, field.value));
         fields.push(unknownDateField);
         const embed = {
             title: "Upcoming game releases",
