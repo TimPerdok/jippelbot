@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll --config ./jest.config.js",
-    "run": "ts-node dist/index.js",
+    "run": "node dist/index.js",
     "start": "npm-run-all \"build\" \"run\"",
-    "dev": "ts-node src/index.ts",
+    "dev": "npx tsx src/index.ts",
     "build": "npm-run-all \"pre-transpile\" & tsc",
-    "pre-transpile": "ts-node ./build-scripts/pre-transpile.ts"
+    "pre-transpile": "npx tsx ./build-scripts/pre-transpile.ts"
   },
   "repository": {
     "type": "git",

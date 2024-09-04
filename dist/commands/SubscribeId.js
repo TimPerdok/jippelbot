@@ -63,11 +63,19 @@ class Subscribe extends Command_1.default {
         });
     }
     enrichGameAndSave(game, guildId, userDescription) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             game = yield IGDBApi_1.default.enrichGameData(game);
             if (userDescription)
                 game.userDescription = userDescription;
-            // await JSONDataHandler.addGameSubscription(guildId, game);
+            const games = yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(guildId);
+            const index = games.findIndex(g => g.id === game.id);
+            if (index !== -1)
+                games[index] = Object.assign(Object.assign({}, games[index]), game);
+            else
+                games.push(game);
+            yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.overwrite(guildId, games);
+            (_a = Bot_1.default.getInstance().getServerById(guildId)) === null || _a === void 0 ? void 0 : _a.updateLiveMessages();
             return game;
         });
     }

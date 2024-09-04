@@ -50,9 +50,17 @@ export default class Subscribe extends Command {
     }
 
     async enrichGameAndSave(game: Game, guildId: string, userDescription?: string | null): Promise<Game> {
-        game = await IGDBApi.enrichGameData(game);
+        game = await IGDBApi.enrichGameData(game)
         if (userDescription) game.userDescription = userDescription;
-        // await JSONDataHandler.addGameSubscription(guildId, game);
+        const games = await DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(guildId) as Game[];
+        const index = games.findIndex(g => g.id === game.id);
+        if (index !== -1) games[index] = {
+            ...games[index],
+            ...game
+        };
+        else games.push(game);
+        await DiscordBot.getInstance().dataHandlers.gameSubscriptions.overwrite(guildId, games)
+        DiscordBot.getInstance().getServerById(guildId)?.updateLiveMessages();
         return game;
     }
 
