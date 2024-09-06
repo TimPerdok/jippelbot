@@ -59,7 +59,7 @@ export default class Subscribe extends Command {
         gameInData ? await interaction.editReply(`${game.name} is geupdatet.`)
             : await interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
             
-        DiscordBot.getInstance().getServerById(interaction.guildId ?? "")?.updateLiveMessages();
+        DiscordBot.getInstance().getServerById(interaction.guildId ?? "")?.refreshLiveMessages();
     }
 
     async onButtonPress(interaction: ButtonInteraction<CacheType>): Promise<void> {
@@ -86,7 +86,7 @@ export default class Subscribe extends Command {
         };
         else games.push(game);
         await DiscordBot.getInstance().dataHandlers.gameSubscriptions.overwrite(guildId, games)
-        DiscordBot.getInstance().getServerById(guildId)?.updateLiveMessages();
+        DiscordBot.getInstance().getServerById(guildId)?.refreshLiveMessages();
         return game;
     }
 

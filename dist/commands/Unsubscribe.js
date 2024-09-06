@@ -36,7 +36,7 @@ class Subscribe extends Command_1.default {
             if (!deletedGame)
                 return yield interaction.reply({ content: `De server is niet geabonneerd op ${name}.`, ephemeral: true });
             yield interaction.reply({ content: `De server is niet meer geabonneerd op ${deletedGame.name}.`, ephemeral: true });
-            (_d = Bot_1.default.getInstance().getServerById((_c = interaction.guildId) !== null && _c !== void 0 ? _c : "")) === null || _d === void 0 ? void 0 : _d.updateLiveMessages();
+            (_d = Bot_1.default.getInstance().getServerById((_c = interaction.guildId) !== null && _c !== void 0 ? _c : "")) === null || _d === void 0 ? void 0 : _d.refreshLiveMessages();
         });
     }
 }

@@ -7,6 +7,16 @@ import CustomIdentifier from "../classes/CustomIdentifier";
 import PollEmbed from "../classes/data/polls/PollEmbed";
 import { PollJSON } from "../types/PollJSON";
 
+enum TimeUnits {
+    SECOND = 1,
+    MINUTE = 60,
+    HOUR = 3600,
+    DAY = 86400,
+    WEEK = 604800,
+    MONTH = 2592000,
+    YEAR = 31536000
+}
+
 export type PollChannelType = "GUILD_TEXT" | "GUILD_VOICE"
 export default abstract class PollSubcommand<T extends VoteAction<ActionParams>> extends Subcommand {
 
@@ -14,8 +24,10 @@ export default abstract class PollSubcommand<T extends VoteAction<ActionParams>>
 
     abstract parseInteractionToParams(interaction: ChatInputCommandInteraction): ActionParams | Promise<ActionParams>
 
+    
+
     static get DEFAULT_END_DATE() {
-        return Math.round(((new Date().getTime()) + 1000 * 60 * 60 * 24) / 1000)
+        return Math.round(((new Date().getTime()) + TimeUnits.DAY * 1000) / 1000)
     } 
 
     constructor(name: string, description: string) {
@@ -69,7 +81,7 @@ export default abstract class PollSubcommand<T extends VoteAction<ActionParams>>
         if (!messageId) return console.error("No messageId")
         interaction.deferUpdate()
         
-        const poll = Poll.fromItem(await DiscordBot.getInstance().dataHandlers.poll.getItem(guildId, messageId) as PollJSON<T>)
+        const poll = Poll.fromJson(await DiscordBot.getInstance().dataHandlers.poll.getItem(guildId, messageId) as PollJSON<T>)
         if (!poll) return console.error("No poll")
         poll.addVote(interaction.user.id, isYes)
         const pollEmbed = PollEmbed.fromEmbed(interaction.message.embeds[0], poll)

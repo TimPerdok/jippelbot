@@ -18,9 +18,19 @@ const Poll_1 = __importDefault(require("../classes/data/polls/Poll"));
 const Bot_1 = __importDefault(require("../classes/Bot"));
 const CustomIdentifier_1 = __importDefault(require("../classes/CustomIdentifier"));
 const PollEmbed_1 = __importDefault(require("../classes/data/polls/PollEmbed"));
+var TimeUnits;
+(function (TimeUnits) {
+    TimeUnits[TimeUnits["SECOND"] = 1] = "SECOND";
+    TimeUnits[TimeUnits["MINUTE"] = 60] = "MINUTE";
+    TimeUnits[TimeUnits["HOUR"] = 3600] = "HOUR";
+    TimeUnits[TimeUnits["DAY"] = 86400] = "DAY";
+    TimeUnits[TimeUnits["WEEK"] = 604800] = "WEEK";
+    TimeUnits[TimeUnits["MONTH"] = 2592000] = "MONTH";
+    TimeUnits[TimeUnits["YEAR"] = 31536000] = "YEAR";
+})(TimeUnits || (TimeUnits = {}));
 class PollSubcommand extends Subcommand_1.default {
     static get DEFAULT_END_DATE() {
-        return Math.round(((new Date().getTime()) + 1000 * 60 * 60 * 24) / 1000);
+        return Math.round(((new Date().getTime()) + TimeUnits.DAY * 1000) / 1000);
     }
     constructor(name, description) {
         super(name, description);
@@ -74,7 +84,7 @@ class PollSubcommand extends Subcommand_1.default {
             if (!messageId)
                 return console.error("No messageId");
             interaction.deferUpdate();
-            const poll = Poll_1.default.fromItem(yield Bot_1.default.getInstance().dataHandlers.poll.getItem(guildId, messageId));
+            const poll = Poll_1.default.fromJson(yield Bot_1.default.getInstance().dataHandlers.poll.getItem(guildId, messageId));
             if (!poll)
                 return console.error("No poll");
             poll.addVote(interaction.user.id, isYes);

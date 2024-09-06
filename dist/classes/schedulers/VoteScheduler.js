@@ -13,41 +13,46 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Bot_1 = __importDefault(require("../Bot"));
-const ScheduledAction_1 = __importDefault(require("./ScheduledAction"));
 const Poll_1 = __importDefault(require("../data/polls/Poll"));
-class VoteScheduler {
+const Scheduler_1 = __importDefault(require("../Scheduler"));
+class VoteManager {
     constructor(guild) {
         this.guild = guild;
-        this.scheduledActions = this.createScheduledActions();
+        this.actions = this.createScheduledActions();
+        this.init();
+    }
+    init() {
+        this.scheduler = new Scheduler_1.default(this.actions, "VoteScheduler");
     }
     createScheduledActions() {
-        const polls = Bot_1.default.getInstance().dataHandlers.poll.getAllOfServer(this.guild.id).map((poll) => Poll_1.default.fromItem(poll));
-        return polls.map((poll) => new ScheduledAction_1.default({
-            callback: () => __awaiter(this, void 0, void 0, function* () {
-                const newPoll = yield Bot_1.default.getInstance().dataHandlers.poll.getItem(this.guild.id, poll.id);
-                if (!newPoll)
-                    return;
-                Poll_1.default.fromItem(newPoll).finish();
-            }),
-            at: poll.hasPassed ? new Date() : new Date((poll.endDate * 1000))
-        }));
+        const polls = Bot_1.default.getInstance().dataHandlers.poll.getAllOfServer(this.guild.id).map((poll) => Poll_1.default.fromJson(poll));
+        return polls.map((poll) => {
+            return ({
+                callback: this.createCallback(poll.id),
+                rule: poll.hasPassed || poll.expired ? new Date() : new Date((poll.endDate * 1000))
+            });
+        });
+    }
+    createCallback(id) {
+        return () => __awaiter(this, void 0, void 0, function* () {
+            const newPoll = yield Bot_1.default.getInstance().dataHandlers.poll.getItem(this.guild.id, id);
+            if (!newPoll)
+                return;
+            Poll_1.default.fromJson(newPoll).finish();
+        });
     }
     addPoll(poll) {
-        this.scheduledActions.push(new ScheduledAction_1.default({
-            callback: () => __awaiter(this, void 0, void 0, function* () {
-                const newPoll = yield Bot_1.default.getInstance().dataHandlers.poll.getItem(this.guild.id, poll.id);
-                if (!newPoll)
-                    return;
-                Poll_1.default.fromItem(newPoll).finish();
-            }),
-            at: poll.hasPassed ? new Date() : new Date((poll.endDate * 1000))
-        }));
+        this.actions.push({
+            rule: poll.hasPassed ? new Date() : new Date((poll.endDate * 1000)),
+            callback: this.createCallback(poll.id),
+        });
+        this.reload();
     }
-    reschedule() {
+    reload() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Promise.all(this.scheduledActions.map((action) => action.stop()));
-            this.scheduledActions = this.createScheduledActions();
+            yield this.scheduler.stop();
+            this.init();
         });
     }
 }
-exports.default = VoteScheduler;
+exports.default = VoteManager;

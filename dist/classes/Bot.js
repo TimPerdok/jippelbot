@@ -57,7 +57,7 @@ class DiscordBot {
                 const serverData = this.dataHandlers.serverdata.getAllOfServer(guild.id);
                 const rest = new ServerREST_1.default(this.rest, guild, clientId);
                 rest.updateCommands(this.commands);
-                return new Server_1.default(guild, serverData, rest);
+                return new Server_1.default(guild);
             });
         }));
         DiscordBot.client.on(discord_js_1.Events.MessageCreate, (message) => {

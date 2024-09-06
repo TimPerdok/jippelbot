@@ -2,46 +2,37 @@ import { Guild, Message, TextChannel } from "discord.js";
 import { Game } from "../../api/IGDB";
 import DiscordBot from "../Bot";
 import { doWithLock } from "../Lock";
-import ScheduledAction from "./ScheduledAction";
+import Scheduler, { ScheduledAction } from "../Scheduler";
 
 
-export default class GameReleaseScheduler  {
-    scheduledActions: ScheduledAction[];
+export default class GameReleaseManager  {
    
+    private scheduler: Scheduler;
 
     constructor(private guild: Guild) {
-        this.scheduledActions = this.createScheduledActions()
+        this.scheduler = new Scheduler(this.createScheduledActions(), "GameReleaseScheduler");
     }
 
-    createScheduledActions() {
-        
+    createScheduledActions(): ScheduledAction[] {
         const toBeReleasedGames = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(this.guild.id)
             .filter((game) => !!game?.nextReleaseDate)
         
         return toBeReleasedGames.map((game) => {
-            console.log(`Scheduling ${game.name} to be released at ${new Date((game.nextReleaseDate ?? 0) * 1000)}`)
             const releaseDate = new Date((game.nextReleaseDate ?? 0) * 1000)
-            return new ScheduledAction({
+            return {
                 callback: () => this.releaseGame(game),
-                at: releaseDate < new Date() ? new Date(new Date().getTime() + 3000) : releaseDate
-            })
+                rule: releaseDate < new Date()
+                        ? new Date(new Date().getTime() + 3000)
+                        : releaseDate
+            }
         })
-    }
-
-    unschedule() {
-        this.scheduledActions.forEach((action) => action.stop())
-    }
-
-    reschedule() {
-        this.unschedule()
-        this.scheduledActions = this.createScheduledActions()
     }
 
     async releaseGame(game: Game) {
         const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getAllOfServer(this.guild.id)
         const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
         if (!channel) return;
-        await doWithLock('deleteOldGameReleaseMessageLock', ()=> {
+        await doWithLock('deleteOldGameReleaseMessageLock', () => {
             return this.removeOldMessages(channel)
         })
         await channel.send({ content: `**${game.name} is gereleased!**` })

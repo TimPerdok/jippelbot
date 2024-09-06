@@ -35,8 +35,7 @@ export default class JSONDataHandler<T extends DataJSON>{
         fs.writeFileSync(fullPath, JSON.stringify({}))
     }
 
-
-    async write(file: string, data: ServerScoped<T>) {
+    write(file: string, data: ServerScoped<T>) {
         fs.writeFileSync(path.join(this.dataFolder, file), JSON.stringify(data))
     }
 
@@ -45,10 +44,10 @@ export default class JSONDataHandler<T extends DataJSON>{
         return JSON.parse(fs.readFileSync(file, 'utf8'))
     }
 
-    async overwrite(serverId: string, data: T) {
-        const file = await this.read(this.file) as ServerScoped<T>
+    overwrite(serverId: string, data: T) {
+        const file = this.read(this.file) as ServerScoped<T>
         file[serverId] = data
-        await this.write(this.file, file)
+        this.write(this.file, file)
     }
 
 
@@ -57,12 +56,12 @@ export default class JSONDataHandler<T extends DataJSON>{
         return file[serverId] ?? {} as T
     }
 
-    async getAll(): Promise<ServerScoped<T>> {
-        return await this.read(this.file) as ServerScoped<T>
+    getAll(): ServerScoped<T> {
+        return this.read(this.file) as ServerScoped<T>
     }
 
-    async overwriteAll(data: ServerScoped<T>) {
-        await this.write(this.file, data)
+    overwriteAll(data: ServerScoped<T>) {
+        this.write(this.file, data)
     }
 
 }

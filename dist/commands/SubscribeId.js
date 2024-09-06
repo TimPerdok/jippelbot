@@ -29,7 +29,7 @@ class Subscribe extends Command_1.default {
         super("subscribeid", "Voeg een game toe met een id om naar uit te kijken.");
     }
     onCommand(interaction) {
-        var _a, _b, _c, _d;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const id = interaction.options.getString("id", true);
             const userDescription = interaction.options.getString("description", false);
@@ -43,7 +43,6 @@ class Subscribe extends Command_1.default {
             const gameInData = yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.getItem((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", game.id);
             gameInData ? yield interaction.editReply(`${game.name} is geupdatet.`)
                 : yield interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
-            (_d = Bot_1.default.getInstance().getServerById((_c = interaction.guildId) !== null && _c !== void 0 ? _c : "")) === null || _d === void 0 ? void 0 : _d.rescheduleGameReleases();
         });
     }
     onButtonPress(interaction) {
@@ -74,8 +73,8 @@ class Subscribe extends Command_1.default {
                 games[index] = Object.assign(Object.assign({}, games[index]), game);
             else
                 games.push(game);
-            yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.overwrite(guildId, games);
-            (_a = Bot_1.default.getInstance().getServerById(guildId)) === null || _a === void 0 ? void 0 : _a.updateLiveMessages();
+            Bot_1.default.getInstance().dataHandlers.gameSubscriptions.overwrite(guildId, games);
+            (_a = Bot_1.default.getInstance().getServerById(guildId)) === null || _a === void 0 ? void 0 : _a.refreshLiveMessages();
             return game;
         });
     }

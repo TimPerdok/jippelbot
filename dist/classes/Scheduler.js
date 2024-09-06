@@ -20,18 +20,47 @@ var Interval;
     Interval["YEARLY"] = "0 0 1 1 *";
 })(Interval = exports.Interval || (exports.Interval = {}));
 class Scheduler {
-    constructor() {
+    constructor(actions, name = "Scheduler") {
+        this.actions = actions;
+        this.name = name;
+        this.init();
     }
-    schedule(schedules) {
-        if (!Array.isArray(schedules))
-            schedules = [schedules];
-        schedules.forEach(({ callback, at }) => {
-            (0, node_schedule_1.scheduleJob)(at, callback);
+    init() {
+        const jobs = this.actions.map(({ callback, rule }, i) => (0, node_schedule_1.scheduleJob)(rule instanceof Date && rule < new Date() ? new Date() : rule, this.wrap(i, callback)));
+        console.log(`Scheduled ${jobs.length} jobs for ${this.name}`);
+    }
+    wrap(index, callback) {
+        return (fireDate) => __awaiter(this, void 0, void 0, function* () {
+            console.log(`Running job ${index} for ${this.name} at ${fireDate}`);
+            try {
+                yield this.remove(index);
+                yield callback(fireDate);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        });
+    }
+    remove(index) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.actions.splice(index, 1);
         });
     }
     stop() {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, node_schedule_1.gracefulShutdown)();
+        });
+    }
+    reschedule() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.stop();
+            this.init();
+        });
+    }
+    add(action) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.actions.push(action);
+            yield this.reschedule();
         });
     }
 }

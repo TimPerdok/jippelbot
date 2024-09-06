@@ -1,29 +1,32 @@
 import { Guild } from "discord.js";
 import { ServerConfig } from "../types/ServerdataJSON";
-import GameReleasesEmbedUpdater from "./gamereleases/GameReleasesEmbedUpdater";
+import GameReleaseEmbedManager from "./schedulers/GameReleasesEmbedManager";
 import ServerREST from "./ServerREST";
 import GameReleaseScheduler from "./schedulers/GameReleaseScheduler";
-import VoteScheduler from "./schedulers/VoteScheduler";
+import VoteManager from "./schedulers/VoteScheduler";
 
 export default class Server {
     
-    private gameReleasesEmbedUpdater: GameReleasesEmbedUpdater
+    private gameReleasesEmbedUpdater: GameReleaseEmbedManager
     private gameReleaseScheduler: GameReleaseScheduler
-    voteScheduler: VoteScheduler;
+    private voteManager: VoteManager;
 
-    constructor(public guild: Guild, private config: ServerConfig, private rest: ServerREST) {
-        this.gameReleasesEmbedUpdater = new GameReleasesEmbedUpdater(this.guild.id)
+    constructor(public guild: Guild) {
+        this.gameReleasesEmbedUpdater = new GameReleaseEmbedManager(this.guild.id)
         this.gameReleaseScheduler = new GameReleaseScheduler(this.guild)
-        this.voteScheduler = new VoteScheduler(this.guild)
+        this.voteManager = new VoteManager(this.guild)
     }
 
-
-    rescheduleGameReleases() {
-        this.gameReleaseScheduler.reschedule()
+    refreshLiveMessages() {
+        this.gameReleasesEmbedUpdater.refresh();
     }
 
-    updateLiveMessages() {
-        this.gameReleasesEmbedUpdater.refresh()
+    reloadPolls() {
+        this.voteManager.reload()
+    }
+
+    addPoll(poll: any) {
+        this.voteManager.addPoll(poll)
     }
     
 }

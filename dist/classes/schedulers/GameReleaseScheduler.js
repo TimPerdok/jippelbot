@@ -14,31 +14,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Bot_1 = __importDefault(require("../Bot"));
 const Lock_1 = require("../Lock");
-const ScheduledAction_1 = __importDefault(require("./ScheduledAction"));
-class GameReleaseScheduler {
+const Scheduler_1 = __importDefault(require("../Scheduler"));
+class GameReleaseManager {
     constructor(guild) {
         this.guild = guild;
-        this.scheduledActions = this.createScheduledActions();
+        this.scheduler = new Scheduler_1.default(this.createScheduledActions(), "GameReleaseScheduler");
     }
     createScheduledActions() {
         const toBeReleasedGames = Bot_1.default.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(this.guild.id)
             .filter((game) => !!(game === null || game === void 0 ? void 0 : game.nextReleaseDate));
         return toBeReleasedGames.map((game) => {
-            var _a, _b;
-            console.log(`Scheduling ${game.name} to be released at ${new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000)}`);
-            const releaseDate = new Date(((_b = game.nextReleaseDate) !== null && _b !== void 0 ? _b : 0) * 1000);
-            return new ScheduledAction_1.default({
+            var _a;
+            const releaseDate = new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000);
+            return {
                 callback: () => this.releaseGame(game),
-                at: releaseDate < new Date() ? new Date(new Date().getTime() + 3000) : releaseDate
-            });
+                rule: releaseDate < new Date()
+                    ? new Date(new Date().getTime() + 3000)
+                    : releaseDate
+            };
         });
-    }
-    unschedule() {
-        this.scheduledActions.forEach((action) => action.stop());
-    }
-    reschedule() {
-        this.unschedule();
-        this.scheduledActions = this.createScheduledActions();
     }
     releaseGame(game) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -63,4 +57,4 @@ class GameReleaseScheduler {
         });
     }
 }
-exports.default = GameReleaseScheduler;
+exports.default = GameReleaseManager;

@@ -57,7 +57,7 @@ class Subscribe extends Command_1.default {
             const gameInData = yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.getAllOfServer((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "");
             gameInData ? yield interaction.editReply(`${game.name} is geupdatet.`)
                 : yield interaction.editReply(`Je hebt ${game.name} toegevoegd.`);
-            (_d = Bot_1.default.getInstance().getServerById((_c = interaction.guildId) !== null && _c !== void 0 ? _c : "")) === null || _d === void 0 ? void 0 : _d.updateLiveMessages();
+            (_d = Bot_1.default.getInstance().getServerById((_c = interaction.guildId) !== null && _c !== void 0 ? _c : "")) === null || _d === void 0 ? void 0 : _d.refreshLiveMessages();
         });
     }
     onButtonPress(interaction) {
@@ -89,7 +89,7 @@ class Subscribe extends Command_1.default {
             else
                 games.push(game);
             yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.overwrite(guildId, games);
-            (_a = Bot_1.default.getInstance().getServerById(guildId)) === null || _a === void 0 ? void 0 : _a.updateLiveMessages();
+            (_a = Bot_1.default.getInstance().getServerById(guildId)) === null || _a === void 0 ? void 0 : _a.refreshLiveMessages();
             return game;
         });
     }

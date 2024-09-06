@@ -5,7 +5,7 @@ import JSONDataHandler, { ServerScoped } from "./datahandlers/JSONDataHandler";
 import ServerREST from "./ServerREST";
 import TwitchAccessTokenHandler, { TwitchAuth } from "../api/TwitchAccessToken";
 import StdinListener from "./StdinListener";
-import GameReleasesEmbedUpdater from "./gamereleases/GameReleasesEmbedUpdater";
+import GameReleaseEmbedManager from "./schedulers/GameReleasesEmbedManager";
 import { ServerConfig } from "../types/ServerdataJSON";
 import { Game } from "../api/IGDB";
 import ListDataHandler from "./datahandlers/ListDataHandler";
@@ -75,7 +75,7 @@ export default class DiscordBot {
                 const serverData = this.dataHandlers.serverdata.getAllOfServer(guild.id)
                 const rest = new ServerREST(this.rest, guild, clientId)
                 rest.updateCommands(this.commands)
-                return new Server(guild, serverData, rest)
+                return new Server(guild)
             });
         });
 

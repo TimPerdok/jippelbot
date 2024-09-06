@@ -25,7 +25,7 @@ export default class Subscribe extends Command {
         DiscordBot.getInstance().dataHandlers.gameSubscriptions.overwrite(interaction.guildId ?? "", newGames);
         if (!deletedGame) return await interaction.reply({content: `De server is niet geabonneerd op ${name}.`, ephemeral: true})
         await interaction.reply({content: `De server is niet meer geabonneerd op ${deletedGame.name}.`, ephemeral: true});
-        DiscordBot.getInstance().getServerById(interaction.guildId ?? "")?.updateLiveMessages();
+        DiscordBot.getInstance().getServerById(interaction.guildId ?? "")?.refreshLiveMessages();
     }
 
 }
