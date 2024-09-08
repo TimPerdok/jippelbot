@@ -29,7 +29,6 @@ export default class Scheduler {
 
     private wrap(index: number, callback: JobCallback): JobCallback {
         return async (fireDate: Date) => {
-            console.log(`Running job ${index} for ${this.name} at ${fireDate}`);
             try {
                 await this.remove(index);
                 await callback(fireDate);

@@ -16,7 +16,7 @@ export default class Summon extends Command {
             .setName(this.name)
             .setDescription(this.description)
             .addUserOption(option => option.setName("user").setDescription("De persoon die je wilt summonen").setRequired(true))
-            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen"));
+            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(false));
         return builder as SlashCommandBuilder;
     }
 
@@ -34,7 +34,7 @@ export default class Summon extends Command {
         const channel: VoiceChannel = channels.find(channel => channel?.type === ChannelType.GuildVoice && channel.members.has(user.id)) as VoiceChannel;
         const sender: GuildMember = interaction.member as GuildMember;
         const receiver: GuildMember = await interaction.guild?.members.fetch(user.id) as GuildMember;
-        
+
         if (!channel) return await user.send(`Je wordt gesummoned door ${sender.displayName} in ${receiver.displayName}. Klik <#${interaction.channelId}> om te reageren.`);
         const vc: VoiceConnection = joinVoiceChannel({
             channelId: channel.id,
@@ -42,32 +42,37 @@ export default class Summon extends Command {
             adapterCreator: channel.guild.voiceAdapterCreator
         });
 
-        const tts = new gTTS(`${receiver.displayName} wordt gesumment door ${sender.displayName}. ${customMessage}`, 'nl');
-        doWithLock("SummonLock", async () => {
-           await new Promise<void>((resolve) => {
-                const tmpFile = path.join(TEMP_FOLDER, 'gtts.mp3');
-                if (fs.existsSync(tmpFile)) fs.rmSync(tmpFile);
-                tts.save(tmpFile, (err) => {
-                    if (err) return resolve();
-                    const player = createAudioPlayer();
-                    const resource = createAudioResource(fs.createReadStream(tmpFile));
-                    player.play(resource);
-                    vc.subscribe(player);
+        doWithLock("SummonLock", () => this.summon(receiver, sender, vc, customMessage));
+        await interaction.reply({ content: `Je hebt ${user.username} gesummoned.`, ephemeral: true });
+    }
 
-                    player.on(AudioPlayerStatus.Idle, () => {
-                        vc.disconnect();
-                        resolve();
-                    });
+    async summon(receiver: GuildMember, sender: GuildMember, vc: VoiceConnection, customMessage: string = "") {
+        const channelMessage = sender.voice.channel ? ` om naar ${sender.voice.channel.name} te gaan` : "";
+        const tts = new gTTS(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. Hier volgt een bericht: ${customMessage}`, 'nl');
+        await new Promise<void>((resolve) => {
+            const tmpFile = path.join(TEMP_FOLDER, 'gtts.mp3');
+            if (fs.existsSync(tmpFile)) fs.rmSync(tmpFile);
+            tts.save(tmpFile, (err) => {
+                if (err) return resolve();
+                const player = createAudioPlayer();
+                const resource = createAudioResource(fs.createReadStream(tmpFile));
+                player.play(resource);
+                vc.subscribe(player);
 
-                    player.on('error', error => {
-                        console.error('Error:', error);
-                        vc.disconnect();
-                        resolve();
-                    });
+                player.on(AudioPlayerStatus.Idle, () => {
+                    vc.disconnect();
+                    resolve();
+                });
+
+                player.on('error', error => {
+                    console.error('Error:', error);
+                    vc.disconnect();
+                    resolve();
                 });
             });
         });
-        await interaction.reply({ content: `Je hebt ${user.username} gesummoned.`, ephemeral: true });
+
     }
+
 
 }
