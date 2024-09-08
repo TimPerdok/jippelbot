@@ -1,4 +1,4 @@
-import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, ChatInputCommandInteraction, EmbedBuilder, Guild, GuildMember, MessageCreateOptions, MessagePayload, SlashCommandSubcommandBuilder } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, ChatInputCommandInteraction, EmbedBuilder, Guild, GuildMember, MessageCreateOptions, MessagePayload, SlashCommandSubcommandBuilder, TextBasedChannel, TextChannel } from "discord.js";
 import Subcommand from "../classes/Subcommand";
 import Poll from "../classes/data/polls/Poll";
 import { ActionParams, VoteAction, VoteEvent } from "../classes/data/VoteActions";
@@ -40,9 +40,9 @@ export default abstract class PollSubcommand<T extends VoteAction<ActionParams>>
         const guildId = interaction.guildId
         if (!guildId) return console.error("No guildId")
         const embed = PollEmbed.create(poll, interaction.user)
-        const channel = interaction.channel
+        const channel = interaction.channel as TextChannel | null
         if (!channel) return console.error("No channel")
-        const message = await interaction.channel.send({
+        const message = await channel.send({
             embeds: [embed], components: [
                 new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -26,18 +17,15 @@ class EnableDallE extends Command_1.default {
     constructor() {
         super("enabledalle", "Enable or disable dall-e");
     }
-    onCommand(interaction) {
-        var _a, _b;
-        return __awaiter(this, void 0, void 0, function* () {
-            const enabled = interaction.options.getBoolean("enabled", true);
-            const password = interaction.options.getString("password", true);
-            if (password !== process.env.disablepass)
-                return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true });
-            const serverdata = Bot_1.default.getInstance().dataHandlers.serverdata.getAllOfServer((_a = interaction.guildId) !== null && _a !== void 0 ? _a : "");
-            serverdata.isDalleEnabled = enabled;
-            Bot_1.default.getInstance().dataHandlers.serverdata.overwrite((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "", serverdata);
-            interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true });
-        });
+    async onCommand(interaction) {
+        const enabled = interaction.options.getBoolean("enabled", true);
+        const password = interaction.options.getString("password", true);
+        if (password !== process.env.disablepass)
+            return interaction.reply({ content: "Fout wachtwoord lmao", ephemeral: true });
+        const serverdata = Bot_1.default.getInstance().dataHandlers.serverdata.getAllOfServer(interaction.guildId ?? "");
+        serverdata.isDalleEnabled = enabled;
+        Bot_1.default.getInstance().dataHandlers.serverdata.overwrite(interaction.guildId ?? "", serverdata);
+        interaction.reply({ content: `Dall-e is now ${enabled ? "enabled" : "disabled"}`, ephemeral: true });
     }
 }
 exports.default = EnableDallE;

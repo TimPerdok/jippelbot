@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -27,24 +18,21 @@ class ReleaseMonth extends Command_1.default {
     constructor() {
         super("releasemonth", "Bekijk een maand met releases.");
     }
-    onCommand(interaction) {
-        var _a, _b;
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const month = interaction.options.getString("month", true);
-                const year = (_a = interaction.options.getNumber("year", false)) !== null && _a !== void 0 ? _a : new Date().getFullYear();
-                let games = yield Bot_1.default.getInstance().dataHandlers.gameSubscriptions.getAllOfServer((_b = interaction.guildId) !== null && _b !== void 0 ? _b : "");
-                games = month === "Onbekend" ? games.filter(game => (game === null || game === void 0 ? void 0 : game.nextReleaseDate) == undefined)
-                    : games.filter(game => { var _a, _b; return (game === null || game === void 0 ? void 0 : game.nextReleaseDate) != undefined && new Date(((_a = game.nextReleaseDate) !== null && _a !== void 0 ? _a : 0) * 1000).getMonth() == util_1.MONTHS.indexOf(month) && new Date(((_b = game.nextReleaseDate) !== null && _b !== void 0 ? _b : 0) * 1000).getFullYear() == year; });
-                if (!(games === null || games === void 0 ? void 0 : games.length))
-                    return yield interaction.reply({ content: "Deze maand heeft nog geen releases", ephemeral: true });
-                const embed = yield (0, util_1.createEmbed)(games, true);
-                yield interaction.reply({ embeds: [embed], ephemeral: true });
-            }
-            catch (error) {
-                interaction.reply({ content: `Er is iets fout gegaan. ${error}`, ephemeral: true });
-            }
-        });
+    async onCommand(interaction) {
+        try {
+            const month = interaction.options.getString("month", true);
+            const year = interaction.options.getNumber("year", false) ?? new Date().getFullYear();
+            let games = await Bot_1.default.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(interaction.guildId ?? "");
+            games = month === "Onbekend" ? games.filter(game => game?.nextReleaseDate == undefined)
+                : games.filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == util_1.MONTHS.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);
+            if (!games?.length)
+                return await interaction.reply({ content: "Deze maand heeft nog geen releases", ephemeral: true });
+            const embed = await (0, util_1.createEmbed)(games, true);
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+        }
+        catch (error) {
+            interaction.reply({ content: `Er is iets fout gegaan. ${error}`, ephemeral: true });
+        }
     }
 }
 exports.default = ReleaseMonth;

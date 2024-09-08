@@ -40,5 +40,5 @@ class TokenHandler {
         TokenHandler.write(TokenHandler.files.twitchaccesstoken, token);
     }
 }
-exports.default = TokenHandler;
 TokenHandler.files = { twitchaccesstoken: "twitchaccesstoken.json" };
+exports.default = TokenHandler;

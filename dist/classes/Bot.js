@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -21,6 +12,7 @@ const ListDataHandler_1 = __importDefault(require("./datahandlers/ListDataHandle
 const Server_1 = __importDefault(require("./Server"));
 const Constants_1 = require("../Constants");
 const CustomIdentifier_1 = __importDefault(require("./CustomIdentifier"));
+const fs_1 = __importDefault(require("fs"));
 class DiscordBot {
     setInstance(instance) {
         DiscordBot.instance = instance;
@@ -30,12 +22,15 @@ class DiscordBot {
     }
     constructor(token, clientId, twitchToken) {
         this.setInstance(this);
+        fs_1.default.mkdirSync(Constants_1.TEMP_FOLDER, { recursive: true });
         this.rest = new discord_js_1.REST({ version: '10' }).setToken(token);
         DiscordBot.client = new discord_js_1.Client({
             intents: [discord_js_1.GatewayIntentBits.Guilds,
                 discord_js_1.GatewayIntentBits.GuildMessages,
                 discord_js_1.GatewayIntentBits.MessageContent,
-                discord_js_1.GatewayIntentBits.GuildMembers]
+                discord_js_1.GatewayIntentBits.GuildMembers,
+                discord_js_1.GatewayIntentBits.GuildVoiceStates
+            ]
         });
         this.serverRESTS = [];
         this.commands = new discord_js_1.Collection();
@@ -46,9 +41,8 @@ class DiscordBot {
             serverdata: new JSONDataHandler_1.default('serverdata.json'),
             gameSubscriptions: new ListDataHandler_1.default('gameSubscriptions.json')
         };
-        DiscordBot.client.on('ready', () => __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
-            console.log(`Logged in as ${(_b = (_a = DiscordBot.client) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.tag}`);
+        DiscordBot.client.on('ready', async () => {
+            console.log(`Logged in as ${DiscordBot.client?.user?.tag}`);
             this.commands = Constants_1.COMMANDS.reduce((collection, command) => {
                 collection.set(command.name, command);
                 return collection;
@@ -59,14 +53,13 @@ class DiscordBot {
                 rest.updateCommands(this.commands);
                 return new Server_1.default(guild);
             });
-        }));
+        });
         DiscordBot.client.on(discord_js_1.Events.MessageCreate, (message) => {
-            var _a;
             if (!message.guild)
                 return console.log('Received DM');
             if (message.author.bot)
                 return console.log('Received bot message');
-            const voteChannel = this.dataHandlers.serverdata.getAllOfServer((_a = message.guild) === null || _a === void 0 ? void 0 : _a.id).voteChannel;
+            const voteChannel = this.dataHandlers.serverdata.getAllOfServer(message.guild?.id).voteChannel;
             if (message.channel.id !== voteChannel)
                 return;
             message.delete();
@@ -84,32 +77,40 @@ class DiscordBot {
     getServerById(id) {
         return this.servers.find(server => server.guild.id === id);
     }
-    onInteractionCreate(interaction) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let command;
-                switch (interaction.constructor.name) {
-                    case 'ChatInputCommandInteraction':
-                        interaction = interaction;
-                        command = this.commands.get(interaction === null || interaction === void 0 ? void 0 : interaction.commandName);
+    async onInteractionCreate(interaction) {
+        try {
+            let command;
+            switch (interaction.constructor.name) {
+                case 'ChatInputCommandInteraction':
+                    interaction = interaction;
+                    command = this.commands.get(interaction?.commandName);
+                    try {
                         command.onCommand(interaction);
-                        break;
-                    case "ButtonInteraction":
-                        interaction = interaction;
+                    }
+                    catch (error) {
+                        console.error(error);
+                    }
+                    break;
+                case "ButtonInteraction":
+                    interaction = interaction;
+                    try {
                         const customId = CustomIdentifier_1.default.fromCustomId(interaction.customId);
                         command = this.commands.get(customId.command);
-                        if (customId === null || customId === void 0 ? void 0 : customId.subcommand)
-                            return (_a = command.subcommands
-                                .find(subcommand => subcommand.name === customId.subcommand)) === null || _a === void 0 ? void 0 : _a.onButtonPress(interaction);
+                        if (customId?.subcommand)
+                            return command.subcommands
+                                .find(subcommand => subcommand.name === customId.subcommand)
+                                ?.onButtonPress(interaction);
                         command.onButtonPress(interaction);
-                        break;
-                }
+                    }
+                    catch (error) {
+                        console.error(error);
+                    }
+                    break;
             }
-            catch (error) {
-                console.error(error);
-            }
-        });
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 }
 exports.default = DiscordBot;

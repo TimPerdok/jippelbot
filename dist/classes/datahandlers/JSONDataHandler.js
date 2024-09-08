@@ -33,9 +33,8 @@ class JSONDataHandler {
         this.write(this.file, file);
     }
     getAllOfServer(serverId) {
-        var _a;
         const file = this.read(this.file);
-        return (_a = file[serverId]) !== null && _a !== void 0 ? _a : {};
+        return file[serverId] ?? {};
     }
     getAll() {
         return this.read(this.file);

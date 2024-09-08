@@ -10,9 +10,10 @@ import { ServerConfig } from "../types/ServerdataJSON";
 import { Game } from "../api/IGDB";
 import ListDataHandler from "./datahandlers/ListDataHandler";
 import Server from "./Server";
-import { COMMANDS } from "../Constants";
+import { COMMANDS, TEMP_FOLDER } from "../Constants";
 import CustomIdentifier from "./CustomIdentifier";
 import { VoteAction } from "./data/VoteActions";
+import fs from 'fs'
 
 
 export default class DiscordBot {
@@ -48,12 +49,17 @@ export default class DiscordBot {
 
     constructor(token: string, clientId: string, twitchToken: TwitchAuth) {
         this.setInstance(this)
+
+        fs.mkdirSync(TEMP_FOLDER, { recursive: true })
+        
         this.rest = new REST({ version: '10' }).setToken(token);
         DiscordBot.client = new Client({
             intents: [GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.MessageContent,
-            GatewayIntentBits.GuildMembers]
+            GatewayIntentBits.GuildMembers,
+            GatewayIntentBits.GuildVoiceStates
+        ]
         });
         this.serverRESTS = []
         this.commands = new Collection<string, Command>();
@@ -111,16 +117,20 @@ export default class DiscordBot {
                 case 'ChatInputCommandInteraction':
                     interaction = interaction as ChatInputCommandInteraction;
                     command = this.commands.get(interaction?.commandName) as Command;
-                    command.onCommand(interaction);
+                    try { command.onCommand(interaction); } catch (error) { console.error(error) }
                     break;
                 case "ButtonInteraction":
                     interaction = interaction as ButtonInteraction;
-                    const customId = CustomIdentifier.fromCustomId(interaction.customId)
-                    command = this.commands.get(customId.command) as Command;
-                    if (customId?.subcommand) return command.subcommands
-                                                        .find(subcommand => subcommand.name === customId.subcommand)
-                                                        ?.onButtonPress(interaction);
-                    command.onButtonPress(interaction);
+                    try {
+                        const customId = CustomIdentifier.fromCustomId(interaction.customId)
+                        command = this.commands.get(customId.command) as Command;
+                        if (customId?.subcommand) return command.subcommands
+                                                            .find(subcommand => subcommand.name === customId.subcommand)
+                                                            ?.onButtonPress(interaction);
+                        command.onButtonPress(interaction); 
+                    } catch (error) {
+                        console.error(error)
+                    }
                     break;
             }
         } catch (error) {

@@ -9,8 +9,12 @@ import SubscribeId from "./commands/SubscribeId"
 import Unsubscribe from "./commands/Unsubscribe"
 import Vote from "./commands/Vote"
 import Wanneerbenikgejoined from "./commands/Wanneerbenikgejoined"
+import path from 'path'
+import os from 'os'
 
 export const SRC_DIR = __dirname
+
+export const TEMP_FOLDER = path.join(os.tmpdir(), 'jippelbot');
 
 export const COMMANDS = [
     new EnableDallE(),

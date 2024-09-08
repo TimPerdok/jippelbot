@@ -22,15 +22,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -48,51 +39,42 @@ class GameReleaseEmbedManager {
         this.scheduler = new Scheduler_1.default([{ callback: this.refresh, rule: Scheduler_1.Interval.DAILY }], "GameReleaseEmbedManager");
         this.refresh();
     }
-    getMessage() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const channel = yield this.getReleaseChannel();
-            const messages = yield channel.messages.fetch({ limit: 25 });
-            return messages.find((message) => { var _a; return message.author.id === ((_a = Bot_1.default.client.user) === null || _a === void 0 ? void 0 : _a.id) && message.embeds.length > 0; });
-        });
+    async getMessage() {
+        const channel = await this.getReleaseChannel();
+        const messages = await channel.messages.fetch({ limit: 25 });
+        return messages.find((message) => message.author.id === Bot_1.default.client.user?.id && message.embeds.length > 0);
     }
-    getContent() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const games = yield this.gameDataHandler.getAllOfServer(this.serverId);
-            const embed = yield (0, util_1.createEmbed)(games);
-            return { embeds: [embed] };
-        });
+    async getContent() {
+        const games = await this.gameDataHandler.getAllOfServer(this.serverId);
+        const embed = await (0, util_1.createEmbed)(games);
+        return { embeds: [embed] };
     }
-    getReleaseChannel() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const serverdata = yield this.serverdataHandler.getAllOfServer(this.serverId);
-            const channel = Bot_1.default.client.channels.cache.get(serverdata.releaseChannel);
-            return channel;
-        });
+    async getReleaseChannel() {
+        const serverdata = await this.serverdataHandler.getAllOfServer(this.serverId);
+        const channel = Bot_1.default.client.channels.cache.get(serverdata.releaseChannel);
+        return channel;
     }
-    refresh() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Update all games
-            this.updateGames();
-            // Update the embed message
-            this.updateMessage();
-        });
+    async refresh() {
+        // Update all games
+        this.updateGames();
+        // Update the embed message
+        this.updateMessage();
     }
-    updateGames() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const games = this.gameDataHandler.getAllOfServer(this.serverId);
-            const updatedGames = yield IGDBApi_1.default.searchGames(games.map((game) => game.id));
-            this.gameDataHandler.overwrite(this.serverId, games.map((game) => (Object.assign(Object.assign({}, game), updatedGames.find((newGame) => newGame.id === game.id)))));
-        });
+    async updateGames() {
+        const games = this.gameDataHandler.getAllOfServer(this.serverId);
+        const updatedGames = await IGDBApi_1.default.searchGames(games.map((game) => game.id));
+        this.gameDataHandler.overwrite(this.serverId, games.map((game) => ({
+            ...game,
+            ...updatedGames.find((newGame) => newGame.id === game.id)
+        })));
     }
-    updateMessage() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const content = yield this.getContent();
-            const message = yield this.getMessage();
-            if (message)
-                return message.edit(content);
-            const channel = yield this.getReleaseChannel();
-            return channel.send(content);
-        });
+    async updateMessage() {
+        const content = await this.getContent();
+        const message = await this.getMessage();
+        if (message)
+            return message.edit(content);
+        const channel = await this.getReleaseChannel();
+        return channel.send(content);
     }
 }
 exports.default = GameReleaseEmbedManager;
