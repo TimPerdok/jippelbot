@@ -11,12 +11,43 @@ const path_1 = __importDefault(require("path"));
 const Command_1 = __importDefault(require("../classes/Command"));
 const Lock_1 = require("../classes/Lock");
 const Constants_1 = require("../Constants");
+const languages = {
+    'af': 'Afrikaans',
+    'ar': 'Arabic',
+    'zh': 'Chinese',
+    'da': 'Danish',
+    'nl': 'Dutch',
+    'en': 'English',
+    'fi': 'Finnish',
+    'fr': 'French',
+    'de': 'German',
+    'el': 'Greek',
+    'hi': 'Hindi',
+    'is': 'Icelandic',
+    'it': 'Italian',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'no': 'Norwegian',
+    'pl': 'Polish',
+    'pt': 'Portuguese',
+    'ru': 'Russian',
+    'es': 'Spanish',
+    'sv': 'Swedish',
+    'th': 'Thai',
+    'tr': 'Turkish',
+    'vi': 'Vietnamese',
+    'cy': 'Welsh'
+};
 class TTS extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(true));
+            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(true))
+            .addStringOption(option => option.setName("language")
+            .setDescription("De taal waarin het bericht moet worden voorgelezen. Standaard is Nederlands")
+            .setRequired(false)
+            .setChoices(Object.entries(languages).map(([key, value]) => ({ name: value, value: key })).slice(0, 25)));
         return builder;
     }
     constructor() {
@@ -24,6 +55,7 @@ class TTS extends Command_1.default {
     }
     async onCommand(interaction) {
         const message = interaction.options.getString("message")?.substring(0, 300) ?? "";
+        const language = interaction.options.getString("language") ?? "nl";
         const channels = (await interaction.guild?.channels.fetch());
         if (!channels)
             return;
@@ -31,11 +63,11 @@ class TTS extends Command_1.default {
         const channel = channels.find(channel => channel?.type === discord_js_1.ChannelType.GuildVoice && channel.members.has(sender.id));
         if (!channel)
             return await interaction.reply({ content: "Je moet in een voice channel zitten om dit commando te gebruiken.", ephemeral: true });
-        (0, Lock_1.doWithLock)("SummonLock", () => this.summon(channel, message));
+        (0, Lock_1.doWithLock)("SummonLock", () => this.summon(channel, message, language));
         await interaction.reply({ content: `Je hebt de volgende TTS verstuurd: ${message}`, ephemeral: true });
     }
-    async summon(channel, customMessage = "") {
-        const tts = new gtts_1.default(customMessage, 'nl');
+    async summon(channel, message, language = "nl") {
+        const tts = new gtts_1.default(message, language);
         await new Promise((resolve) => {
             const vc = (0, voice_1.joinVoiceChannel)({ channelId: channel.id, guildId: channel.guild.id, adapterCreator: channel.guild.voiceAdapterCreator });
             const tmpFile = path_1.default.join(Constants_1.TEMP_FOLDER, 'gtts.mp3');
