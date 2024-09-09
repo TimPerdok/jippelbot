@@ -13,7 +13,7 @@ export default class TTS extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(false));
+            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(true));
         return builder as SlashCommandBuilder;
     }
 
