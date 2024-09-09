@@ -11,6 +11,7 @@ import Vote from "./commands/Vote"
 import Wanneerbenikgejoined from "./commands/Wanneerbenikgejoined"
 import path from 'path'
 import os from 'os'
+import TTS from "./commands/TTS"
 
 export const SRC_DIR = __dirname
 
@@ -25,6 +26,7 @@ export const COMMANDS = [
     new Subscribe(),
     new SubscribeId(),
     new Summon(),
+    new TTS(),
     new Unsubscribe(),
     new Vote(),
     new Wanneerbenikgejoined(),

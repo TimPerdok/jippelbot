@@ -9,8 +9,6 @@ import { doWithLock } from "../classes/Lock";
 
 export default class Summon extends Command {
 
-    private summonAudio = path.join(SRC_DIR, "..", 'assets', 'audio', 'summon-full.mp3');
-
     get data(): SlashCommandBuilder {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
@@ -50,7 +48,7 @@ export default class Summon extends Command {
         const channelMessage = sender.voice.channel ? ` om naar ${sender.voice.channel.name} te gaan` : "";
         const tts = new gTTS(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. Hier volgt een bericht: ${customMessage}`, 'nl');
         await new Promise<void>((resolve) => {
-            const tmpFile = path.join(TEMP_FOLDER, 'gtts.mp3');
+            const tmpFile = path.join(TEMP_FOLDER, 'summon-gtts.mp3');
             if (fs.existsSync(tmpFile)) fs.rmSync(tmpFile);
             tts.save(tmpFile, (err) => {
                 if (err) return resolve();

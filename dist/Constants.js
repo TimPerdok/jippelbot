@@ -17,6 +17,7 @@ const Vote_1 = __importDefault(require("./commands/Vote"));
 const Wanneerbenikgejoined_1 = __importDefault(require("./commands/Wanneerbenikgejoined"));
 const path_1 = __importDefault(require("path"));
 const os_1 = __importDefault(require("os"));
+const TTS_1 = __importDefault(require("./commands/TTS"));
 exports.SRC_DIR = __dirname;
 exports.TEMP_FOLDER = path_1.default.join(os_1.default.tmpdir(), 'jippelbot');
 exports.COMMANDS = [
@@ -28,6 +29,7 @@ exports.COMMANDS = [
     new Subscribe_1.default(),
     new SubscribeId_1.default(),
     new Summon_1.default(),
+    new TTS_1.default(),
     new Unsubscribe_1.default(),
     new Vote_1.default(),
     new Wanneerbenikgejoined_1.default(),
