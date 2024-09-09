@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const voice_1 = require("@discordjs/voice");
 const discord_js_1 = require("discord.js");
 const fs_1 = __importDefault(require("fs"));
+const gtts_1 = __importDefault(require("gtts"));
 const path_1 = __importDefault(require("path"));
 const Command_1 = __importDefault(require("../classes/Command"));
-const Constants_1 = require("../Constants");
-const gtts_1 = __importDefault(require("gtts"));
 const Lock_1 = require("../classes/Lock");
+const Constants_1 = require("../Constants");
 class Summon extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
@@ -36,18 +36,18 @@ class Summon extends Command_1.default {
         const receiver = await interaction.guild?.members.fetch(user.id);
         if (!channel)
             return await user.send(`Je wordt gesummoned door ${sender.displayName} in ${receiver.displayName}. Klik <#${interaction.channelId}> om te reageren.`);
-        const vc = (0, voice_1.joinVoiceChannel)({
-            channelId: channel.id,
-            guildId: channel.guild.id,
-            adapterCreator: channel.guild.voiceAdapterCreator
-        });
-        (0, Lock_1.doWithLock)("SummonLock", () => this.summon(receiver, sender, vc, customMessage));
+        (0, Lock_1.doWithLock)("SummonLock", () => this.summon(receiver, sender, channel, customMessage));
         await interaction.reply({ content: `Je hebt ${user.username} gesummoned.`, ephemeral: true });
     }
-    async summon(receiver, sender, vc, customMessage = "") {
+    async summon(receiver, sender, channel, customMessage = "") {
         const channelMessage = sender.voice.channel ? ` om naar ${sender.voice.channel.name} te gaan` : "";
         const tts = new gtts_1.default(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. Hier volgt een bericht: ${customMessage}`, 'nl');
         await new Promise((resolve) => {
+            const vc = (0, voice_1.joinVoiceChannel)({
+                channelId: channel.id,
+                guildId: channel.guild.id,
+                adapterCreator: channel.guild.voiceAdapterCreator
+            });
             const tmpFile = path_1.default.join(Constants_1.TEMP_FOLDER, 'summon-gtts.mp3');
             if (fs_1.default.existsSync(tmpFile))
                 fs_1.default.rmSync(tmpFile);

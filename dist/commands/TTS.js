@@ -16,7 +16,7 @@ class TTS extends Command_1.default {
         const builder = new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(false));
+            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(true));
         return builder;
     }
     constructor() {
@@ -31,13 +31,13 @@ class TTS extends Command_1.default {
         const channel = channels.find(channel => channel?.type === discord_js_1.ChannelType.GuildVoice && channel.members.has(sender.id));
         if (!channel)
             return await interaction.reply({ content: "Je moet in een voice channel zitten om dit commando te gebruiken.", ephemeral: true });
-        const vc = (0, voice_1.joinVoiceChannel)({ channelId: channel.id, guildId: channel.guild.id, adapterCreator: channel.guild.voiceAdapterCreator });
-        (0, Lock_1.doWithLock)("SummonLock", () => this.summon(vc, message));
+        (0, Lock_1.doWithLock)("SummonLock", () => this.summon(channel, message));
         await interaction.reply({ content: `Je hebt de volgende TTS verstuurd: ${message}`, ephemeral: true });
     }
-    async summon(vc, customMessage = "") {
+    async summon(channel, customMessage = "") {
         const tts = new gtts_1.default(customMessage, 'nl');
         await new Promise((resolve) => {
+            const vc = (0, voice_1.joinVoiceChannel)({ channelId: channel.id, guildId: channel.guild.id, adapterCreator: channel.guild.voiceAdapterCreator });
             const tmpFile = path_1.default.join(Constants_1.TEMP_FOLDER, 'gtts.mp3');
             if (fs_1.default.existsSync(tmpFile))
                 fs_1.default.rmSync(tmpFile);

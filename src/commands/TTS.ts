@@ -1,5 +1,5 @@
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
-import { ChannelType, ChatInputCommandInteraction, GuildMember, SlashCommandBuilder, VoiceChannel } from "discord.js";
+import { ChannelType, ChatInputCommandInteraction, GuildChannel, GuildMember, SlashCommandBuilder, VoiceChannel } from "discord.js";
 import fs from 'fs';
 import gTTS from "gtts";
 import path from 'path';
@@ -28,14 +28,14 @@ export default class TTS extends Command {
         const sender = interaction.member as GuildMember;
         const channel: VoiceChannel = channels.find(channel => channel?.type === ChannelType.GuildVoice && channel.members.has(sender.id)) as VoiceChannel;
         if (!channel) return await interaction.reply({ content: "Je moet in een voice channel zitten om dit commando te gebruiken.", ephemeral: true });
-        const vc: VoiceConnection = joinVoiceChannel({ channelId: channel.id, guildId: channel.guild.id, adapterCreator: channel.guild.voiceAdapterCreator });
-        doWithLock("SummonLock", () => this.summon(vc, message));
+        doWithLock("SummonLock", () => this.summon(channel, message));
         await interaction.reply({ content: `Je hebt de volgende TTS verstuurd: ${message}`, ephemeral: true });
     }
 
-    async summon(vc: VoiceConnection, customMessage: string = "") {
+    async summon(channel: GuildChannel, customMessage: string = "") {
         const tts = new gTTS(customMessage, 'nl');
         await new Promise<void>((resolve) => {
+            const vc: VoiceConnection = joinVoiceChannel({ channelId: channel.id, guildId: channel.guild.id, adapterCreator: channel.guild.voiceAdapterCreator });
             const tmpFile = path.join(TEMP_FOLDER, 'gtts.mp3');
             if (fs.existsSync(tmpFile)) fs.rmSync(tmpFile);
             tts.save(tmpFile, (err) => {
