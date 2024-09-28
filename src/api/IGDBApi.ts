@@ -22,7 +22,8 @@ class IGDBApi {
         const response = await IGDBApi.post(
             url,
             `fields ${IGDB.gameFields};
-            where id = (${ids.join(',')});`);
+            where id = (${ids.join(',')});
+            limit 500;`);
         let games: Game[] = response.data;
         games = await this.addCurrentReleases(games)
         games = await this.addNextReleases(games)

@@ -42,7 +42,7 @@ export default class GameReleaseEmbedManager {
 
     public async refresh() {
         // Update all games
-        this.updateGames()
+        await this.updateGames()
         // Update the embed message
         this.updateMessage()
     }

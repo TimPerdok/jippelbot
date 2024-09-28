@@ -20,7 +20,8 @@ class IGDBApi {
             return Promise.resolve([]);
         const url = `${IGDB_1.default.baseUrl}/games`;
         const response = await IGDBApi.post(url, `fields ${IGDB_1.default.gameFields};
-            where id = (${ids.join(',')});`);
+            where id = (${ids.join(',')});
+            limit 500;`);
         let games = response.data;
         games = await this.addCurrentReleases(games);
         games = await this.addNextReleases(games);
