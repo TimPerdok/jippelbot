@@ -33,24 +33,24 @@ class GameReleaseEmbedBuilder {
             return [];
         const gamesWithRelease = games.filter(game => !!game.nextReleaseDate);
         datesWithReleaseInMonth?.reduce((previous, current, index) => {
-            const month = current.getUTCMonth();
-            const year = current.getUTCFullYear();
+            const month = current.getMonth();
+            const year = current.getFullYear();
             const gamesOfMonth = gamesWithRelease
                 .filter(game => {
                 const date = new Date((game.nextReleaseDate ?? 0) * 1000);
-                return date.getUTCMonth() === month && date.getUTCFullYear() === year;
+                return date.getMonth() === month && date.getFullYear() === year;
             }).sort((a, b) => (a?.nextReleaseDate ?? 0) - (b?.nextReleaseDate ?? 0));
             if (!gamesOfMonth.length)
                 return current;
             const normalGamesOfMonth = gamesOfMonth.filter(game => !this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
-            const toNextYear = previous && previous.getUTCFullYear() !== year;
+            const toNextYear = previous && previous.getFullYear() !== year;
             const isLast = index === datesWithReleaseInMonth.length - 1;
             if (((toNextYear || isLast))) {
                 const gamesWithBroadReleaseInYear = games
-                    .filter(game => new Date((game.nextReleaseDate ?? 0) * 1000).getUTCFullYear() === previous.getUTCFullYear())
+                    .filter(game => new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() === previous.getFullYear())
                     .filter(game => this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
                 if (gamesWithBroadReleaseInYear.length)
-                    embedFields.push(this.createEmbedField(previous.getUTCFullYear().toString(), gamesWithBroadReleaseInYear, small));
+                    embedFields.push(this.createEmbedField(previous.getFullYear().toString(), gamesWithBroadReleaseInYear, small));
             }
             if (!normalGamesOfMonth.length)
                 return current;
@@ -80,10 +80,13 @@ class GameReleaseEmbedBuilder {
         return Object.entries(Object.fromEntries(games
             .filter(game => game?.nextReleaseDate != undefined)
             .map(game => new Date((game.nextReleaseDate ?? 0) * 1000))
-            .map(date => ([`${date.getUTCMonth()}-${date.getUTCFullYear()}`, date]))))
+            .map(date => {
+            console.log(([`${date.getMonth()}-${date.getFullYear()}`, date]));
+            return ([`${date.getMonth()}-${date.getFullYear()}`, date]);
+        })))
             .map(([key, value]) => value)
             .sort((a, b) => a.getTime() - b.getTime());
     }
 }
-GameReleaseEmbedBuilder.isBroadRelease = (date) => date.getUTCMonth() === 11 && date.getUTCDate() === 31;
+GameReleaseEmbedBuilder.isBroadRelease = (date) => date.getMonth() === 11 && date.getDate() === 31;
 exports.default = GameReleaseEmbedBuilder;
