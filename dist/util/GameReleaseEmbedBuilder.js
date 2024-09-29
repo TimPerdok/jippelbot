@@ -42,7 +42,9 @@ class GameReleaseEmbedBuilder {
             }).sort((a, b) => (a?.nextReleaseDate ?? 0) - (b?.nextReleaseDate ?? 0));
             if (!gamesOfMonth.length)
                 return current;
-            const gamesWithBroadReleaseInYear = gamesOfMonth.filter(game => this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
+            const gamesWithBroadReleaseInYear = games
+                .filter(game => new Date((game.nextReleaseDate ?? 0) * 1000).getUTCFullYear() === year)
+                .filter(game => this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
             const normalGamesOfMonth = gamesOfMonth.filter(game => !this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
             const toNextYear = previous && previous.getUTCFullYear() !== year;
             const isLast = index === datesWithReleaseInMonth.length - 1;

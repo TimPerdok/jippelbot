@@ -39,14 +39,19 @@ export default class GameReleaseEmbedBuilder {
             const month = current.getUTCMonth();
             const year = current.getUTCFullYear();
 
+
             const gamesOfMonth = gamesWithRelease
                 .filter(game => {
                     const date = new Date((game.nextReleaseDate ?? 0) * 1000);
                     return date.getUTCMonth() === month && date.getUTCFullYear() === year;
                 }).sort((a, b) => (a?.nextReleaseDate ?? 0) - (b?.nextReleaseDate ?? 0));
+
+
             if (!gamesOfMonth.length) return current;
 
-            const gamesWithBroadReleaseInYear = gamesOfMonth.filter(game => this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
+            const gamesWithBroadReleaseInYear = games
+                .filter(game => new Date((game.nextReleaseDate ?? 0) * 1000).getUTCFullYear() === year)
+                .filter(game => this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
             const normalGamesOfMonth = gamesOfMonth.filter(game => !this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
 
             const toNextYear = previous && previous.getUTCFullYear() !== year;
