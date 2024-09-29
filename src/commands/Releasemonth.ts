@@ -1,14 +1,11 @@
-import { ChatInputCommandInteraction, Client, Embed, EmbedField, SlashCommandBuilder } from "discord.js";
-import Command from "../classes/Command";
-import JSONDataHandler from "../classes/datahandlers/JSONDataHandler";
-import IGDBApi from "../api/IGDBApi";
-import { MONTHS, createEmbed, gameToValue as gameToValue, uniqueArray, uppercaseFirstLetter } from "../util/util";
-import DiscordBot from "../classes/Bot";
+import { ChatInputCommandInteraction, Embed, SlashCommandBuilder } from "discord.js";
 import { Game } from "../api/IGDB";
+import DiscordBot from "../classes/Bot";
+import Command from "../classes/Command";
+import { MONTHS } from "../Constants";
+import GameReleaseEmbedBuilder from "../util/GameReleaseEmbedBuilder";
 
 export default class ReleaseMonth extends Command {
-
-    
 
     get data(): SlashCommandBuilder {
         return new SlashCommandBuilder()
@@ -34,7 +31,7 @@ export default class ReleaseMonth extends Command {
                     : games.filter(game => game?.nextReleaseDate != undefined && new Date((game.nextReleaseDate ?? 0) * 1000).getMonth() == MONTHS.indexOf(month) && new Date((game.nextReleaseDate ?? 0) * 1000).getFullYear() == year);
             if (!games?.length) return await interaction.reply({ content: "Deze maand heeft nog geen releases", ephemeral: true });
 
-            const embed = await createEmbed(games, true) as Embed;
+            const embed = GameReleaseEmbedBuilder.createEmbed(games, true) as Embed;
             await interaction.reply({ embeds: [embed], ephemeral: true });    
         } catch (error) {
             interaction.reply({content: `Er is iets fout gegaan. ${error}`, ephemeral: true});

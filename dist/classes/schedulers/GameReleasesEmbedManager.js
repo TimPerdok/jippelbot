@@ -27,9 +27,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const IGDBApi_1 = __importDefault(require("../../api/IGDBApi"));
-const util_1 = require("../../util/util");
 const Bot_1 = __importDefault(require("../Bot"));
 const Scheduler_1 = __importStar(require("../Scheduler"));
+const GameReleaseEmbedBuilder_1 = __importDefault(require("../../util/GameReleaseEmbedBuilder"));
 class GameReleaseEmbedManager {
     constructor(serverId) {
         this.serverId = serverId;
@@ -45,8 +45,8 @@ class GameReleaseEmbedManager {
         return messages.find((message) => message.author.id === Bot_1.default.client.user?.id && message.embeds.length > 0);
     }
     async getContent() {
-        const games = await this.gameDataHandler.getAllOfServer(this.serverId);
-        const embed = await (0, util_1.createEmbed)(games);
+        const games = this.gameDataHandler.getAllOfServer(this.serverId);
+        const embed = GameReleaseEmbedBuilder_1.default.createEmbed(games);
         return { embeds: [embed] };
     }
     async getReleaseChannel() {

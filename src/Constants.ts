@@ -17,6 +17,9 @@ export const SRC_DIR = __dirname
 
 export const TEMP_FOLDER = path.join(os.tmpdir(), 'jippelbot');
 
+export const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"];
+
+
 export const COMMANDS = [
     new EnableDallE(),
     new Imagine(),

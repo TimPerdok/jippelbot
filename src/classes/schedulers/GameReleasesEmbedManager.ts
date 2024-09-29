@@ -2,10 +2,10 @@ import { Embed, Message, MessageCreateOptions, MessageEditOptions, MessagePayloa
 import { Game } from "../../api/IGDB";
 import IGDBApi from "../../api/IGDBApi";
 import { ServerConfig } from "../../types/ServerdataJSON";
-import { createEmbed } from "../../util/util";
 import DiscordBot from "../Bot";
 import Scheduler, { Interval, ScheduledAction } from "../Scheduler";
 import JSONDataHandler from "../datahandlers/JSONDataHandler";
+import GameReleaseEmbedBuilder from "../../util/GameReleaseEmbedBuilder";
 
 
 export default class GameReleaseEmbedManager {
@@ -29,8 +29,8 @@ export default class GameReleaseEmbedManager {
     }
 
     private async getContent(): Promise<MessageCreateOptions> {
-        const games = await this.gameDataHandler.getAllOfServer(this.serverId);
-        const embed = await createEmbed(games) as Embed;
+        const games = this.gameDataHandler.getAllOfServer(this.serverId);
+        const embed = GameReleaseEmbedBuilder.createEmbed(games) as Embed;
         return { embeds: [embed] }
     }
 
