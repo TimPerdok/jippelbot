@@ -42,14 +42,15 @@ class GameReleaseEmbedBuilder {
             }).sort((a, b) => (a?.nextReleaseDate ?? 0) - (b?.nextReleaseDate ?? 0));
             if (!gamesOfMonth.length)
                 return current;
-            const gamesWithBroadReleaseInYear = games
-                .filter(game => new Date((game.nextReleaseDate ?? 0) * 1000).getUTCFullYear() === year)
-                .filter(game => this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
             const normalGamesOfMonth = gamesOfMonth.filter(game => !this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
             const toNextYear = previous && previous.getUTCFullYear() !== year;
             const isLast = index === datesWithReleaseInMonth.length - 1;
-            if (((toNextYear || isLast) && gamesWithBroadReleaseInYear.length)) {
-                embedFields.push(this.createEmbedField(previous.getUTCFullYear().toString(), gamesWithBroadReleaseInYear, small));
+            if (((toNextYear || isLast))) {
+                const gamesWithBroadReleaseInYear = games
+                    .filter(game => new Date((game.nextReleaseDate ?? 0) * 1000).getUTCFullYear() === previous.getUTCFullYear())
+                    .filter(game => this.isBroadRelease(new Date((game.nextReleaseDate ?? 0) * 1000)));
+                if (gamesWithBroadReleaseInYear.length)
+                    embedFields.push(this.createEmbedField(previous.getUTCFullYear().toString(), gamesWithBroadReleaseInYear, small));
             }
             if (!normalGamesOfMonth.length)
                 return current;
