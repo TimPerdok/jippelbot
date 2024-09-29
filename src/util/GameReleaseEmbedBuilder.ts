@@ -33,6 +33,8 @@ export default class GameReleaseEmbedBuilder {
 
         const embedFields: EmbedField[] = []
 
+        if (!datesWithReleaseInMonth.length) return [];
+
         datesWithReleaseInMonth?.reduce((previous: Date, current: Date, index: number) => {
             const month = current.getUTCMonth();
             const year = current.getUTCFullYear();

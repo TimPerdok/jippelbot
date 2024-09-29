@@ -29,6 +29,8 @@ class GameReleaseEmbedBuilder {
     static createEmbedFields(games, small) {
         const datesWithReleaseInMonth = this.getMonthsWithReleases(games);
         const embedFields = [];
+        if (!datesWithReleaseInMonth.length)
+            return [];
         datesWithReleaseInMonth?.reduce((previous, current, index) => {
             const month = current.getUTCMonth();
             const year = current.getUTCFullYear();
