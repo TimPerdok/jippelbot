@@ -39,7 +39,6 @@ export default class GameReleaseEmbedBuilder {
             const month = current.getMonth();
             const year = current.getFullYear();
 
-
             const gamesOfMonth = gamesWithRelease
                 .filter(game => {
                     const date = new Date((game.nextReleaseDate ?? 0) * 1000);
@@ -75,7 +74,7 @@ export default class GameReleaseEmbedBuilder {
                 small));
 
             return current;
-        })
+        }, null);
 
         embedFields.push(this.createEmbedField("Onbekend", games.filter(game => !game.nextReleaseDate), small))
         return embedFields;
@@ -104,7 +103,6 @@ export default class GameReleaseEmbedBuilder {
                     .filter(game => game?.nextReleaseDate != undefined)
                     .map(game => new Date((game.nextReleaseDate ?? 0) * 1000))
                     .map(date => {
-                        console.log(([`${date.getMonth()}-${date.getFullYear()}`, date]))
                         return ([`${date.getMonth()}-${date.getFullYear()}`, date])
                     })))
             .map(([key, value]) => value)

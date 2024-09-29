@@ -56,7 +56,7 @@ class GameReleaseEmbedBuilder {
                 return current;
             embedFields.push(this.createEmbedField(current.toLocaleString("nl-NL", { month: "long", year: "numeric" }), normalGamesOfMonth, small));
             return current;
-        });
+        }, null);
         embedFields.push(this.createEmbedField("Onbekend", games.filter(game => !game.nextReleaseDate), small));
         return embedFields;
     }
@@ -81,7 +81,6 @@ class GameReleaseEmbedBuilder {
             .filter(game => game?.nextReleaseDate != undefined)
             .map(game => new Date((game.nextReleaseDate ?? 0) * 1000))
             .map(date => {
-            console.log(([`${date.getMonth()}-${date.getFullYear()}`, date]));
             return ([`${date.getMonth()}-${date.getFullYear()}`, date]);
         })))
             .map(([key, value]) => value)
