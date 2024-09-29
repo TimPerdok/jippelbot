@@ -28,14 +28,29 @@ class GameReleaseEmbedBuilder {
     }
     static createEmbedFields(games, small) {
         const datesWithReleaseInMonth = this.getMonthsWithReleases(games);
-        const embedFields = datesWithReleaseInMonth.map(dateWithReleaseInMonth => {
-            const month = dateWithReleaseInMonth.getMonth();
-            const year = dateWithReleaseInMonth.getFullYear();
+        const embedFields = [];
+        datesWithReleaseInMonth.reduce((previous, current, index) => {
+            const month = current.getUTCMonth();
+            const year = current.getUTCFullYear();
+            const isLast = index === datesWithReleaseInMonth.length - 1;
+            const toNextYear = previous && previous.getUTCFullYear() !== year;
+            if (toNextYear || isLast) {
+                const gamesWithBroadReleaseInYear = games.filter(game => {
+                    const date = new Date((game.nextReleaseDate ?? 0) * 1000);
+                    return date.getUTCFullYear() === previous.getUTCFullYear() && this.isBroadRelease(date);
+                });
+                if (gamesWithBroadReleaseInYear.length) {
+                    embedFields.push(this.createEmbedField(previous.getUTCFullYear().toString(), gamesWithBroadReleaseInYear, small));
+                }
+            }
             const gamesOfMonth = games.filter(game => {
                 const date = new Date((game.nextReleaseDate ?? 0) * 1000);
-                return date.getMonth() === month && date.getFullYear() === year;
+                return date.getUTCMonth() === month && date.getUTCFullYear() === year && !this.isBroadRelease(date);
             }).sort((a, b) => (a?.nextReleaseDate ?? 0) - (b?.nextReleaseDate ?? 0));
-            return this.createEmbedField(dateWithReleaseInMonth.toLocaleString("nl-NL", { month: "long", year: "numeric" }), gamesOfMonth, small);
+            if (!gamesOfMonth.length)
+                return current;
+            embedFields.push(this.createEmbedField(current.toLocaleString("nl-NL", { month: "long", year: "numeric" }), gamesOfMonth, small));
+            return current;
         });
         embedFields.push(this.createEmbedField("Onbekend", this.getUnknownReleaseDateGames(games), small));
         return embedFields;
@@ -63,9 +78,10 @@ class GameReleaseEmbedBuilder {
         return Object.entries(Object.fromEntries(games
             .filter(game => game?.nextReleaseDate != undefined)
             .map(game => new Date((game.nextReleaseDate ?? 0) * 1000))
-            .map(date => ([`${date.getMonth()}-${date.getFullYear()}`, date]))))
+            .map(date => ([`${date.getUTCMonth()}-${date.getUTCFullYear()}`, date]))))
             .map(([key, value]) => value)
             .sort((a, b) => a.getTime() - b.getTime());
     }
 }
+GameReleaseEmbedBuilder.isBroadRelease = (date) => date.getUTCMonth() === 11 && date.getUTCDate() === 31;
 exports.default = GameReleaseEmbedBuilder;

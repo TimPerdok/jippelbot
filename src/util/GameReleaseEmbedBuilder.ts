@@ -4,6 +4,8 @@ import { uppercaseFirstLetter } from "./util";
 
 export default class GameReleaseEmbedBuilder {
 
+    private static isBroadRelease = (date: Date) => date.getUTCMonth() === 11 && date.getUTCDate() === 31;
+
     private static formatRelease(game: Game, small = false) {
         const date = new Date((game?.nextReleaseDate ?? 0) * 1000);
         const status = game?.nextReleaseStatus != undefined
@@ -29,25 +31,53 @@ export default class GameReleaseEmbedBuilder {
     private static createEmbedFields(games: Game[], small: boolean): EmbedField[] {
         const datesWithReleaseInMonth = this.getMonthsWithReleases(games)
 
-        const embedFields = datesWithReleaseInMonth.map(dateWithReleaseInMonth => {
-            const month = dateWithReleaseInMonth.getMonth();
-            const year = dateWithReleaseInMonth.getFullYear();
+        const embedFields: EmbedField[] = []
+
+        datesWithReleaseInMonth.reduce((previous: Date, current: Date, index: number) => {
+            const month = current.getUTCMonth();
+            const year = current.getUTCFullYear();
+            const isLast = index === datesWithReleaseInMonth.length - 1;
+
+            const toNextYear = previous && previous.getUTCFullYear() !== year;
+
+            if (toNextYear || isLast) {
+                const gamesWithBroadReleaseInYear = games.filter(game => {
+                    const date = new Date((game.nextReleaseDate ?? 0) * 1000);
+                    return date.getUTCFullYear() === previous.getUTCFullYear() && this.isBroadRelease(date);
+                });
+                if (gamesWithBroadReleaseInYear.length) {
+                    embedFields.push(
+                        this.createEmbedField(
+                            previous.getUTCFullYear().toString(),
+                            gamesWithBroadReleaseInYear,
+                            small
+                        )
+                    )
+                }
+            }
+
 
             const gamesOfMonth = games.filter(game => {
                 const date = new Date((game.nextReleaseDate ?? 0) * 1000);
-                return date.getMonth() === month && date.getFullYear() === year;
+                return date.getUTCMonth() === month && date.getUTCFullYear() === year && !this.isBroadRelease(date);
             }).sort((a, b) => (a?.nextReleaseDate ?? 0) - (b?.nextReleaseDate ?? 0));
 
-            return this.createEmbedField(
-                dateWithReleaseInMonth.toLocaleString("nl-NL", { month: "long", year: "numeric" }),
+            if (!gamesOfMonth.length) return current;
+
+            embedFields.push(this.createEmbedField(
+                current.toLocaleString("nl-NL", { month: "long", year: "numeric" }),
                 gamesOfMonth,
-                small)
+                small));
+
+            return current;
         })
 
-        embedFields.push(this.createEmbedField("Onbekend", this.getUnknownReleaseDateGames(games), small))
 
+
+        embedFields.push(this.createEmbedField("Onbekend", this.getUnknownReleaseDateGames(games), small))
         return embedFields;
     }
+
 
     private static createEmbedField(heading: string, games: Game[], small: boolean): EmbedField {
         let exceededCount = 0;
@@ -74,7 +104,7 @@ export default class GameReleaseEmbedBuilder {
                 games
                     .filter(game => game?.nextReleaseDate != undefined)
                     .map(game => new Date((game.nextReleaseDate ?? 0) * 1000))
-                    .map(date => ([`${date.getMonth()}-${date.getFullYear()}`, date]))))
+                    .map(date => ([`${date.getUTCMonth()}-${date.getUTCFullYear()}`, date]))))
             .map(([key, value]) => value)
             .sort((a, b) => a.getTime() - b.getTime())
     }
