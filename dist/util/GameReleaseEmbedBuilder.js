@@ -29,7 +29,7 @@ class GameReleaseEmbedBuilder {
     static createEmbedFields(games, small) {
         const datesWithReleaseInMonth = this.getMonthsWithReleases(games);
         const embedFields = [];
-        datesWithReleaseInMonth.reduce((previous, current, index) => {
+        datesWithReleaseInMonth?.reduce((previous, current, index) => {
             const month = current.getUTCMonth();
             const year = current.getUTCFullYear();
             const isLast = index === datesWithReleaseInMonth.length - 1;
