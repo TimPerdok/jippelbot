@@ -64,9 +64,10 @@ class GameReleaseEmbedBuilder {
         let exceededCount = 0;
         const lines = [];
         games.forEach((game) => {
-            if (lines.join("\n").length > 950)
+            const formattedRelease = this.formatRelease(game, small);
+            if (lines.join("\n").length + formattedRelease.length > 980)
                 return exceededCount++;
-            lines.push(this.formatRelease(game, small));
+            lines.push(formattedRelease);
         });
         if (exceededCount > 0)
             lines.push(`& ${exceededCount} meer`);
