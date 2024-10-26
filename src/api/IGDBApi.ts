@@ -135,7 +135,8 @@ class IGDBApi {
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where platform = 6 & id = (${releaseDates.join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date > ${Math.floor(Date.now() / 1000)};
+            limit 500;`);
         return response.data as ReleaseDate[];
     }
 
@@ -146,7 +147,8 @@ class IGDBApi {
         let response = await IGDBApi.post(
             url,
             `fields id,game,status,date;
-            where platform = 6 & id = (${releaseDates.join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date < ${Math.floor(Date.now() / 1000)};
+            limit 500;`);
         return response.data as ReleaseDate[];
     }
 
@@ -184,8 +186,6 @@ class IGDBApi {
             limit 1;`);
         return response.data?.[0]?.url
     }
-
-
 }
 
 export default IGDBApi;

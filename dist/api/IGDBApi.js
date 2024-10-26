@@ -119,7 +119,8 @@ class IGDBApi {
             return Promise.resolve(undefined);
         const url = `${IGDB_1.default.baseUrl}/release_dates`;
         let response = await IGDBApi.post(url, `fields id,game,status,date;
-            where platform = 6 & id = (${releaseDates.join(',')}) & date > ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date > ${Math.floor(Date.now() / 1000)};
+            limit 500;`);
         return response.data;
     }
     static async getCurrentReleases(games) {
@@ -128,7 +129,8 @@ class IGDBApi {
             return Promise.resolve(undefined);
         const url = `${IGDB_1.default.baseUrl}/release_dates`;
         let response = await IGDBApi.post(url, `fields id,game,status,date;
-            where platform = 6 & id = (${releaseDates.join(',')}) & date < ${Math.floor(Date.now() / 1000)};`);
+            where platform = 6 & id = (${releaseDates.join(',')}) & date < ${Math.floor(Date.now() / 1000)};
+            limit 500;`);
         return response.data;
     }
     static async getNextReleaseDate(releaseDateIDs) {

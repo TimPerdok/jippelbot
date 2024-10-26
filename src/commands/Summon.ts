@@ -40,7 +40,7 @@ export default class Summon extends Command {
 
     async summon(receiver: GuildMember, sender: GuildMember, channel: GuildChannel, customMessage: string = "") {
         const channelMessage = sender.voice.channel ? ` om naar ${sender.voice.channel.name} te gaan` : "";
-        const tts = new gTTS(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. Hier volgt een bericht: ${customMessage}`, 'nl');
+        const tts = new gTTS(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. ${customMessage ? `Hier volgt een bericht: ${customMessage}` : ""}`, 'nl');
         await new Promise<void>((resolve) => {
             const vc: VoiceConnection = joinVoiceChannel({
                 channelId: channel.id,

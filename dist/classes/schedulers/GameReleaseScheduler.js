@@ -17,7 +17,7 @@ class GameReleaseManager {
         return toBeReleasedGames.map((game) => {
             const releaseDate = new Date((game.nextReleaseDate ?? 0) * 1000);
             return {
-                callback: () => this.releaseGame(game),
+                callback: async () => await (0, Lock_1.doWithLock)('deleteOldGameReleaseMessageLock', () => this.releaseGame(game)),
                 rule: releaseDate < new Date()
                     ? new Date(new Date().getTime() + 3000)
                     : releaseDate
@@ -29,9 +29,7 @@ class GameReleaseManager {
         const channel = Bot_1.default.client.channels.cache.get(serverdata.releaseChannel);
         if (!channel)
             return;
-        await (0, Lock_1.doWithLock)('deleteOldGameReleaseMessageLock', () => {
-            return this.removeOldMessages(channel);
-        });
+        await this.removeOldMessages(channel);
         await channel.send({ content: `**${game.name} is gereleased!**` });
         Bot_1.default.getInstance().dataHandlers.gameSubscriptions.remove(this.guild.id, game.id);
     }

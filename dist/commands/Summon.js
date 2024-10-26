@@ -41,7 +41,7 @@ class Summon extends Command_1.default {
     }
     async summon(receiver, sender, channel, customMessage = "") {
         const channelMessage = sender.voice.channel ? ` om naar ${sender.voice.channel.name} te gaan` : "";
-        const tts = new gtts_1.default(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. Hier volgt een bericht: ${customMessage}`, 'nl');
+        const tts = new gtts_1.default(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. ${customMessage ? `Hier volgt een bericht: ${customMessage}` : ""}`, 'nl');
         await new Promise((resolve) => {
             const vc = (0, voice_1.joinVoiceChannel)({
                 channelId: channel.id,

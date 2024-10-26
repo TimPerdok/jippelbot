@@ -5,8 +5,8 @@ import { doWithLock } from "../Lock";
 import Scheduler, { ScheduledAction } from "../Scheduler";
 
 
-export default class GameReleaseManager  {
-   
+export default class GameReleaseManager {
+
     private scheduler: Scheduler;
 
     constructor(private guild: Guild) {
@@ -16,14 +16,14 @@ export default class GameReleaseManager  {
     createScheduledActions(): ScheduledAction[] {
         const toBeReleasedGames = DiscordBot.getInstance().dataHandlers.gameSubscriptions.getAllOfServer(this.guild.id)
             .filter((game) => !!game?.nextReleaseDate)
-        
+
         return toBeReleasedGames.map((game) => {
             const releaseDate = new Date((game.nextReleaseDate ?? 0) * 1000)
             return {
-                callback: () => this.releaseGame(game),
+                callback: async () => await doWithLock('deleteOldGameReleaseMessageLock', () => this.releaseGame(game)),
                 rule: releaseDate < new Date()
-                        ? new Date(new Date().getTime() + 3000)
-                        : releaseDate
+                    ? new Date(new Date().getTime() + 3000)
+                    : releaseDate
             }
         })
     }
@@ -32,9 +32,7 @@ export default class GameReleaseManager  {
         const serverdata = DiscordBot.getInstance().dataHandlers.serverdata.getAllOfServer(this.guild.id)
         const channel = DiscordBot.client.channels.cache.get(serverdata.releaseChannel) as TextChannel;
         if (!channel) return;
-        await doWithLock('deleteOldGameReleaseMessageLock', () => {
-            return this.removeOldMessages(channel)
-        })
+        await this.removeOldMessages(channel)
         await channel.send({ content: `**${game.name} is gereleased!**` })
         DiscordBot.getInstance().dataHandlers.gameSubscriptions.remove(this.guild.id, game.id)
     }
