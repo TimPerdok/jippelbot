@@ -4,7 +4,7 @@ export type Game = {
     id: number
     name: string
     url: string
-    currentReleaseStatus: number
+    currentReleaseStatus?: number
     release_dates?: number[]
     nextReleaseDate?: number
     nextReleaseStatus?: number

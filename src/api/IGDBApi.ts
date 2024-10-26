@@ -25,12 +25,12 @@ class IGDBApi {
             where id = (${ids.join(',')});
             limit 500;`);
         let games: Game[] = response.data;
-        games = await this.addCurrentReleases(games)
-        games = await this.addNextReleases(games)
+        games = await this.addCurrentReleaseStatus(games)
+        games = await this.addNextReleaseDate(games)
         return games;
     }
 
-    static async addCurrentReleases(games: Game[]): Promise<Game[]> {
+    static async addCurrentReleaseStatus(games: Game[]): Promise<Game[]> {
         const currentReleases = await this.getCurrentReleases(games);
         games.forEach(game => {
             const currentRelease = currentReleases?.find(release => release.game === game.id);
@@ -39,7 +39,7 @@ class IGDBApi {
         return games;
     }
 
-    static async addNextReleases(games: Game[]): Promise<Game[]> {
+    static async addNextReleaseDate(games: Game[]): Promise<Game[]> {
         const nextReleaseDates = await this.getNextReleaseDates(games);
         games.forEach(game => {
             const releaseDate = nextReleaseDates?.find(release => release.game === game.id);
@@ -60,7 +60,7 @@ class IGDBApi {
             limit 5;`,);
         if (!response.data?.length) return [];
         let games: Game[] = response.data;
-        games = await this.addNextReleases(games)
+        games = await this.addNextReleaseDate(games)
         return games;
     }
 
@@ -139,6 +139,24 @@ class IGDBApi {
             limit 500;`);
         return response.data as ReleaseDate[];
     }
+
+    static async filterExpiredGames(games: Game[]): Promise<Game[]> {
+        const releaseDates = games.filter(game=>game?.release_dates).map(game => game.release_dates).flat()
+        if (!releaseDates?.length) return Promise.resolve([]);
+        const url = `${IGDB.baseUrl}/release_dates`;
+        let response = await IGDBApi.post(
+            url,
+            `fields id,game,status,date;
+            where platform = 6 & id = (${releaseDates.join(',')});
+            limit 500;`);
+        const dates = response.data as ReleaseDate[];
+        const now = Math.floor(Date.now() / 1000);
+        return games.filter(game => {
+            const releaseDate = dates.find(date => date.game === game.id);
+            return releaseDate && (!releaseDate.date || releaseDate.date > now) && game.currentReleaseStatus != 6;
+        });
+    }
+
 
     static async getCurrentReleases(games: Game[]): Promise<ReleaseDate[] | undefined> {
         const releaseDates = games.filter(game=>game?.release_dates).map(game => game.release_dates).flat()

@@ -63,7 +63,8 @@ class GameReleaseEmbedManager {
     async updateGames() {
         const games = this.gameDataHandler.getAllOfServer(this.serverId);
         const updatedGames = await IGDBApi_1.default.searchGames(games.map((game) => game.id));
-        this.gameDataHandler.overwrite(this.serverId, games.map((game) => ({
+        const filteredGames = await IGDBApi_1.default.filterExpiredGames(updatedGames);
+        this.gameDataHandler.overwrite(this.serverId, filteredGames.map((game) => ({
             ...game,
             ...updatedGames.find((newGame) => newGame.id === game.id)
         })));
