@@ -1,13 +1,10 @@
-import EnableDallE from "./commands/EnableDallE"
 import Ping from "./commands/Ping"
 import Summon from "./commands/Summon"
-import Imagine from "./commands/Imagine"
 import Release from "./commands/Release"
 import Subscribe from "./commands/Subscribe"
 import ReleaseMonth from "./commands/Releasemonth"
 import SubscribeId from "./commands/SubscribeId"
 import Unsubscribe from "./commands/Unsubscribe"
-import Vote from "./commands/Vote"
 import Wanneerbenikgejoined from "./commands/Wanneerbenikgejoined"
 import path from 'path'
 import os from 'os'
@@ -21,8 +18,6 @@ export const MONTHS = ["January", "February", "March", "April", "May", "June", "
 
 
 export const COMMANDS = [
-    new EnableDallE(),
-    new Imagine(),
     new Ping(),
     new Release(),
     new ReleaseMonth(),
@@ -31,6 +26,5 @@ export const COMMANDS = [
     new Summon(),
     new TTS(),
     new Unsubscribe(),
-    new Vote(),
     new Wanneerbenikgejoined(),
 ]

@@ -20,7 +20,7 @@ export default class ServerREST {
         this.rest.put(
             Routes.applicationGuildCommands(this.clientId, this.server.id),
             {
-                body: [...commands.values()].map((command: Command)=>{return command.data.toJSON()})
+                body: [...commands.values()].map((command: Command)=> command.data.toJSON())
             },
         )
     }

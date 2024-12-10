@@ -27,7 +27,7 @@ class ListDataHandler extends JSONDataHandler_1.default {
     }
     async getItem(serverId, id) {
         const list = this.getAllOfServer(serverId);
-        return list.find((item) => item.id === (id + ""));
+        return list.find((item) => item.id === id);
     }
     getAllOfServer(serverId) {
         const file = this.read(this.file);

@@ -37,7 +37,6 @@ class DiscordBot {
         this.stdinListener = new StdinListener_1.default();
         this.stdinListener.start();
         this.dataHandlers = {
-            poll: new ListDataHandler_1.default('poll.json'),
             serverdata: new JSONDataHandler_1.default('serverdata.json'),
             gameSubscriptions: new ListDataHandler_1.default('gameSubscriptions.json')
         };

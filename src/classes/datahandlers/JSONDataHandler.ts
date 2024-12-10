@@ -1,12 +1,9 @@
-import { Channel, Collection, Guild, GuildMember, Invite, Message, TextChannel } from "discord.js";
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import { SRC_DIR } from "../../Constants";
 import { Game } from "../../api/IGDB";
 import { TwitchAccessTokenJSON } from "../../api/TwitchAccessToken";
-import { PollJSON } from "../../types/PollJSON";
 import { ServerConfig } from "../../types/ServerdataJSON";
-import { VoteAction } from "../data/VoteActions";
 
 export type ServerScoped<JSONData> = {
     [guildId: string]: JSONData
@@ -16,7 +13,7 @@ export type DataJSON =  UnidentifiableItem | IdentifiableItem[]
 
 export type UnidentifiableItem = ServerConfig | TwitchAccessTokenJSON
 
-export type IdentifiableItem = PollJSON<VoteAction> | Game
+export type IdentifiableItem = Game
 
 export type Item = UnidentifiableItem | IdentifiableItem
 

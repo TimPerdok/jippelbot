@@ -1,7 +1,4 @@
-import path from 'path';
-import { SRC_DIR } from "../../Constants";
 import JSONDataHandler, { IdentifiableItem } from "./JSONDataHandler";
-import type { Game } from "../../api/IGDB";
 
 
 export type ServerScoped<JSONData> = {
@@ -34,7 +31,7 @@ export default class ListDataHandler<T extends IdentifiableItem[]> extends JSOND
 
     async getItem(serverId: string, id: string | number): Promise<IdentifiableItem | undefined> {
         const list = this.getAllOfServer(serverId)
-        return list.find((item: IdentifiableItem) => item.id === (id + ""))
+        return list.find((item: IdentifiableItem) => item.id === id)
     }
 
     getAllOfServer(serverId: string): T {

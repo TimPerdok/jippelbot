@@ -1,5 +1,4 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, CacheType, Collection, Events, GatewayIntentBits, Guild, Interaction, REST, Message, } from "discord.js";
-import { PollJSON } from "../types/PollJSON";
 import Command from "./Command";
 import JSONDataHandler, { ServerScoped } from "./datahandlers/JSONDataHandler";
 import ServerREST from "./ServerREST";
@@ -12,7 +11,6 @@ import ListDataHandler from "./datahandlers/ListDataHandler";
 import Server from "./Server";
 import { COMMANDS, TEMP_FOLDER } from "../Constants";
 import CustomIdentifier from "./CustomIdentifier";
-import { VoteAction } from "./data/VoteActions";
 import fs from 'fs'
 
 
@@ -31,7 +29,6 @@ export default class DiscordBot {
 
     stdinListener: StdinListener;
     dataHandlers: {
-        poll: ListDataHandler<PollJSON<VoteAction>[]>
         serverdata: JSONDataHandler<ServerConfig>
         gameSubscriptions: ListDataHandler<Game[]>
     };
@@ -66,7 +63,6 @@ export default class DiscordBot {
         this.stdinListener = new StdinListener()
         this.stdinListener.start()
         this.dataHandlers = {
-            poll: new ListDataHandler<PollJSON<VoteAction>[]>('poll.json'),
             serverdata: new JSONDataHandler<ServerConfig>('serverdata.json'),
             gameSubscriptions: new ListDataHandler<Game[]>('gameSubscriptions.json')
         }

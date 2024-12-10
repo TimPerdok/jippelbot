@@ -13,7 +13,6 @@ const Subscribe_1 = __importDefault(require("./commands/Subscribe"));
 const Releasemonth_1 = __importDefault(require("./commands/Releasemonth"));
 const SubscribeId_1 = __importDefault(require("./commands/SubscribeId"));
 const Unsubscribe_1 = __importDefault(require("./commands/Unsubscribe"));
-const Vote_1 = __importDefault(require("./commands/Vote"));
 const Wanneerbenikgejoined_1 = __importDefault(require("./commands/Wanneerbenikgejoined"));
 const path_1 = __importDefault(require("path"));
 const os_1 = __importDefault(require("os"));
@@ -32,6 +31,5 @@ exports.COMMANDS = [
     new Summon_1.default(),
     new TTS_1.default(),
     new Unsubscribe_1.default(),
-    new Vote_1.default(),
     new Wanneerbenikgejoined_1.default(),
 ];

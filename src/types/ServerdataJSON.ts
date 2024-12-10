@@ -3,7 +3,6 @@ export type ServerConfig = {
     voteChannel: string
     voiceChannelCategory: string
     textChannelCategory: string
-    isDalleEnabled: boolean
     releaseChannel: string
 }
 
