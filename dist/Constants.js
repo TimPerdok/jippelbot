@@ -4,10 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.COMMANDS = exports.MONTHS = exports.TEMP_FOLDER = exports.SRC_DIR = void 0;
-const EnableDallE_1 = __importDefault(require("./commands/EnableDallE"));
 const Ping_1 = __importDefault(require("./commands/Ping"));
 const Summon_1 = __importDefault(require("./commands/Summon"));
-const Imagine_1 = __importDefault(require("./commands/Imagine"));
 const Release_1 = __importDefault(require("./commands/Release"));
 const Subscribe_1 = __importDefault(require("./commands/Subscribe"));
 const Releasemonth_1 = __importDefault(require("./commands/Releasemonth"));
@@ -21,8 +19,6 @@ exports.SRC_DIR = __dirname;
 exports.TEMP_FOLDER = path_1.default.join(os_1.default.tmpdir(), 'jippelbot');
 exports.MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"];
 exports.COMMANDS = [
-    new EnableDallE_1.default(),
-    new Imagine_1.default(),
     new Ping_1.default(),
     new Release_1.default(),
     new Releasemonth_1.default(),

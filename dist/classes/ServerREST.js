@@ -9,7 +9,7 @@ class ServerREST {
     }
     updateCommands(commands) {
         this.rest.put(discord_js_1.Routes.applicationGuildCommands(this.clientId, this.server.id), {
-            body: [...commands.values()].map((command) => { return command.data.toJSON(); })
+            body: [...commands.values()].map((command) => command.data.toJSON())
         });
     }
 }
