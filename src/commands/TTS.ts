@@ -5,35 +5,8 @@ import gTTS from "gtts";
 import path from 'path';
 import Command from "../classes/Command";
 import { doWithLock } from "../classes/Lock";
-import { Locks, TEMP_FOLDER } from "../Constants";
+import { LANGUAGES, Locks, TEMP_FOLDER } from "../Constants";
 
-const languages = {
-    'af': 'Afrikaans',
-    'ar': 'Arabic',
-    'zh': 'Chinese',
-    'da': 'Danish',
-    'nl': 'Dutch',
-    'en': 'English',
-    'fi': 'Finnish',
-    'fr': 'French',
-    'de': 'German',
-    'el': 'Greek',
-    'hi': 'Hindi',
-    'is': 'Icelandic',
-    'it': 'Italian',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'no': 'Norwegian',
-    'pl': 'Polish',
-    'pt': 'Portuguese',
-    'ru': 'Russian',
-    'es': 'Spanish',
-    'sv': 'Swedish',
-    'th': 'Thai',
-    'tr': 'Turkish',
-    'vi': 'Vietnamese',
-    'cy': 'Welsh'
-  }
 
 export default class TTS extends Command {
 
@@ -45,7 +18,7 @@ export default class TTS extends Command {
             .addStringOption(option => option.setName("language")
                 .setDescription("De taal waarin het bericht moet worden voorgelezen. Standaard is Nederlands")
                 .setRequired(false)
-                .setChoices(Object.entries(languages).map(([key, value]) => ({ name: value, value: key })).slice(0, 25))
+                .setChoices(Object.entries(LANGUAGES).map(([key, value]) => ({ name: value, value: key })).slice(0, 25))
             );
         return builder as SlashCommandBuilder;
     }

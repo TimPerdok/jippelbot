@@ -17,13 +17,18 @@ class Message extends Command_1.default {
             .setName(this.name)
             .setDescription(this.description)
             .addUserOption(option => option.setName("user").setDescription("De persoon die je wilt berichten").setRequired(true))
-            .addStringOption(option => option.setName("message").setDescription("Het bericht dat je wilt voorgelezen wilt laten worden").setRequired(true));
+            .addStringOption(option => option.setName("message").setDescription("Het bericht dat je wilt voorgelezen wilt laten worden").setRequired(true))
+            .addStringOption(option => option.setName("language")
+            .setDescription("De taal waarin het bericht moet worden voorgelezen. Standaard is Nederlands")
+            .setRequired(false)
+            .setChoices(Object.entries(Constants_1.LANGUAGES).map(([key, value]) => ({ name: value, value: key })).slice(0, 25)));
         return builder;
     }
     constructor() {
         super("message", "Stuur iemand een TTS message");
     }
     async onCommand(interaction) {
+        const language = interaction.options.getString("language") ?? "nl";
         const user = interaction.options.getUser("user", true);
         if (user.bot)
             return await interaction.reply({ content: "Je kan geen bots summonen.", ephemeral: true });
@@ -36,11 +41,11 @@ class Message extends Command_1.default {
         const receiver = await interaction.guild?.members.fetch(user.id);
         if (!channel)
             return await interaction.reply({ content: `${receiver.displayName} zit niet in een kanaal momenteel.`, ephemeral: true });
-        (0, Lock_1.doWithLock)(Constants_1.Locks.VoiceLock, () => this.sendCustomMessage(receiver, sender, channel, customMessage));
+        (0, Lock_1.doWithLock)(Constants_1.Locks.VoiceLock, () => this.sendCustomMessage(receiver, sender, channel, customMessage, language));
         await interaction.reply({ content: `Je hebt naar ${user.displayName} een TTS verstuurd.`, ephemeral: true });
     }
-    async sendCustomMessage(receiver, sender, channel, customMessage = "") {
-        const tts = new gtts_1.default(`Bericht van ${sender.displayName} voor ${receiver.displayName}. ${customMessage}`, 'nl');
+    async sendCustomMessage(receiver, sender, channel, customMessage = "", language = "nl") {
+        const tts = new gtts_1.default(`Bericht van ${sender.displayName} voor ${receiver.displayName}. ${customMessage}`, language);
         await new Promise((resolve) => {
             const vc = (0, voice_1.joinVoiceChannel)({
                 channelId: channel.id,

@@ -21,6 +21,35 @@ export enum Locks {
     VoiceLock = "VoiceLock"
 }
 
+
+export const LANGUAGES = {
+    'af': 'Afrikaans',
+    'ar': 'Arabic',
+    'zh': 'Chinese',
+    'da': 'Danish',
+    'nl': 'Dutch',
+    'en': 'English',
+    'fi': 'Finnish',
+    'fr': 'French',
+    'de': 'German',
+    'el': 'Greek',
+    'hi': 'Hindi',
+    'is': 'Icelandic',
+    'it': 'Italian',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'no': 'Norwegian',
+    'pl': 'Polish',
+    'pt': 'Portuguese',
+    'ru': 'Russian',
+    'es': 'Spanish',
+    'sv': 'Swedish',
+    'th': 'Thai',
+    'tr': 'Turkish',
+    'vi': 'Vietnamese',
+    'cy': 'Welsh'
+  }
+
 export const COMMANDS = [
     new Ping(),
     new Release(),

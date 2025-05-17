@@ -5,7 +5,7 @@ import gTTS from "gtts";
 import path from 'path';
 import Command from "../classes/Command";
 import { doWithLock } from "../classes/Lock";
-import { Locks, TEMP_FOLDER } from "../Constants";
+import { LANGUAGES, Locks, TEMP_FOLDER } from "../Constants";
 
 export default class Summon extends Command {
 
@@ -14,7 +14,12 @@ export default class Summon extends Command {
             .setName(this.name)
             .setDescription(this.description)
             .addUserOption(option => option.setName("user").setDescription("De persoon die je wilt summonen").setRequired(true))
-            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(false));
+            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(false))
+            .addStringOption(option => option.setName("language")
+                .setDescription("De taal waarin het bericht moet worden voorgelezen. Standaard is Nederlands")
+                .setRequired(false)
+                .setChoices(Object.entries(LANGUAGES).map(([key, value]) => ({ name: value, value: key })).slice(0, 25))
+            );
         return builder as SlashCommandBuilder;
     }
 
@@ -23,6 +28,7 @@ export default class Summon extends Command {
     }
 
     async onCommand(interaction: ChatInputCommandInteraction) {
+        const language = interaction.options.getString("language") ?? "nl";
         const user = interaction.options.getUser("user", true);
         if (user.bot) return await interaction.reply({ content: "Je kan geen bots summonen.", ephemeral: true });
         const customMessage = interaction.options.getString("message")?.substring(0, 300) ?? "";
@@ -36,13 +42,13 @@ export default class Summon extends Command {
             await user.send(`Je wordt gesummoned door ${sender.displayName} in ${receiver.displayName}. Klik <#${interaction.channelId}> om te reageren.`);
             await interaction.reply({ content: `${receiver.displayName} heeft een PM ontvangen.`, ephemeral: true });
         }
-        doWithLock(Locks.VoiceLock, () => this.summon(receiver, sender, channel, customMessage));
+        doWithLock(Locks.VoiceLock, () => this.summon(receiver, sender, channel, customMessage, language));
         await interaction.reply({ content: `Je hebt ${user.username} gesummoned.`, ephemeral: true });
     }
 
-    async summon(receiver: GuildMember, sender: GuildMember, channel: GuildChannel, customMessage: string = "") {
+    async summon(receiver: GuildMember, sender: GuildMember, channel: GuildChannel, customMessage: string = "", language = "nl") {
         const channelMessage = sender.voice.channel ? ` om naar ${sender.voice.channel.name} te gaan` : "";
-        const tts = new gTTS(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. ${customMessage ? `Hier volgt een bericht: ${customMessage}` : ""}`, 'nl');
+        const tts = new gTTS(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. ${customMessage ? `Hier volgt een bericht: ${customMessage}` : ""}`, language);
         await new Promise<void>((resolve) => {
             const vc: VoiceConnection = joinVoiceChannel({
                 channelId: channel.id,

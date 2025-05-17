@@ -11,33 +11,6 @@ const path_1 = __importDefault(require("path"));
 const Command_1 = __importDefault(require("../classes/Command"));
 const Lock_1 = require("../classes/Lock");
 const Constants_1 = require("../Constants");
-const languages = {
-    'af': 'Afrikaans',
-    'ar': 'Arabic',
-    'zh': 'Chinese',
-    'da': 'Danish',
-    'nl': 'Dutch',
-    'en': 'English',
-    'fi': 'Finnish',
-    'fr': 'French',
-    'de': 'German',
-    'el': 'Greek',
-    'hi': 'Hindi',
-    'is': 'Icelandic',
-    'it': 'Italian',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'no': 'Norwegian',
-    'pl': 'Polish',
-    'pt': 'Portuguese',
-    'ru': 'Russian',
-    'es': 'Spanish',
-    'sv': 'Swedish',
-    'th': 'Thai',
-    'tr': 'Turkish',
-    'vi': 'Vietnamese',
-    'cy': 'Welsh'
-};
 class TTS extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
@@ -47,7 +20,7 @@ class TTS extends Command_1.default {
             .addStringOption(option => option.setName("language")
             .setDescription("De taal waarin het bericht moet worden voorgelezen. Standaard is Nederlands")
             .setRequired(false)
-            .setChoices(Object.entries(languages).map(([key, value]) => ({ name: value, value: key })).slice(0, 25)));
+            .setChoices(Object.entries(Constants_1.LANGUAGES).map(([key, value]) => ({ name: value, value: key })).slice(0, 25)));
         return builder;
     }
     constructor() {
