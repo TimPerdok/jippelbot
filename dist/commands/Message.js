@@ -11,46 +11,43 @@ const path_1 = __importDefault(require("path"));
 const Command_1 = __importDefault(require("../classes/Command"));
 const Lock_1 = require("../classes/Lock");
 const Constants_1 = require("../Constants");
-class Summon extends Command_1.default {
+class Message extends Command_1.default {
     get data() {
         const builder = new discord_js_1.SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addUserOption(option => option.setName("user").setDescription("De persoon die je wilt summonen").setRequired(true))
-            .addStringOption(option => option.setName("message").setDescription("Een custom bericht dat je wilt meesturen").setRequired(false));
+            .addUserOption(option => option.setName("user").setDescription("De persoon die je wilt berichten").setRequired(true))
+            .addStringOption(option => option.setName("message").setDescription("Het bericht dat je wilt voorgelezen wilt laten worden").setRequired(true));
         return builder;
     }
     constructor() {
-        super("summon", "Summon iemand");
+        super("message", "Stuur iemand een TTS message");
     }
     async onCommand(interaction) {
         const user = interaction.options.getUser("user", true);
         if (user.bot)
             return await interaction.reply({ content: "Je kan geen bots summonen.", ephemeral: true });
-        const customMessage = interaction.options.getString("message")?.substring(0, 300) ?? "";
+        const customMessage = interaction.options.getString("message", true)?.substring(0, 300);
         const channels = (await interaction.guild?.channels.fetch());
         if (!channels)
             return;
         const channel = channels.find(channel => channel?.type === discord_js_1.ChannelType.GuildVoice && channel.members.has(user.id));
         const sender = interaction.member;
         const receiver = await interaction.guild?.members.fetch(user.id);
-        if (!channel) {
-            await user.send(`Je wordt gesummoned door ${sender.displayName} in ${receiver.displayName}. Klik <#${interaction.channelId}> om te reageren.`);
-            await interaction.reply({ content: `${receiver.displayName} heeft een PM ontvangen.`, ephemeral: true });
-        }
-        (0, Lock_1.doWithLock)(Constants_1.Locks.VoiceLock, () => this.summon(receiver, sender, channel, customMessage));
-        await interaction.reply({ content: `Je hebt ${user.username} gesummoned.`, ephemeral: true });
+        if (!channel)
+            return await interaction.reply({ content: `${receiver.displayName} zit niet in een kanaal momenteel.`, ephemeral: true });
+        (0, Lock_1.doWithLock)(Constants_1.Locks.VoiceLock, () => this.sendCustomMessage(receiver, sender, channel, customMessage));
+        await interaction.reply({ content: `Je hebt naar ${user.displayName} een TTS verstuurd.`, ephemeral: true });
     }
-    async summon(receiver, sender, channel, customMessage = "") {
-        const channelMessage = sender.voice.channel ? ` om naar ${sender.voice.channel.name} te gaan` : "";
-        const tts = new gtts_1.default(`${receiver.displayName} wordt gesumment door ${sender.displayName}${channelMessage}. ${customMessage ? `Hier volgt een bericht: ${customMessage}` : ""}`, 'nl');
+    async sendCustomMessage(receiver, sender, channel, customMessage = "") {
+        const tts = new gtts_1.default(`Bericht van ${sender.displayName} voor ${receiver.displayName}. ${customMessage}`, 'nl');
         await new Promise((resolve) => {
             const vc = (0, voice_1.joinVoiceChannel)({
                 channelId: channel.id,
                 guildId: channel.guild.id,
                 adapterCreator: channel.guild.voiceAdapterCreator
             });
-            const tmpFile = path_1.default.join(Constants_1.TEMP_FOLDER, 'summon-gtts.mp3');
+            const tmpFile = path_1.default.join(Constants_1.TEMP_FOLDER, 'remote-gtts.mp3');
             if (fs_1.default.existsSync(tmpFile))
                 fs_1.default.rmSync(tmpFile);
             tts.save(tmpFile, (err) => {
@@ -73,4 +70,4 @@ class Summon extends Command_1.default {
         });
     }
 }
-exports.default = Summon;
+exports.default = Message;

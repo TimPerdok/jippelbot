@@ -63,7 +63,7 @@ class TTS extends Command_1.default {
         const channel = channels.find(channel => channel?.type === discord_js_1.ChannelType.GuildVoice && channel.members.has(sender.id));
         if (!channel)
             return await interaction.reply({ content: "Je moet in een voice channel zitten om dit commando te gebruiken.", ephemeral: true });
-        (0, Lock_1.doWithLock)("SummonLock", () => this.summon(channel, message, language));
+        (0, Lock_1.doWithLock)(Constants_1.Locks.VoiceLock, () => this.summon(channel, message, language));
         await interaction.reply({ content: `Je hebt de volgende TTS verstuurd: ${message}`, ephemeral: true });
     }
     async summon(channel, message, language = "nl") {

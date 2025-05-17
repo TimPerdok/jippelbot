@@ -9,6 +9,7 @@ import Wanneerbenikgejoined from "./commands/Wanneerbenikgejoined"
 import path from 'path'
 import os from 'os'
 import TTS from "./commands/TTS"
+import Message from "./commands/Message"
 
 export const SRC_DIR = __dirname
 
@@ -16,6 +17,9 @@ export const TEMP_FOLDER = path.join(os.tmpdir(), 'jippelbot');
 
 export const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"];
 
+export enum Locks {
+    VoiceLock = "VoiceLock"
+}
 
 export const COMMANDS = [
     new Ping(),
@@ -24,6 +28,7 @@ export const COMMANDS = [
     new Subscribe(),
     new SubscribeId(),
     new Summon(),
+    new Message(),
     new TTS(),
     new Unsubscribe(),
     new Wanneerbenikgejoined(),

@@ -5,7 +5,7 @@ import gTTS from "gtts";
 import path from 'path';
 import Command from "../classes/Command";
 import { doWithLock } from "../classes/Lock";
-import { TEMP_FOLDER } from "../Constants";
+import { Locks, TEMP_FOLDER } from "../Constants";
 
 const languages = {
     'af': 'Afrikaans',
@@ -62,7 +62,7 @@ export default class TTS extends Command {
         const sender = interaction.member as GuildMember;
         const channel: VoiceChannel = channels.find(channel => channel?.type === ChannelType.GuildVoice && channel.members.has(sender.id)) as VoiceChannel;
         if (!channel) return await interaction.reply({ content: "Je moet in een voice channel zitten om dit commando te gebruiken.", ephemeral: true });
-        doWithLock("SummonLock", () => this.summon(channel, message, language));
+        doWithLock(Locks.VoiceLock, () => this.summon(channel, message, language));
         await interaction.reply({ content: `Je hebt de volgende TTS verstuurd: ${message}`, ephemeral: true });
     }
 
