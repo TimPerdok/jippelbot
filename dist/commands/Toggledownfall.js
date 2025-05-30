@@ -76,7 +76,7 @@ class Toggledownfall extends Command_1.default {
             throw new Error(`Bestand niet gevonden voor type: ${type}`);
         }
         const player = (0, voice_1.createAudioPlayer)();
-        const resource = (0, voice_1.createAudioResource)(fs_1.default.createReadStream(filePath), { inlineVolume: true });
+        const resource = (0, voice_1.createAudioResource)(fs_1.default.createReadStream(filePath));
         resource.volume?.setVolume(0.5); // Set volume to 50%
         player.play(resource);
         currentConnection.subscribe(player);
