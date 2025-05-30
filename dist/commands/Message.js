@@ -32,7 +32,7 @@ class Message extends Command_1.default {
         const user = interaction.options.getUser("user", true);
         if (user.bot)
             return await interaction.reply({ content: "Je kan geen bots summonen.", ephemeral: true });
-        const customMessage = interaction.options.getString("message", true)?.substring(0, 300);
+        const customMessage = interaction.options.getString("message", true)?.substring(0, 50);
         const channels = (await interaction.guild?.channels.fetch());
         if (!channels)
             return;
