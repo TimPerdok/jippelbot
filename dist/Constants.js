@@ -16,6 +16,7 @@ const path_1 = __importDefault(require("path"));
 const os_1 = __importDefault(require("os"));
 const TTS_1 = __importDefault(require("./commands/TTS"));
 const Message_1 = __importDefault(require("./commands/Message"));
+const Toggledownfall_1 = __importDefault(require("./commands/Toggledownfall"));
 exports.SRC_DIR = __dirname;
 exports.TEMP_FOLDER = path_1.default.join(os_1.default.tmpdir(), 'jippelbot');
 exports.MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "December"];
@@ -61,4 +62,5 @@ exports.COMMANDS = [
     new TTS_1.default(),
     new Unsubscribe_1.default(),
     new Wanneerbenikgejoined_1.default(),
+    new Toggledownfall_1.default(),
 ];
