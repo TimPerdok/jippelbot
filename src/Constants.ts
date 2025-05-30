@@ -10,6 +10,7 @@ import path from 'path'
 import os from 'os'
 import TTS from "./commands/TTS"
 import Message from "./commands/Message"
+import Toggledownfall from "./commands/Toggledownfall"
 
 export const SRC_DIR = __dirname
 
@@ -61,4 +62,5 @@ export const COMMANDS = [
     new TTS(),
     new Unsubscribe(),
     new Wanneerbenikgejoined(),
+    new Toggledownfall(),
 ]
