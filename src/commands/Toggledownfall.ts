@@ -89,7 +89,7 @@ export default class Toggledownfall extends Command {
         }
 
         const player = createAudioPlayer();
-        const resource = createAudioResource(fs.createReadStream(filePath), {inlineVolume: true});
+        const resource = createAudioResource(fs.createReadStream(filePath));
         resource.volume?.setVolume(0.5); // Set volume to 50%
         player.play(resource);
 
